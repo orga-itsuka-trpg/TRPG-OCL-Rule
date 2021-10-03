@@ -1,0 +1,7350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [メイン] タブ */
+		.t0 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t1 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [秘匿(匿名さん,匿名さん)] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステータス] タブ */
+		.t3 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(IR,匿名さん)] タブ */
+		.t4 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [情報] タブ */
+		.t5 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(マゼラン,匿名さん)] タブ */
+		.t6 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(レッド,匿名さん)] タブ */
+		.t7 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：noname */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：GM */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：インフラレッド */
+		.p2 { color: #888888; }
+		.p2 .diceroll { background-color: #888888; }
+
+		/* 発言者：GM */
+		.p3 { color: #673ab7; }
+		.p3 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：大砲 */
+		.p4 { color: #888888; }
+		.p4 .diceroll { background-color: #888888; }
+
+		/* 発言者：レッド */
+		.p5 { color: #888888; }
+		.p5 .diceroll { background-color: #888888; }
+
+		/* 発言者：レッド */
+		.p6 { color: #f44336; }
+		.p6 .diceroll { background-color: #f44336; }
+
+		/* 発言者：マゼラン */
+		.p7 { color: #888888; }
+		.p7 .diceroll { background-color: #888888; }
+
+		/* 発言者：マゼラン */
+		.p8 { color: #9c27b0; }
+		.p8 .diceroll { background-color: #9c27b0; }
+
+		/* 発言者：巴マミ */
+		.p9 { color: #ff5722; }
+		.p9 .diceroll { background-color: #ff5722; }
+
+		/* 発言者：美樹さやか */
+		.p10 { color: #3f51b5; }
+		.p10 .diceroll { background-color: #3f51b5; }
+
+		/* 発言者：？？？ */
+		.p11 { color: #888888; }
+		.p11 .diceroll { background-color: #888888; }
+
+		/* 発言者：ラッキールウ */
+		.p12 { color: #888888; }
+		.p12 .diceroll { background-color: #888888; }
+
+		/* 発言者：system */
+		.p13 { color: #888888; }
+		.p13 .diceroll { background-color: #888888; }
+
+		/* 発言者：ルパン三世 */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：次元 */
+		.p15 { color: #888888; }
+		.p15 .diceroll { background-color: #888888; }
+
+		/* 発言者：五ェ門 */
+		.p16 { color: #888888; }
+		.p16 .diceroll { background-color: #888888; }
+
+		/* 発言者：ルパン */
+		.p17 { color: #888888; }
+		.p17 .diceroll { background-color: #888888; }
+
+		/* 発言者：KP */
+		.p18 { color: #888888; }
+		.p18 .diceroll { background-color: #888888; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			違う卓やってるから観戦
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			！<br>
+			やりたい人はいつもの通りにキャラ作ってくれ(^^)
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			何をやる予定か教えろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			とりあえず考えたのは怪盗<br>
+			とある美術館の目玉展示である「シャンクスの微笑み」を盗み出すのが目的
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			面白そうだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			そんなゴミ盗むなゲボカス
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			首太不機嫌ゴリラの微笑みか
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			スクラッチ500万円当選の価値はあると思ってんすがね…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			PLは3人以上はほしいのを教える
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			最初のキャラで決めるぞ<br>
+			来い<br>
+			参加してェけどなァ…赤髪海賊団以外のエミュできねェもんなァ<br>
+			むしろ赤髪海賊団のエミュを教えろ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			最低階級をお前に教える
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			マズい調律者があちこちで動き出した
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			9時過ぎても参加者集まらないなら行くことを教える<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			すぐ落ちるけど入っていい？<br>
+			9時まで飯食べてるから待ってくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			え～～～～～～～～<br>
+			いいよ！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			わかった<br>
+			うわあり！<br>
+			GM経験シャンとしては4～5人がちょうどいいのを教える
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			strいる？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いらないと思う
+		</p>
+		<p class="player p4">
+			<b>大砲</b>
+			わかった<br>
+			12d6 (12D6) ＞ 42[6,3,2,4,2,5,4,4,1,2,5,4] ＞ 42
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			12d6 (12D6) ＞ 44[1,1,4,6,3,5,3,5,5,4,2,5] ＞ 44
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			振り直しは勝手にやってくれ(^^)
+		</p>
+		<p class="player p5">
+			<b>レッド</b>
+			12d6 (12D6) ＞ 38[1,5,1,2,2,3,6,4,5,6,2,1] ＞ 38
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			前回使ったルルブもスレに貼っとく教える<br>
+			x4 3d6 #1<br>
+			(3D6) ＞ 13[6,2,5] ＞ 13<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 12[4,4,4] ＞ 12<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 8[3,4,1] ＞ 8<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 10[1,3,6] ＞ 10
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>レッド</b>
+			ルールはシャンクトゥルフでいいのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			って振るとやり易いことを教える
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			あとシナリオ中に起こるイベントを秘匿で送ってくれ(^^)
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			x4 3d6 #1<br>
+			(3D6) ＞ 11[5,3,3] ＞ 11<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 12[1,5,6] ＞ 12<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 14[5,6,3] ＞ 14<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 10[4,4,2] ＞ 10
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			へ〜！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			x4 3d6 #1<br>
+			(3D6) ＞ 16[6,5,5] ＞ 16<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 12[1,5,6] ＞ 12<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 10[1,3,6] ＞ 10<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 7[2,4,1] ＞ 7
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			×4 3d6<br>
+			🌈<br>
+			🌈<br>
+			ココフォリアのシステムを学習していってるな…ルフィ<br>
+			x4 3d6 #1<br>
+			(3D6) ＞ 7[3,1,3] ＞ 7<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 11[4,3,4] ＞ 11<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 9[2,4,3] ＞ 9<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 11[2,5,4] ＞ 11<br>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ではINTだけ振り直そうか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			アルファベットのxでいいな　ルフィ<br>
+			バツ入れたの？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			3d6 (3D6) ＞ 10[1,5,4] ＞ 10
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			x4 3d6 #1<br>
+			(3D6) ＞ 9[3,2,4] ＞ 9<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 13[6,3,4] ＞ 13<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 12[5,2,5] ＞ 12<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 6[2,1,3] ＞ 6
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			エックス
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			馬鹿すぎて悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			振り直していいよ
+		</p>
+		<p class="player p4">
+			<b>大砲</b>
+			１ｄ１００　悲しさ (1D100) ＞ 94
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			シ<br>
+			ク<br>
+			シ<br>
+			ク
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			シ<br>
+			ク<br>
+			シ<br>
+			ク
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			馬鹿なほうが楽しいからこのままでいく、来い
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ちなみにこれはBCDiceってdicebotの機能がやってることなんで<br>
+			詳しくはBCDiceでググってくれ(^^)<br>
+			へ〜！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			x4 3d6 #1<br>
+			(3D6) ＞ 11[6,2,3] ＞ 11<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 10[3,2,5] ＞ 10<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 11[1,6,4] ＞ 11<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 13[6,2,5] ＞ 13
+		</p>
+		<p class="player p7">
+			<b>マゼラン</b>
+			名前入れ忘れた
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			別のルルブがスレに貼られているようだけど。<br>
+			そちらを基準に振り直したほうがいいのかな？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			そっちでいいか
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p4">
+			<b>大砲</b>
+			イベント　全てのプレイヤーが溺死か焼死するまで体内に煮えたぎる紅茶を流し込まれる
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			強さ<br>
+			美しさ<br>
+			賢さ<br>
+			速さ<br>
+			の4つと技能値でお願いします
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 9[3,6]+6 ＞ 15<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 9[4,5]+6 ＞ 15<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 7[1,6]+6 ＞ 13<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 3[2,1]+6 ＞ 9
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 5[3,2]+6 ＞ 11<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 6[3,3]+6 ＞ 12<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 5[2,3]+6 ＞ 11<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 10[6,4]+6 ＞ 16
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			こわい<br>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			強さ 11<br>
+			賢さ 12<br>
+			美しさ 11<br>
+			速さ 16
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>マゼラン</b>
+			x4 2d6+6  #1<br>
+			(2D6+6) ＞ 5[1,4]+6 ＞ 11<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 9[6,3]+6 ＞ 15<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 11[5,6]+6 ＞ 17<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 10[6,4]+6 ＞ 16
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈キャラ消された🌈
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p7">
+			<b>マゼラン</b>
+			強さ 11<br>
+			美しさ 15<br>
+			賢さ 17<br>
+			速さ 16
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			なんで！？(^^)なんで！？(^^)
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			悲しいだろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			紅茶ってキャラだったのか<br>
+			ゴミだと思って消しちゃったわすまん
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p6">
+			<b>レッド</b>
+			強さ15<br>
+			美しさ15　幸運75<br>
+			賢さ13  アイデア65<br>
+			早さ9 回避45
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>レッド</b>
+			ゴミ?（ビキビキ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			これ天竜人みたいで好き
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p4">
+			<b>大砲</b>
+			俺は失せる<br>
+			すまなかったな…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			技能は推奨は無いのを教える<br>
+			基本的な目星聞き耳くらいだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			こっちこそなんかごめん…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			うわマミだ<br>
+			だいばくはつ失せろォォォォォ！（✊）
+		</p>
+		<p class="player p9">
+			<b>巴マミ</b>
+			おで紅茶好き
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			PL募集は一旦ここで締め切るのを教える
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			PLが…粛清されて消えた！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			なんで…？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			なんで…？<br>
+			だいばくはつですか…？<br>
+			おい…なんでGMが困惑してる…<br>
+			マミ入れよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			誰でもいいからマミ役で参戦しろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			メモ代わりにしたけど許してくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			あと一人くらい欲しいんすがね…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			うわあり！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			紅茶もPLならなんで抜けた
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			あとはイベント一つ出してくれ^^
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			頼む……紅茶役とマミ役誰か来てくれェ……！
+		</p>
+		<p class="player p4">
+			<b>大砲</b>
+			紅茶と大砲をゲームから排除しようとする謎の勢力が存在していることを教える
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			こわい<br>
+			(^^)?????????
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			いや、紅茶は私の私物だよ。<br>
+			紛らわしいから消した
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			構わず入れ大砲<br>
+			ゾッ！！？！？！？！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			大砲は知らん
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			大砲は？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			マミも帰って来い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>大砲</b>
+			俺は何か消された<br>
+			悲しいからもう入らないい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			これ技能公開か秘匿か教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			公開で
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			技能は公開してくれ^^
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			大砲がマミ役で入ればいいと思ってんすがね……<br>
+			いや入れ大砲　早くしろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			俺もなんか悲しいから卓爆破して深夜にやり直す
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			悲しいだろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			こらえろ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			悲しいだろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			こらえる
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			うわあり！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			早く1人入れアホンダラ<br>
+			乗り越えろ…！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			頼む…！一人入ってくれェ…！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			イベント<br>
+			みんなで楽しく宴の準備をしているところに発狂したルウが乱入して全員犯そうとする<br>
+			みたいな感じでいいか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ラストシーンってこと？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			20分になって入らなかったら卓を殺す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			シナリオ的にはそうなるだろうけどまァ…順番ダイスで決めてもらっても構わねェ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>レッド</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			choice 紅茶 マミ 大砲 美樹さやか (choice 紅茶 マミ 大砲 美樹さやか) ＞ 美樹さやか<br>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			アドリブ卓ならさやかちゃんに任せなさい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			べっぴんさんだろ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			イベント：不死身の怪物が現れる<br>
+			殺せないので逃げてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			こういうときのさやかは頼れるだろ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			来たか。美樹さやか
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 9[3,6]+6 ＞ 15<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 7[6,1]+6 ＞ 13<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 8[4,4]+6 ＞ 14<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 8[6,2]+6 ＞ 14
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			技能も適当に作ってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			男2人女2人でバランスもいいな　ルフィ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			うお！なんという美人！好きになった
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			まーまー落ち着きなさいってアンタたち
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			怪物の見た目はこっちで指定していい？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			強さ 15<br>
+			美しさ 13<br>
+			賢さ 14<br>
+			速さ 14
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			恋愛卓の始まり濃厚に
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった<br>
+			イベントが起こったら貼る
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			落ち着いて心を鎮めてはどうかな。<br>
+			紅茶でも味わうといいよ。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>noname</b>
+			【能力値】<br>
+			強さ…STRとCONに該当<br>
+			賢さ…INTに該当　他に「アイデア」という項目を追加して賢さの値の5倍に設定する<br>
+			美しさ…POWに該当　他に「幸運」という項目を追加して美しさの値の5倍に設定する<br>
+			速さ…DEXに該当　　他に「回避」という項目を追加して速さの5倍に設定する<br>
+			<br>
+			上記4つをそれぞれ2d6+6で決めることを教える<br>
+			<br>
+			HP…強さと一緒<br>
+			SAN…美しさ×5　幸運と一緒<br>
+			死亡回数…初期値は0 死んだら+1
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			いいや…この面子で恋愛は不可だな…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">情報</div>
+		<p class="player p3">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランとさやか技能決めてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			今思ったけど実行前の景気づけの宴ってことにしてくれねェか？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			まーまー慌てなさんな
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			520もあると悩むだろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			それはそう
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			全部80にしたっていいんだ…考えろ！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			そういえば40余っていたね。<br>
+			さっき教わった共産主義…を追加しようか
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>noname</b>
+			【技能】<br>
+			賢さ×30で「振り分けポイント」を求める　そのポイントを使って様々な技能を自由に作ることができる<br>
+			1つの技能につきポイントを1~80まで振り分ける<br>
+			<br>
+			1d100が成功率よりも低い数字の場合　技能ダイスは成功し　その場で使えることを教える<br>
+			失敗した場合　その技能は「死ぬまで」使えなくなることを教える<br>
+			所有技能が全て使用不能になった場合　その場で爆死する<br>
+			<br>
+			またTRPGには「クリティカル」と「ファンブル」の概念があることを教える<br>
+			1d100をやった際にダイスの目が1～5であった場合はクリティカルとなり良い出来事が起こる<br>
+			ダイスの目が96～100の場合はファンブルとなり悪い出来事が起こる<br>
+			このゲームではファンブルが出たらその場で爆死を教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			戻ったが…4人いるみたいだからおれはいらねぇな…<br>
+			ビナーがプロパガンダあるの怖いだろ<br>
+			やばいルールがシャンパラに変わった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ちなみに何故私がプロパガンダを持っているかについては、<br>
+			これと同時期に開催されていたロボノイア4回目を見ると分かるよ。
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			署長のイス　99<br>
+			ドクドクの実　80<br>
+			見聞色の覇気　99<br>
+			隠密　80<br>
+			フグ鯨　99<br>
+			世界一周　60
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			おれの足遅すぎだァ～！明らかに怪盗向けじゃないぞォ！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			剣術：80<br>
+			目星：75<br>
+			癒やしの魔法：76<br>
+			痛覚遮断：90<br>
+			人魚の魔女：99<br>
+			<br>
+			癒やしの魔法は応急手当と一緒<br>
+			痛覚遮断はHP減少をSAN減少に置き換える<br>
+			人魚の魔女はSANが0になった時に死なずに魔女になって暴れる
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった<br>
+			技能は公開してくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			もうすぐイベントを送る
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			1d100 (1D100) ＞ 27
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			全員がお腹をこわしてゲリになる、すると1個だけトイレが出現する
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ひどい<br>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ちなみに俺は署長のイスが簡易トイレになるから争いに巻き込まれないことを教える
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p6">
+			<b>レッド</b>
+			宴だァ～！！！80<br>
+			お前の左腕　俺によく馴染むぜ 5<br>
+			約束が違うな 50<br>
+			お前に教える 80<br>
+			見聞色の覇気 80<br>
+			失せろ 80<br>
+			トキトキの実 15
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			みんな漏らしてしまえばいい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			じゃあイベントはルパン一味が現れて戦闘になるって感じで
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			ひどい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			イベント全員分確認したからぼちぼち始めるのを教える
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			準備はいいか教えろ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			教える
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			教えるよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			教えよう
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			じゃあ始めるぞォ！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			出港だァ～！！！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			出航だァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			出港だァ～～！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			出航だァ～！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あなたたちはシャンカーと呼ばれる怪盗グループです。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			不名誉な名前で確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			不名誉な名前だろ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			うぐっダサすぎだァ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ダサッいい気味ね
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			他にも構成員はいますが、今回は4人での仕事です
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			まーまーそう言いなさんなって<br>
+			慣れたら案外気にいるかもよ？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			4人は酒場で今回のお宝、「シャンクスの微笑み」を盗むために集まっていました。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			さやかの言う通りだよ。<br>
+			それよりも、仕事の方を考えるべきだろう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			いつも不機嫌そうだから希少価値があるだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			そしてこれは景気付けの宴でもあります。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			宴だァ～！！！！！！！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			今は忘れて宴だァ～！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			宴だァ～！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			グビッ！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			宴だァ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ビールと紅茶合うのかよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			いや～オレンジジュースは美味いねぇ！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			フグ鯨食っていい？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			今回の盗みに関しては以下の通りです。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			紅茶の後に飲むビールは美味しいね。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			グビッ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			尿意濃厚に
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			○○美術館に秘蔵してあるシャンクスの微笑みを盗むこと。<br>
+			深夜に向かうこと。予告状は既に出してあります。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			これくらいおれ達なら余裕だろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ゾロ目で美術館の名前を決める<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			……（意味深に無言）
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			…と、そのように相談していると、何か物音がありました。聞き耳をどうぞ。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			深夜か…闇に閉ざされた時間はおれに都合がいい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 44 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			1d100&lt;=99 (1D100&lt;=99) ＞ 83 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 頭の知恵 (1D100&lt;=80) ＞ 65 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>？？？</b>
+			……お゛…で゛…
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			……？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			という声が聞こえました。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			何だ(^^）!?
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			何か聞き覚えあるんだよなァ…
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			お゛で゛、゛怪゛盗゛犯゛す゛！゛！゛！゛！゛
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			何よコイツ！？どっから来たの！？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			キッショ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			という声と同時に、酒場の扉が開かれ、一人の男が出てきました。
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			choice[レッド,マゼラン,さやか,インフラレッド]犯゛す゛！゛！゛！゛！゛ (choice[レッド,マゼラン,さやか,インフラレッド]) ＞ レッド
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			なんだ！？なんだ！？どうしておれ達が怪盗だってわかったんだ！？(^^)
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			おやおや。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ウッ…ウッ…ウアッ…！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			おれに同性愛の趣味はねェ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			レッド、確か君は彼と知己だったね。<br>
+			相手をして上げなさい。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			レッド頑張れ！こんな奴さっさと倒しちゃいなさいよ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			レッドは強さ×5で振ってください
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			本当は仲良くしたかっただけなんだよね
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 強さ (1D100&lt;=80) ＞ 67 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			ん゛あ゛あ゛あ゛あ゛あ゛あ゛あ゛
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			お前がおれに…勝てるわけねェだろうが！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			犯せませんでした。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			悲しいだろ
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			choice[レッド,マゼラン,さやか,インフラレッド]つ゛ぎ゛は゛犯゛す゛！゛！゛！゛！゛ (choice[レッド,マゼラン,さやか,インフラレッド]) ＞ レッド
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			強さ15だろ<br>
+			懲りないやつだ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			ごべーん！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			お前なら…いい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			純愛で確定
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ここで強さ×5で振り切ればさすがに止めるでしょう
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			おやまあ。<br>
+			気に入られているんだね。<br>
+			よほど君のことが好きなのかな。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			お前なら…いい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			頼む…やめてくれェ…！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			何よこいつ……レッドのことが好きなの…？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=75 強さ (1D100&lt;=75) ＞ 25 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			四皇の強さは格が違う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			格が違う
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			ウ゛ッ゛…゛！゛ウ゛ッ゛…゛！゛ウ゛ァ゛ッ゛…゛！゛
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			おっと、勝てるわけねェだろ？（妖笑）
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			分かるよその気持ち…私も好きな人がいるの……でも片思い……辛いわよね片思いって……
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			泣きながら帰りました。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			何だったんだ今の
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			後で慰めてやらねェ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			何しに来たんだ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			非情だね。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			な<br>
+			に<br>
+			も<br>
+			ゾッ！？！！？？！！？！？？！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			と、少しハプニングはありましたが、約束の時間のため、一行は博物館へと行くことになりました。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			なんだよこのイベント
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			美術館じゃないのかよ……
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			間違えたw🌈
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ちなみにあのラッキールウは、路上で何者かに撃たれて死んでいました。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			自業自得で確定
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			まぁ…自業自得か
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=76 癒やしの魔法 (1D100&lt;=76) ＞ 74 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			よくやった！殺されて正解だった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			聖者か？
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			私の魔法で蘇生させてあげよう
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			聖者
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			聖者か？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			この子は優しすぎる…
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			う゛わ゛！゛あ゛り゛が゛と゛う゛！゛お゛詫゛び゛に゛犯゛す゛！゛！゛
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			さやか毎回聖者プレイしてるな
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			やっぱり死ぬべきだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ルウはやっぱりゴミだな
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			流石にこの展開は読めただろ<br>
+			レイプ魔蘇生させるのは聖者とは言わねェだろアホンダラ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			こわい
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			CCB&lt;=100 犯゛す゛！゛ (1D100&lt;=100) ＞ 2 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかはレイプされました。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈<br>
+			ダサッ<br>
+			いい気味ね
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			そんな…あんまりだよ…こんなのってないよ…
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			こんなんどんな目で眺めりゃいいんだァ～！？
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			おやまあ。可哀想に。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			今は恍惚としているラッキールウです。殺してください
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとさやかはSANチェック
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=65 SANチェック (1D100&lt;=65) ＞ 50 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			1d3の減少
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d3 (1D3) ＞ 1
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			トキトキの実で認識できないレイプし返す、来い
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ラッキールウにプロパガンダしていい？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] SAN : 65 → 64
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			さやかの精神力は格が違う
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			あたしって本当バカ……
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=40 プロパガンダ (1D100&lt;=40) ＞ 60 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			🌈<br>
+			なにもなかった！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			犯されてそれで済むのも異常だな<br>
+			これって勝手にダイス振っていいのか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとインフラレッドが何かしようとしましたが失敗しました。<br>
+			えーーーーーーいいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			なに秘匿会話してんだお前ェ！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=15 トキトキの実 (1D100&lt;=15) ＞ 32 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			プロパガンダは死ぬまで封印なのを教える
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			署長のイスに隠れる<br>
+			1d100&lt;=99　署長のイス (1D100&lt;=99) ＞ 68 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			良いのよ……私なんて……どうせもう死んでるんだもん……ゾンビだもん……誰かの役に立てるわけでもない……
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			このシャンクスは無能力者で確定
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			トキトキの実の能力を使おうと思ったら失敗しました。死ぬまで封印です。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			紅茶を飲んでおこうかな。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			I can swimで確定
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランは署長の椅子に隠れました。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 64 ＞ 成功<br>
+			グビッ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			インフラレッドは紅茶を飲みました。<br>
+			さっさとこいつ殺せ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			別によくね
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 失せろ (1D100&lt;=80) ＞ 31 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ラッキールウに10d100ダメージ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			10d100 (10D100) ＞ 513[59,46,56,17,19,18,93,73,59,73] ＞ 513
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			メチャクチャだ…噂以上…！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			そこそこ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			明らかにダメージおかしいだろ
+		</p>
+		<p class="player p12">
+			<b>ラッキールウ</b>
+			お゛で゛は゛死゛に゛ま゛し゛た゛。゛
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さて、殺すべきものを殺した怪盗たちは、美術館へと行きます。<br>
+			車でいい？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			教える
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			いいよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			良いわよ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			じゃあ車で美術館近くまで行きました。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			私の車を使うといい。<br>
+			8人まで乗れるから。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			着いたら起こしてくれ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			美術館の門の前にいます。警備員が2人と監視カメラが3つくらいあります。警備員はまだ気づいていません。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			レッドをドクドクの実で叩き起こす
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			なんだよこの車
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			警備員の能力値を決めます。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			うぐっ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			何でこんな車あるんだよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			1d100&lt;=80　起きろアホンダラ (1D100&lt;=80) ＞ 42 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			特異点でマゼランをバラバラにして殺す
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			なんだ！？(^^)なんだ！？(^^)
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			シャンクス起きて、着いたよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 妖精と鍵 (1D100&lt;=80) ＞ 11 ＞ スペシャル
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			いくらなんでも毒で起こすことはねェだろ…
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			x4 3d6 #1<br>
+			(3D6) ＞ 9[1,5,3] ＞ 9<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 7[1,5,1] ＞ 7<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 10[2,2,6] ＞ 10<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 9[5,1,3] ＞ 9
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			警備員がいるね。<br>
+			まずは彼らを片付けなければ。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			監視カメラもあるのでそこにも気をつけて
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			あとマゼランがバラバラになって死にました。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			おわァあああ～！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			死亡回数+1
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ マゼラン ] 死亡 : 0 → 1
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			シャンパラ始まった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ちょうどいい。彼の死体で警備員をおびき寄せよう。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			冷静だな…
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			死体をドクドクで爆発させていいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			警備員は死体を見ると駆けつけ、警察に通報しています。中に入れそうですね。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			心を鎮めるのには紅茶が一番だよ。<br>
+			どうだい？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ごめんわすれてた
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			入り口のドアは開かないみたいです。<br>
+			鍵をどうにかするか壊すかしましょう
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			1d100&lt;=80 (1D100&lt;=80) ＞ 98 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			じゃあ紅茶を飲む
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			インフラレッドから紅茶をもらって監視カメラにもらった紅茶を投げる
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			怪盗なんだから馬鹿正直に入り口から入らなくても良いでしょ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとマゼランのクローンが送られてきました。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 紅茶 (1D100&lt;=80) ＞ 1 ＞ 決定的成功/スペシャル
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			グビッ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			とても美味しい紅茶でした。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			相変わらず…すげェ&quot;紅茶&quot;だ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			うぐっいい香すぎだァ～！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			やはり生臭い紅茶の香りはいいものだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			だそ<br>
+			けん
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			あとマゼランは死にました。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			その紅茶、マミさんを思い出すなぁ……
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			おわァあああ～！！！！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ちょっと待てよマゼラン死にすぎだろ……
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			マゼランの死因を調べるぞ、来い
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			紅茶を淹れると、あたりにとてもいい匂いが立ち込めます。<br>
+			鍵が何故か開きました。<br>
+			目星していいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 21 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=75 目星 (1D100&lt;=75) ＞ 1 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			なんで…？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			よくやった！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 頭の知恵 (1D100&lt;=80) ＞ 44 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランは爆死したみたいです。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			目星ならさやかちゃんに任せなさい！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			うぐっクリ出すぎだァ～！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ファンブル更に濃厚に
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			爆発使えそうなやつは…まァ今はいいか
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ドクドクの実を使おうとしたらファンブルで爆死したみたいですね。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ マゼラン ] 死亡 : 1 → 2
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランのクローンが送られてきました。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ウッ…ウッ…ウァッ…！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			とにかくこれで中に入ることができます。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			少しは落ち着いて行動しろよまったく
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			あまり秘匿会話を濫用するものではないよ。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			さっさと目当ての物を頂いて帰ろう
+		</p>
+		<p class="player p11">
+			<b>？？？</b>
+			おっとそういうわけにはいかねぇな
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			これはこれは。同業者のようだね。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			BGM芸濃厚に
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ルパン！あんたも来てたのね
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			CCB&lt;=100　ワルサー (1D100&lt;=100) ＞ 72 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			あついだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			ルパンかァ…テンション下がるだろ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			何やってんだお前ェ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			撃った弾はレッドのすれすれを通過しました。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わざと外したってか？気に食わねェな
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			上手だね。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			生意気な奴だな～！アイツ！
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			いやねぇ、あんたらもあの赤髪ちゃんの絵が欲しいんだろ？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			怪盗…もう許さねえぞおおお！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			シャンクTRPGでルパン出てるところ初めて見ただろ<br>
+			多分レッドコンビが1番秘匿使ってそうな気がするんすがね…<br>
+			ルパンエミュうまいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			あの絵は私達が先に目を付けてたんだからね！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ああ、君の言う通りだとも。<br>
+			…それで、怪盗同士が顔を合わせた訳だけれど。<br>
+			どうするのかな？
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			あれは俺たちの獲物なんだ。子供もいることだし、さっさと帰ることだな
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			マゼランを特異点でバラバラにして殺す
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 妖精と鍵 (1D100&lt;=80) ＞ 38 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(レッド,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			間違えた
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			私を子供扱いするなってーの！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ドクドクの実で毒ガスを充満させる
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			間違えたっていいんだ…乗り越えろ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			おっと、帰るわけねぇだろ？（妖笑）
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ハァ…運が悪いな…
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 91 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			まずいルパン一味が増え始めた
+		</p>
+		<p class="player p15">
+			<b>次元</b>
+			おいルパンこんな奴らほっといてさっさといこうぜ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			面白い展開だろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			こちらは4人、君たちは3人。<br>
+			数ではこちらが有利のようだけれど？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとマゼランはバラバラになりました。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			なんでだよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			おっと、今3人になったね。<br>
+			怖い怖い。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			そこの侍の仕業か？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ウッ…ウッ…ウァッ…！
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			おいおい俺達を誰だと思ってる？ルパン一味だぜ？
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ マゼラン ] 死亡 : 2 → 3
+		</p>
+		<p class="player p16">
+			<b>五ェ門</b>
+			拙者ではない…
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			まぁ…そらそうか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			マゼランいじめひどいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			紅茶を飲もう
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			とにかく戦うならいつでもやってやるぜ？
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			君たちもどうかな？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			能力を決めます。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 紅茶 (1D100&lt;=80) ＞ 34 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			いいや…戦っても無意味だな…
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			いーかお前ら、俺の怒りというトンネルを抜けるとそこは血の海でした
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			x4 6d6 #1<br>
+			(6D6) ＞ 29[6,6,3,5,3,6] ＞ 29<br>
+			<br>
+			#2<br>
+			(6D6) ＞ 16[2,3,2,4,1,4] ＞ 16<br>
+			<br>
+			#3<br>
+			(6D6) ＞ 20[3,3,1,6,5,2] ＞ 20<br>
+			<br>
+			#4<br>
+			(6D6) ＞ 25[5,6,2,3,3,6] ＞ 25<br>
+			こんぐらいでいいか
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			なんだ！？(^^)なんだ！？(^^)
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			三人でこうする
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			強さ:29<br>
+			賢さ:16<br>
+			美しさ20<br>
+			速さ:25<br>
+			技能は多すぎるからわからん
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			戦闘に入るよ<br>
+			まともにやりあって勝てる相手じゃないね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			うぐっ強すぎだァ～！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			戦いてェならおれが相手をしてやるが…別にお前らもそういうつもりじゃないんだろう？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			回避100越えとか気は確かか！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			皆殺しだァ～！！！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			やってやろうじゃないの！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			大体当たらないだろあいつ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			……（意味深に無言）
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			主人公補正で確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			あら～やる気になっちゃった？<br>
+			それじゃあ俺達も黙ってないぜ？
+		</p>
+		<p class="player p16">
+			<b>五ェ門</b>
+			choice[さやか,レッド,マゼラン,インフラレッド] (choice[さやか,レッド,マゼラン,インフラレッド]) ＞ インフラレッド<br>
+			CCB&lt;=100 斬鉄剣 (1D100&lt;=100) ＞ 73 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			技能でガードは可能かな？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			回避か受け止めるかしていいよ<br>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			単体攻撃なのは安心だな
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 普通に回避 (1D100&lt;=80) ＞ 71 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとここで二の足踏んでると警察来るよ<br>
+			バラバラ死体あったし
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			へ～！
+		</p>
+		<p class="player p16">
+			<b>五ェ門</b>
+			…む！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			さっさとしろってことだな…
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			むぅ…
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			五ェ門の攻撃は当たらなかったよ<br>
+			インフラレッドのターン
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			調律者は格が違う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ルパン一味と交渉したい
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			見えてなかった<br>
+			すまん<br>
+			ドクドクの実は使用禁止で
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			五ェ門が斬ることができないということは蒟蒻人間で確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			なぜかバラバラ死体もあったし、ここはもうすぐ警察が来るだろうね。<br>
+			ここで争うよりも、目的の物をどちらが早く奪うかで競うほうがいいんじゃないかな？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(マゼラン,匿名さん)</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			GMには従おう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			よく言った！
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			おおあんた良いこと言うじゃないの？<br>
+			俺達と盗みで争うなんて中々骨があるじゃない
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			ついでに後でお前らも一緒に宴しねェか？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ルパン達は美術館の奥へと行ったよ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			つれないな
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			私達も急ごう！
+		</p>
+		<p class="player p14">
+			<b>ルパン三世</b>
+			それはまた今度な
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			あ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			…さて、急がなければならなくなったね。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ということでルパン達はいなくなったね
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			せっかく誘ってやったのにつれないなァ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			なんでルゥ帰ってきたのか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			知らん
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			中の地形はもちろん把握済みでいいのか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さてとにかく奥に行こう<br>
+			地下にお宝はあるみたいだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			おれがしまっておく…良かったな
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			把握済みだよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			下準備さらに濃厚に
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			一応今のはエントランスでの戦い
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			美術館の構造を教えろ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			お宝探しってのは海賊の専門分野だ！負けてられねェ急ぐぞ！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			地下に行くぞ<br>
+			来い
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			行こう！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ああ。急ぐとしよう。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			目玉展示をするための場所を中心に他のものを見て回れる構造だね<br>
+			「中」って形がわかりやすいか
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			この「中」の一番上の展示物保管庫の地下に秘蔵されてるってことです
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ではそこまで一直線に急ごうか。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			インペルダウンと一緒
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			道中トラップに気を付けねえとな
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			保管庫に行くための通路に警備員がいるね<br>
+			3人くらい
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			特異点で警備員の一人をバラバラにして殺す
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 妖精と鍵  (1D100&lt;=80) ＞ 62 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			レッドいつもの頼む
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			警備員の一人がバラバラになったよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			あいつらは別のルートに行ったのか…
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			どうやらここには謎の殺人鬼もいるみてェだな
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あの人たちはなんか警備員に変装するんじゃないかな<br>
+			いつものように
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			あいつらの変装技術は異常だな
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			変装取っておけばよかったなァ…
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			つまりこの中の誰かがルパンの可能性もあるわけか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ルパン一味死んだ！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			変な事言わないでよマゼラン
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ということでなにかあったので警備員は一ヶ所に集まってきました<br>
+			今なら行けるかな？
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			おや。まとまってくれたね。<br>
+			これなら一度に黙らせられるんじゃないかな？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			カチコミだァ～！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			全員に失せろして気絶させるぞ、来い
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			血の気多すぎない？<br>
+			いいよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			頼んだわよシャンクス！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 失せろ (1D100&lt;=80) ＞ 67 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			出た！失せろ出たよ！失せろ出た～！！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			失礼…潜入につき、少々威嚇した
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			警備員はすげェ覇気によって気絶したよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			今のうちに急ごう！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			さすがレッドだ。<br>
+			…さあ、障害はなくなった。<br>
+			急ごうか。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あ、そういえば全員お腹の具合が悪くなったよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			何でだよ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			宴のせいじゃないかな…
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			うぐっ！酒の飲みすぎか…
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			さきほどの宴の毒入りスープが効いたか…
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			S1d1 (1D1) ＞ 1<br>
+			…
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			みんなめちゃくちゃお手洗いいきたい感じだね<br>
+			というかもう漏れそう
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			うぐっ……！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			特異点で自害して次のクローンを呼ぶ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			おい…お前らもか？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			うぐっ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			目星振っていいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 53 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 鍵と妖精(自害） (1D100&lt;=80) ＞ 9 ＞ スペシャル
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			死に方は他と同じバラバラ死体ね
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			トイレが「一つだけ」見つかったよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			私は女性用トイレに行くわよ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとインフラレッドがバラバラになって、死んだよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			トイレは一つだけだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>system</b>
+			[ インフラレッド ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			インフラレッドのクローンが走ってきたよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			赤い霧が水面下で動いてる説濃厚に
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			レディファーストで私に譲りなさいよ！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			なァお前ら…ここはじゃんけんで決めねェか？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			バラバラになるのがなんなのかわからなくて怖い
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ただいま。<br>
+			前の私は突然バラバラになるような反逆者だったけど、<br>
+			今回の私は完璧だよ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			BGM適当に設定したけどこれかなり焦るだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			決めていいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			死んだらお腹の具合はよくなったか教えろ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			といってもここだとダイス勝負しかないだろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			1d100ダイス振って一番数字が大きい方でもいいよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ところで私って死体を操ってるだけなのに排便とかするのかな
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			インフラレッドはお腹の調子はいいね
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			&nbsp;
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			だからトイレは他の皆に譲るよ。<br>
+			頑張ってね。
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			特異点でトイレの鍵を閉める
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			悪ィ間違えて紅茶消した
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 鍵と妖精 (1D100&lt;=80) ＞ 44 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			さっさと1d100で決めるわよ<br>
+			来なさい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			宴で酒飲んで脳の感覚壊して便意消していいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			また出すからいいよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=99　署長のイス (1D100&lt;=99) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			それしたら漏れない？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			聖者か？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			知らんぷりするぞ、来い
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランは署長の椅子にあったトイレ機能で用を足したよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100 (1D100) ＞ 92
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 宴だァ～！！！ (1D100&lt;=80) ＞ 70 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			クソ漏らしは可愛そうなので特異点でレッドをバラバラにして殺す　来い
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 鍵と妖精 (1D100&lt;=80) ＞ 60 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			結局誰もトイレ使わないのかよ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかはトイレに入ったよ<br>
+			トイレのドアが閉まって開かなくなったよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			酒飲んだら便意消えたぞォ～！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			剣でドアをぶっ壊す
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとレッドはバラバラ死体になったよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			うぐっ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=80 剣術 (1D100&lt;=80) ＞ 51 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ レッド ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			トイレのドアは壊れないね
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			さっきから何が起こってるんだァ～！！！？？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			レッドのクローンが何処からともなく来たよ<br>
+			状況整理していい？
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			こういう所のトイレなら上は空洞でしょ、上をよじ登るわよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			時止めろ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			時止める
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやか→トイレの鍵が開かない<br>
+			レッド→バラバラ死体<br>
+			マゼラン→署長の椅子で用を足す<br>
+			インフラレッド→バラバラ死体<br>
+			時止め解除するよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			俺はもうクローン来てなかった？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			滅茶苦茶な絵面だ…噂以上！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかはトイレの壁をよじ登ってきたよ<br>
+			二人ともクローン来てるね
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ドクドクの実使っていい？
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			うわ！ありがとう
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ということで一応便意はみんな収まったよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			酒の飲みすぎには注意だな…みんな
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			トイレにはあらかじめ行こうね！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			うんこ怪盗卓で確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			あたしって本当バカ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			何でこんな画像あるんだよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			知らん
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			興味深い
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ということで奥に進むよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			おれもこういうファンアート欲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			探せばありそうでこわい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			保管庫の前だね<br>
+			目星振ってみて
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 4 ＞ 決定的成功/スペシャル
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ローのあれがあるしなァ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 頭の知恵 (1D100&lt;=80) ＞ 53 ＞ 成功<br>
+			よくやった！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			レッドの見聞色は格が違う
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			クリ多いな…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			よくやった！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			レーザーのセンサーがあるよ<br>
+			レッドは瞬時にどう行くかを把握したみたい<br>
+			その上でなにか投げ捨ててあるね<br>
+			ルパンのものみたい
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			罠かもしれないし違うかもしれねェな
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			うぐっ出し抜かれたぞォ～！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			どうやらもう保管庫に行ったみたいだ<br>
+			早く行った方がいい
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			これはこれは。<br>
+			先を行かれたようだね。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			途中うんこいったせいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			このレーザーを解除する方法あるか考える、来い
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			分かった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			美しさ×5で通り抜けられるよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			おれにはボーナス欲しいシャン…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			特異点でレーザーを閉じて停止させる　来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=75  (1D100&lt;=75) ＞ 59 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			レーザーは別の棟にあるから少し時間かかるね<br>
+			警察にも見つかりそう
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 鍵と妖精 (1D100&lt;=80) ＞ 84 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=75 (1D100&lt;=75) ＞ 30 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=75 美しさ (1D100&lt;=75) ＞ 47 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=55 美しさ (1D100&lt;=55) ＞ 54 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			美しさというか幸運だこれ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			怪盗団は強く、賢く、美しい
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			全員成功だァ～～！！！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			そりゃそうだろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ということで保管庫に行ったよ<br>
+			宝石とかきれいなものがあるけどいま探しているものは無いね<br>
+			地下にあるみたい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			まともに行っても追いつけそうにねェ…出し抜く手段が欲しいだろ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			どうやら地下のようだね。<br>
+			…彼らは今どこまで進んでいるのかな？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンはそろそろシャンクスの微笑みを手に入れられるんじゃないかな
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			うぐっ早すぎだァ～！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			S1D100&lt;=50 (1D100&lt;=50) ＞ 1 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			くぅ～！シャンクス！トキトキの能力でどうにかしなさいよ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			一流の怪盗は格が違う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			まだ手こずってるみたいだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			シャンカーがルパンに！勝てる訳ねェだろうが！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			あの能力は使える日とそうじゃない日があるんだよなァ…
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			はよおりろ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			トキトキの実で全員加速させる、来い<br>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			マゼランのベノムロードで道を作れば早く行けるんじゃ？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			おれだけしか行けないだろ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			先に行って足止めしといてくれれば良いじゃない
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			s1d100&lt;=
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			でもォ…あいつら怖いしなァ…
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈<br>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			なんかアクション起こせ<br>
+			S1d100&lt;=50 (1D100&lt;=50) ＞ 18 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ドクドクで床を溶かして地下にショートカットできる？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			難しいかな
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			トキトキの実で加速する、来い
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=15 トキトキの実 (1D100&lt;=15) ＞ 18 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			惜しい
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			おしい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			今日は使えねェ日だな
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			トキトキの実は死ぬまで使用不可です
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			調律者で壁を貫通する衝撃波を出して周り毎ルパンを攻撃したいのを教える
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンには当たらないけど壁ならなんとか
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			だがまあ、ここで手をこまねいていても仕方がない。<br>
+			普通に進むのはどうだろう？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			分かった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 調律者 (1D100&lt;=80) ＞ 55 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			行くか
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			インフラがやったのは公開する？
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			じゃあ公開で
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			インフラレッドは衝撃波で壁を壊したよ<br>
+			今ならショートカットしてルパンに追い付ける
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			強引だな…
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			よくやった！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			インフラレッドすんげえ～！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			さあ、急ごうか。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			地下に降りたよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			あいつらには渡さねェぞォ！
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			あら～中々やるじゃないの
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンいたね
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ルパン！アンタなんかにあの絵は渡さないわよ！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			さっきぶりだね。<br>
+			調子はどうだい？
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			まあ怪盗としては三流ってとこか？<br>
+			あんな壁壊したりするなんて人間業じゃねぇけどな？<br>
+			あと子供は寝る時間だぜ？
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			私を子供扱いするなって！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			部屋の様子だね
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			心配しないでいい。<br>
+			すぐに直すから。
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			調律者で壁…直せるのかなァ…<br>
+			まあG社のなら多分行けるだろ<br>
+			直す　来い<br>
+			CCB&lt;=80 調律者 (1D100&lt;=80) ＞ 100 ＞ 致命的失敗
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			2部屋あって<br>
+			今いるところと壁を隔ててもう一つ部屋がある。<br>
+			そこにシャンクスの微笑みがあるよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			誰も傷つけてねェし壊しても直すんだ…お前らに三流扱いされる謂れはねェよな？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとインフラレッドが盛大に爆死したよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>ルパン</b>
+			なんだぁ？
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ルパン一味…もう許さねえぞおおお！！！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			よくあることだ…気にするな
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			ちょっと待て俺じゃないって
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>system</b>
+			[ インフラレッド ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あとやけに部屋が大きいね
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			せっかくだし一緒に見るか？シャンクスの微笑み
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(レッド,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンがドアを開けて中に入るよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			私達も入ろう！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			是非見せてもらいたいものだな…シャンクスの微笑みというものを！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			どんな画像が出るか楽しみだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>ルパン</b>
+			シャンクスの微笑み…過去に存在した海賊の貴重な笑うシーンを描いた絵だって話さ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ここかァ～～～～～<br>
+			まァ…そらそうか
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			これがシャンクスの微笑みだそうです
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			ずいぶんおれにそっくりな絵じゃねェか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			すまん
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ダサっ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			……
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			でもちょっと笑った<br>
+			こんなの美術館に飾るなアホンダラ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>ルパン</b>
+			まぁこいつを頂いて俺ァもうずらかるぜ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			約束が違うなで存在しない約束をルパンたちに植え付けて絵を渡させていいか教えろ
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			お前らも十分見たろ？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			振っていいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=50 約束が違うな (1D100&lt;=50) ＞ 62 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p18">
+			<b>KP</b>
+			こんなのを盗みたがるルパン悪趣味で確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			さすがに効かねェか
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			俺のクローンはいつ送られるか教えろ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			毒竜をブチかましていいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			因果律変える技能をわざわざ低めに設定するシャンクス律儀だろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			ということでルパンがシャンクスの微笑みに手をかけようとしたその時
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			もう届いてるよインフラレッドのクローン<br>
+			すまん
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！<br>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			なにかが襲ってくるよ
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			うひゃあ！なんだあいつ！？
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			なんだ！？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ怪物出して
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			おわァアアア～～～っ！？なんだこいつはァ！？
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			いやマジで何だよコイツ…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			怪物について教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			キモい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			どっかで見たんだよなコイツ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			こいつ動くのかよ…
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンは咄嗟に避けて銃を撃つね
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			血で満たされた浴槽のような見た目をしている<br>
+			こいつを見るとSANチェックが発生し失敗すると飛び込みたくてたまらなくなる<br>
+			飛び込むと問答無用で死ぬ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>レッド</b>
+			ロボトミであることを教える
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>ルパン</b>
+			CCB&lt;=100 ワルサー (1D100&lt;=100) ＞ 2 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			さすがルパンだ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			だよなァ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンは咄嗟に判断したけどあなたたちはこの奇怪な姿を見てSANチェックだよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			おやまあ。<br>
+			悍ましい怪物だね。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ルパンは格が違う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			ちょっと待て何しに来たんだよこの怪物…
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=64 SANチェック (1D100&lt;=64) ＞ 36 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=55 SANチェック (1D100&lt;=55) ＞ 11 ＞ スペシャル
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=75 SAN (1D100&lt;=75) ＞ 11 ＞ スペシャル
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			悪趣味な姿だなぁこいつぁ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=60 (1D100&lt;=60) ＞ 92 ＞ 失敗<br>
+			おわァあああ～！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			成功による減少は1d6
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			1d6 (1D6) ＞ 4
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			1d6 (1D6) ＞ 4
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d6 (1D6) ＞ 3
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ レッド ] SAN : 75 → 71<br>
+			[ 美樹さやか ] SAN : 64 → 61
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			失敗は1d10の減少
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ インフラレッド ] SAN : 55 → 51
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			1d10 (1D10) ＞ 5
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			そしてその怪物に飛び込みたくてたまらなくなる
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			発狂だァ～！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			一時的発狂だしちょうどいいか
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			お往きなさい。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			マゼラン何やってんのよ！
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ マゼラン ] SAN : 85 → 80
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			マゼラン何しようとしてんだお前ェ！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			特異点でさやかをバラバラにして殺す　来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランは飛び込んで…そして死にました。
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 鍵と妖精 (1D100&lt;=80) ＞ 54 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			バカ野郎ォーーーーーーーー！！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ちょっと待て…マゼラン死にすぎだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			そしてさやかはバラバラになって死にました。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			ウッ…ウッ…ウァッ…！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			痛覚遮断して死を免れるわよ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			すぐさまクローンが送られてきます。
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ マゼラン ] 死亡 : 3 → 4
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=90 痛覚遮断 (1D100&lt;=90) ＞ 24 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			さやかは3d6のダメージ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			3d6 (3D6) ＞ 5[1,3,1] ＞ 5
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] SAN : 61 → 56
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			バラバラだと痛覚遮断する以前に死ぬと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			さやか、硬すぎだろ！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			おわァアアア～～～っ！！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			なんとかなったみたいですね<br>
+			なんか体ズレてますが
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			死体を動かしてるだけのゾンビだから大丈夫
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] HP : 15 → 10
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ということで戦闘です
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			バラバラにしてるの誰なんすかね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] SAN : 56 → 61
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			ルパン…まずは協力してこの化け物どもをどうにかしねェか？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			こいつ原作で戦闘しないからなァ…<br>
+			ミニオンを生み出してそいつに戦闘させる感じでいい？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			飛び込んだ時にドクドクの実を発動させてたことにしていいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			とりあえず動かないでおく
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 10 ＞ スペシャル
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			発狂状態なのに気は確かか！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>ルパン</b>
+			しょうがねぇか<br>
+			まあ俺はヤバくなる前に逃げるぜ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			マゼランお前何してんだ…？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			動かせるか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			どう動かすか考えてないからいいよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			ドクドクの実は意味なかったね
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ところでコイツ何なの？猫足バスタブとシャワー……が人の手になってる？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			じゃあスタンド的なのを出して<br>
+			そいつが浴槽に引きずり込もうとしてくる感じで
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			悲しいだろ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			わかった<br>
+			次のターンからそうする
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			毒直入れが効かなかったらマゼランやることないと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			赤い液体で満たされた浴槽のようだ。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あと絵はルパンがとりあえず盗ったよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！<br>
+			ルパン何やってんのアンタ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			一流の泥棒は格が違う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>ルパン</b>
+			気にするな<br>
+			まだ逃げるつもりはねぇさ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			お前に絵を預ける<br>
+			おれ達の大切な獲物だ<br>
+			後で返しに来い
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			わかったぜ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			バスタブ？はなにか幽霊のようなものを出して引きずり込もうとするよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			物分かりいいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			CCB&lt;=100 ？？？ (1D100&lt;=100) ＞ 86 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			魔女かなんかか！？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			キッショ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			全員回避で
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=70 回避 (1D100&lt;=70) ＞ 74 ＞ 失敗
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			見聞色で見切っていいか教えろ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			調律者でアブノーマリティからの攻撃を無効化する　来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			さやかは死んだよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 69 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=90 (1D100&lt;=90) ＞ 38 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 調律者 (1D100&lt;=80) ＞ 53 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			インフラレッドは攻撃？をはねのけたよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			即死かよ！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			私の前に立つな
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			死んだなら仕方ない……
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			あーあさやかがグチャグチャだ<br>
+			おれはお前を許さない！！！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=99 人魚の魔女 (1D100&lt;=99) ＞ 30 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			調律者は格が違う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			インフラレッドひとりでいいんじゃねえか？
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			CCB&lt;=100 ワルサー (1D100&lt;=100) ＞ 81 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			人魚の魔女になって相手をしてやる
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			やばいさやかが魔女化し始めた
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンは銃を撃ったけど効かなかったよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			み、み、みんな！さやかが！どうしよう！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			おやおや。<br>
+			これは大変だね。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかが魔女になった姿を見た皆さんはSANチェックです
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			紅茶でSANチェック無効にしていいか教えろ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=71 SAN (1D100&lt;=71) ＞ 20 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			まあいいか
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 紅茶 (1D100&lt;=80) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			グビッ！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 3 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			ならおれも宴で酒飲んでごまかしていいか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			成功した人の減少は1d3<br>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			1d3 (1D3) ＞ 1
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 宴だァ～！！！ (1D100&lt;=80) ＞ 74 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ マゼラン ] SAN : 80 → 79
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			グビッ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			飲んだレッドたちは1減少
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ レッド ] SAN : 71 → 70<br>
+			[ インフラレッド ] SAN : 51 → 50
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			衝撃波でルパンごとさやかを攻撃する　来い
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			酒飲むと気分がスッキリして現実を飲み込めるようになるなァ～！！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			インフラレッドから速さ順に行動<br>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 調律者 (1D100&lt;=80) ＞ 72 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			いや怪物を倒せよ！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			おいおい仲間だぞ？ほどほどにしとけよ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかはサイズ的に回避できなさそうだし2d6ダメージ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			2d6 (2D6) ＞ 7[2,5] ＞ 7
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンは避けるよ
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] HP : 10 → 3
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			CCB&lt;=125 回避 (1D100&lt;=125) ＞ 27 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			怪物はどれも同じだろう。<br>
+			…それならば、かつての仲間であったものに引導を渡すのが先じゃないかな？
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランのターン
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			まったく…どうも血の気の多い奴ばっかでたまらねェ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(レッド,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			ごめん…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			隠密で隠れる
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(レッド,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			まったく気づけてない俺は恥だ！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 63 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(レッド,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			お前なら…いい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランは椅子の影に隠れたよ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(レッド,匿名さん)</div>
+		<p class="player p6">
+			<b>レッド</b>
+			大変だろう…？GM
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			次の出番が回ってくるまで攻撃の選択に入らないよ<br>
+			つぎさやか
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			分かった　怪物を含めてその場の全員に攻撃する
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			スタンドの方はHPあるってことにしていい？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=80 剣術 (1D100&lt;=80) ＞ 27 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			やってくれるなァ…さやか
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランには当たらないね
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 回避 (1D100&lt;=80) ＞ 5 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			回避の代わりに見聞色でいいか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			S3d6 (3D6) ＞ 11[5,4,2] ＞ 11<br>
+			いいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			CCB&lt;=125 回避 (1D100&lt;=125) ＞ 14 ＞ スペシャル
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			お前の攻撃じゃおれには当たらねェ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			全員当たらないけど唯一怪物の方には当たったよ<br>
+			1d6 (1D6) ＞ 5
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			怪物に当たったのなら……それでいい……
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			軽いものだ。
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			次レッド
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			お前に教えるでさやかの攻撃対象を敵だけに絞らせる
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 お前に教える (1D100&lt;=80) ＞ 70 ＞ 成功<br>
+			お前に敵を教える
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ワカッタ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかはアイデア振って
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=70 (1D100&lt;=70) ＞ 77 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかは理解できなかったよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			うぐっ馬鹿すぎだァ～！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			怪物のターンになるよ
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			お願い……誰か……私を殺して……
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			怪物は全員を攻撃するよ<br>
+			マゼランには当たらないね<br>
+			攻撃？<br>
+			まあいいか
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			もう回避の代わりにずっと見聞色していいか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			回避かなにかで<br>
+			いいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 回避 (1D100&lt;=80) ＞ 69 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ルパンも避けたよ<br>
+			さやかはどうする？
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			サイズ的に避けられないなら<br>
+			食らうしかないじゃない！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			じゃあ死にました。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			さやかクローンが送られてきました。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			せっかくだしさやかはSANチェック
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			さやか死んだw
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] HP : 3 → 15
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=65 SANチェック (1D100&lt;=65) ＞ 88 ＞ 失敗<br>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			1d10の減少
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d10 (1D10) ＞ 2
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 美樹さやか ] SAN : 65 → 63
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			あのバスタブを見ると入りたくなりました。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			こわい<br>
+			念の為先に痛覚遮断しとく
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			ふらふらとさやかは入ろうとしますが…
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=90 痛覚遮断 (1D100&lt;=90) ＞ 53 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			そこをルパンが手を引いて止めました。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			うぐっイケメンすぎだァ～！！
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			あいつにゃどうやっても勝てねぇみてぇだ<br>
+			逃げた方がいい！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ルパン……分かったわ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			これはこれは。<br>
+			私の仲間を助けてくれるとは、流石ルパン三世。<br>
+			格が違うね。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			IQ280
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			逃げれるものなのか…？多分見えないだけで他にもいるの濃厚に
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			回避で振れば怪物から逃げられるみたいです。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 回避 (1D100&lt;=80) ＞ 94 ＞ 失敗
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=70 (1D100&lt;=70) ＞ 1 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=90　逃走 (1D100&lt;=90) ＞ 26 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			調律者で攻撃を無力化する
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=45 回避 (1D100&lt;=45) ＞ 55 ＞ 失敗<br>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			できませんでした。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			やっぱりいいよ振って
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 調律者 (1D100&lt;=80) ＞ 5 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			インフラレッドは攻撃？を払いのけ、逃げることができました。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			ちっぽけなお前だけでは止められないさ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			マゼランとさやかも上に逃げることができました。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			あーあ置いてかれちまった
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			レッド殿はまかせた
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			レッドに怪物の手が伸びます。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			クリティカル出した私がシャンクスを抱きかかえて一緒に逃げるよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			聖者か？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			せめて手を握ってくれねェかな…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			さやか大体聖者だな
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			聖者か？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			中学生に抱えられたらおれの面子ってもんが…！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			そして怪物は最後に出ようとしたルパンを握り、バスタブに放り込みました。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			それがあなたたちの見た最後です。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			絵が！！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			獲物とルパンが！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈ルパン死んだｗ🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			…（意味深に無言）
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			固く閉ざされ、地下室への扉は二度と開くことは無いでしょう
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			ルパン！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			そして…
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			技能込みでも開かないか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			幸運振って
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			あいつの仲間も見えなかったし…きっと獲物もルパンも無事だろう
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=55 幸運 (1D100&lt;=55) ＞ 59 ＞ 失敗
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			おれも振っていいか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			全員
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=75 幸運 (1D100&lt;=75) ＞ 26 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			1d100&lt;=65 (1D100&lt;=65) ＞ 32 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			CCB&lt;=70 (1D100&lt;=70) ＞ 3 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			保管庫を出たところ、警察はいないみたいです。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			まぁ居ても気絶させるだけだがなァ…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			特異点でレッドをバラバラにして殺す
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			ただ隠れて行動した方がいいでしょう。バラバラの死体があってあわただしく動いてるみたいです。
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			やっと切り刻んでくるやつの正体がわかったんすがね…おれは恥だ！！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=80 特異点 (1D100&lt;=80) ＞ 70 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			そしてレッドはバラバラになって死にました。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			おわァアアア～～～っ!!!
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ レッド ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			すぐさまクローンが送られてきます。<br>
+			絵は手に入れることができませんでしたが、生きて帰ることはできました。<br>
+			それだけでも良しとしましょう。
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			誰に刻まれたのか見聞色で探っていいか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 見聞色の覇気 (1D100&lt;=80) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			…
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(IR,匿名さん)</div>
+		<p class="player p3">
+			<b>GM</b>
+			幸運振ってみて
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			CCB&lt;=55 幸運 (1D100&lt;=55) ＞ 36 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			誰だ！？(^^)誰だ！？(^^)
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ レッド ] SAN : 70 → 75
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			……
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ レッド ] SAN : 75 → 70
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			バラバラにした犯人はわかりませんでした。
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			おわァアアア～～～っ!!!
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			これで終わり<br>
+			宴だァ～～！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			これは恐ろしい。
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			宴だァ～！！！！！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			宴だァ～！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			宴だァ～！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			宴だァ〜〜〜！！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			宴だァ～～～！！！！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			最後にホラーなの怖いだろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			後日談
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			絵を奪えなかったの悔しいなぁ
+		</p>
+		<p class="player p15">
+			<b>次元</b>
+			それで…そんなダッサい絵を欲しがるやつなんざいるのか？
+		</p>
+		<p class="player p16">
+			<b>五ェ門</b>
+			拙者にはわからぬ…
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			まあいいだろ？どんなものにもマニアってやつぁ存在するんだぜ？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ルパン生きてた！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			絵はルパンが持っていきました。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			見てて面白かっただろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			生きててよかったなァ！！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			後日談のルパンたちの近くで全員で宴してていいか教えろ
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			絵を奪われたの悔しすぎだァ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			ちょっとそれっぽくエミュしてみたけど難しかったろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>レッド</b>
+			CCB&lt;=80 宴だァ～！！！ (1D100&lt;=80) ＞ 3 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			それじゃあ私も紅茶を飲もうかな。<br>
+			CCB&lt;=80 紅茶 (1D100&lt;=80) ＞ 11 ＞ スペシャル
+		</p>
+		<p class="player p17">
+			<b>ルパン</b>
+			…あいつらも楽しそうにやってるみたいだしまぁいいか
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			グビッ！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			さぁ今夜は宴だ奪われたやつも奪ったやつも関係なく飲もう！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			宴だァ～～～！！！！！！！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			グビッ！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			宴だァ～～～～～～！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			宴だァ～～～～！！！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			イベント公開してもいいよ<br>
+			あと色んな人バラバラにしたのはインフラレッドでした。
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			イベント：不死身の怪物が現れる<br>
+			殺せないので逃げてくれ(^^)
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			イベントはルパン一味が現れて戦闘になる
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			イベント<br>
+			みんなで楽しく宴をしているところに発狂したルウが乱入して全員犯そうとする
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			IR滅茶苦茶過ぎだろ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			みんな下痢になってトイレが一つだけ出現する
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			全員犯そうとしたけど長ったらしくなりそうだったからはしょって一部の人だけ犯すことにした<br>
+			すまん
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			結局おれしか狙われなかっただろ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			いや……その後さやかが犯されたな…
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			なんでちょくちょくバラバラ死体発生したのか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			中々ルパンエミュ楽しかったから機会あったらやりたい<br>
+			インフラレッドのせい
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			さやかのトイレの鍵を閉めたのも私だよ。<br>
+			本当は入る前に鍵をかけたかった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			だよなァ…
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			インフラレッドもう許さねえぞぉ！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			じゃあなんでインフラレッドも死んでたのか教えろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			自分を切り刻んだ
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			死んで腹具合直したかった
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			実質インフラレッドに皆殺しにされただろ
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			お前頭がサイコなんだな？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			無茶苦茶だ…噂以上…!<br>
+			じゃあこのまま次のアドリブ卓も立てろ
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			考えとく
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			どんなのがいい？
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			俺違う卓で死んだから参加できる教える<br>
+			特異点か調律者使ってバラバラ死体量産したんすかね…？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			ログとってから爆破する<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ポエム卓みたいなPLにダイレクトアタックする卓
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			この鍵と妖精はすげェ優秀だな！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>マゼラン</b>
+			またね～！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			分かった
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			わかった<br>
+			お疲れシャンだァ～！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			アドリブだからこそオープンシナリオできそうだろ<br>
+			来たな…銀時！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			恋バナさせる
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			失せろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			うぐっ臭すぎだァ～！<br>
+			ビナー見かけたら赤い霧で対抗するぞ<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			私が思いつきで言っただけのルパン一味なのに<br>
+			エミュまでしてくれてありがとう！
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			お疲れ様だァ～～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			恋愛卓の話題は失せろォォオオオ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			お疲れ様だァ～～～！！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			お疲れ様だァ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			お疲れシャン<br>
+			お疲れシャン<br>
+			次はクリケットかシャンセインに行く<br>
+			お疲れシャン<br>
+			来い
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			いいから明日に備えて寝ろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GM</b>
+			いつかまた卓立てたら、もう一度遊んでくれますか！！！？
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			×
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			×
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			アドリブ立てろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			✊×
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			x
+		</p>
+		<p class="player p3">
+			<b>GM</b>
+			うわ！ありがとう！<br>
+			またね～～！
+		</p>
+		<p class="player p6">
+			<b>レッド</b>
+			またね～～！！！
+		</p>
+		<p class="player p10">
+			<b>美樹さやか</b>
+			またね～～～！！！
+		</p>
+		<p class="player p2">
+			<b>インフラレッド</b>
+			またね～～～～～～！！！
+		</p>
+		<p class="player p8">
+			<b>マゼラン</b>
+			またね～！
+		</p>
+	</div>
+</body>
+</html>

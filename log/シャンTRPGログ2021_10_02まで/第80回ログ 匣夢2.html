@@ -1,0 +1,3253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [情報] タブ */
+		.t0 {
+			background-color: #ecf4d9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [メイン] タブ */
+		.t1 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t2 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [ステータス] タブ */
+		.t3 {
+			background-color: #d3edfb;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名さん,匿名さん)] タブ */
+		.t4 {
+			background-color: #fbdac8;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [メモ] タブ */
+		.t5 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：KP */
+		.p0 { color: #241754; }
+		.p0 .diceroll { background-color: #241754; }
+
+		/* 発言者：noname */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：ギャルディーノ */
+		.p2 { color: #006083; }
+		.p2 .diceroll { background-color: #006083; }
+
+		/* 発言者：シャンク */
+		.p3 { color: #e91e63; }
+		.p3 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：吉良吉影 */
+		.p4 { color: #4caf50; }
+		.p4 .diceroll { background-color: #4caf50; }
+
+		/* 発言者：助六 */
+		.p5 { color: #888888; }
+		.p5 .diceroll { background-color: #888888; }
+
+		/* 発言者：system */
+		.p6 { color: #888888; }
+		.p6 .diceroll { background-color: #888888; }
+
+		/* 発言者：ニャンクス */
+		.p7 { color: #888888; }
+		.p7 .diceroll { background-color: #888888; }
+
+		/* 発言者：ダンスシャン */
+		.p8 { color: #888888; }
+		.p8 .diceroll { background-color: #888888; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>KP</b>
+			STR（筋力:たまに使う）3d6<br>
+			CON（体力:ＨＰの最大値でもある）　3d6<br>
+			DEX（敏捷性:行動順や回避などに使う）　3d6<br>
+			POW（精神力:ＳＡＮ値などに影響する）　3d6<br>
+			INT（知性:技能ポイントなどに影響する）　3d6<br>
+			<br>
+			HP=CON<br>
+			SAN=POW<br>
+			幸運=POW×5<br>
+			アイデア=INT×5<br>
+			技能=INT×30<br>
+			<br>
+			技能で防御する場合は技能値の半分(端数切り上げ)<br>
+			<br>
+			1度のSANチェックで5以上減ったらアイデアを振り成功したら一時的発狂となる<br>
+			1d10振ってどんな発狂するか決めてもいいしやりたい発狂があるならそれでもいい<br>
+			<br>
+			その他は適当にるるぶ読む事を…勧める…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>noname</b>
+			参加していいか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			うわあり！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			一度観戦していて内容分かってるので今回も観戦させて貰う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>KP</b>
+			非シャンでも美樹さやかでも参加していいけどさやシャンで参加したらウソップを殺す
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>noname</b>
+			何人まで参加できるか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			2人以上ならいいよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			技能は適当でいいのカネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			参加する<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			心配なら目星に相当するものを取っておく事を…勧める…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			15分過ぎたら〆切予定とする<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			15d6 (15D6) ＞ 57[6,1,1,5,6,4,6,6,3,3,3,6,2,2,3] ＞ 57
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			１５ｄ６ (15D6) ＞ 50[6,2,3,4,1,6,4,6,2,3,6,1,2,1,3] ＞ 50
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			参加する
+		</p>
+		<p class="player p5">
+			<b>助六</b>
+			現状参加シャン3人か
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			15d6 (15D6) ＞ 60[5,4,5,4,3,5,4,5,6,4,3,3,2,1,6] ＞ 60
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			STR 8<br>
+			CON 15<br>
+			DEX 15<br>
+			POW 12<br>
+			INT 7<br>
+			SAN 60 <br>
+			幸運 60<br>
+			アイデア 35
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			STR 11<br>
+			CON 11　HP 11<br>
+			DEX 12<br>
+			POW 10　SAN幸運 50<br>
+			INT 6　アイデア 30　技能値 180
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			見聞色の覇気　60<br>
+			武装色の覇気　60<br>
+			覇王色の覇気　60
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			シャンクのINT<br>
+			ひ<br>
+			く<br>
+			ひ<br>
+			く
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ドルドルの実 80<br>
+			目星 70<br>
+			キャンドルチャンピオン 60
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			全体的にINTが微妙だガネ…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			IQ28集団で確定
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			HP12 SAN50 幸運50 アイデア45 <br>
+			技能ポイント270<br>
+			<br>
+			STR14<br>
+			CON12 <br>
+			DEX15<br>
+			POW10<br>
+			INT9
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			まァ…いざとなればドルドルの実でなんとかするしかなかろーガネ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			うぐっガネとカネつける塩梅難しすぎだァ～！！多分ガネ塗れになるぞォ！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			15分立ったのでPLの準備が出来たら開始する<br>
+			準備出来たら教えろ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			キラークイーン90<br>
+			目星90<br>
+			聞き耳90
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			教えるガネ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			なんだこの助六！？<br>
+			葬式か何かか！？
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			助六は参加するのか教えろ
+		</p>
+		<p class="player p5">
+			<b>助六</b>
+			しない
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			宴としゃれこむにはいささか地味な食い物だガネ…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			アイテムじゃなかったのか…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			では出航だァ〜〜〜〜！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			出港だァ～！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			出航だガネ～～～！！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			出航だァ〜〜〜！！！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			貴方達はダンスシャンの覇王色のダンス・皇を肴に宴をしていました
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			宴だァ～！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			この助六は死ぬほどうめェな！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			何故赤髪が踊っているのか気になるところではあるが…宴だガネ～～！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			このダンスは死ぬほどうめェな！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			貴方達は酔いが回ったのか段々眠くなってきます
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ね…ねむ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			1d100 眠さ (1D100) ＞ 89
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>助六</b>
+			邪魔だったら消していいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			そろそろ家に帰らないとな…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ね<br>
+			む<br>
+			ね<br>
+			む
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ス<br>
+			ヤ<br>
+			ス<br>
+			ヤ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			家に帰ろうとした吉良吉影でしたが眠気に勝てなかったので机に突っ伏して寝てしまいました<br>
+			他も同様です
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			助六を枕に寝る<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ドルドルの実で枕を作るガネ　来い
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ダイスは勝手に振っていいよ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 8 ＞ スペシャル
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			腕枕で寝る<br>
+			こい
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			私のドルドルアーツは格が違う
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			クソうまく枕を作れたので安眠出来た
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			では皆寝たって事でいいか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			教えるガネ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			教える
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　暗転。穏やかな落下。──間。<br>
+			　やがて、淡い光が周囲を取り巻き、足元には固い床の感覚がある。<br>
+			　四方を、そして上下を、正方形の壁で区切られた空間。<br>
+			　見覚えのない場所に、いつからか貴方は立っていた。<br>
+			<br>
+			　目の前には匣、壁面の一つには扉がある。<br>
+			　そして、背後には祭壇があり豪水が置かれている。
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			匣<br>
+			これはなんて読むんだ？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			なんだここは！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>シャンク</b>
+			はこ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			…ハッ！！<br>
+			一体どこだガネここは！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			★探索者の状態★<br>
+			****************************************<br>
+			　衣服は取られ裸、持ち物も全て消えている。<br>
+			****************************************
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			うわ！裸族が二人もいる！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			とりあえずドルドルの実で裸を隠すガネ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=20<br>
+			あそこの大きさ (1D100&lt;=20) ＞ 20 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 98 ＞ 致命的失敗
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			おわァアア～～～っ！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			吉良吉影のイチモツは格が違う
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			クソダサいファッションになってしまい裸より恥ずかしい事になった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			あれは…見なかったことにしよう
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			なんてザマだギャルディーノ！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			くっ…今日はどういうわけか調子が悪いガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			自由行動していいよ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			とりあえず見聞色で部屋の様子を探る<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ccb&lt;=60 見聞色 (1D100&lt;=60) ＞ 36 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			匣に目星していいか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			よくやった！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　正しく真四角に切り取られた正六面体の部屋。<br>
+			　壁は白く、部屋は明るいが光源らしきものは見当たらない。<br>
+			　一切の音はなく、周囲には何の気配もない。
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			匣に目星していいよ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			なら私は祭壇を調べるとするカネ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 19 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=90 (1D100&lt;=90) ＞ 54 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			よくやった！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			匣→祭壇と処理する<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　真っ白な正六面体の匣。<br>
+			　両手で抱えられるほどの大きさだが、やけに重い。
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　凝った彫刻が施された石造りの祭壇。<br>
+			　豪水が置かれている。
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			なぜ豪水とわかるのか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			こちらは祭壇のようなものと水が見つかったガネ<br>
+			そちらはどうだ？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			重い匣があるな
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			豪水は有名だから
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			へ～！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			周りには<br>
+			な<br>
+			に<br>
+			も<br>
+			いないみたいだな…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			匣か…中身は見られそうカネ？
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			開ける事は可能
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			僕が開けよう
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			頼んだガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			匣を開けた<br>
+			すると黒い煙が大量に匣から発生し辺り一面が黒に染まった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！なんだこれは！？
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			s1d3 (1D3) ＞ 2
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			煙は失せて辺りが見えるようになった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			煙失せろおおおおおお！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			特に体調とかに変化はあったりはしないのカネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			するとギャルディーノの姿がいなくなっていた
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			ギャルディーノ失せたw🌈
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			とりあえず匣を覗く<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			…（意味深に消失）
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　あなたは匣を除く。そこには顔があった。<br>
+			　目があり、鼻があり、口がある。<br>
+			　まさしくそれはギャルディーノの生首だった。
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			悪ィ　私死んだガネ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			ギャルディーノの状態については情報タブに記載する<br>
+			来い
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			わかったガネ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>KP</b>
+			★ギャルディーノの状態★<br>
+			****************************************<br>
+			　頭部は探索者の持っている匣の中にある。<br>
+			　匣の中から見上げた形の視界。<br>
+			　見る、聞く、話す、飲食は可能。首は多少なら動かせる。<br>
+			<br>
+			　首から下は自由に動かす事が可能。<br>
+			　頭を触ろうとすると、被せられた匣の感触が分かる。<br>
+			　服は探索者と同じ裸。持ち物もなし。<br>
+			　足は裸足で、床は濡れた感触がする。<br>
+			<br>
+			※つまり、ギャルディーノは…<br>
+			　頭は匣の中にあり探索者と会話する程度のみ。<br>
+			　匣の底面から首が生えている状態のため、取り出し不可。<br>
+			　身体側が動く場合、視覚、聴覚、嗅覚による情報が得られない。<br>
+			　手や足の感触で探索する必要がある。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			こ…これはどうなっとるのだガネ～～～～～！！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			生きているのか…？<br>
+			この状態で…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			こわいだろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			私自身不思議でしょうがないが今のところ命に別状はないようだガネ…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			とりあえず匣を持ち上げてシェイクすることを教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			おわァアア～～～っ！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			シェイクした<br>
+			ギャルディーノは頭が匣にガンガンぶつかってクソ痛かった<br>
+			HP-1d3
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			やめるガネ赤髪ィ～！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			1d3 (1D3) ＞ 2
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			振っても取れないな…ルフィ
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ ギャルディーノ ] HP : 15 → 13
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ハァ…ハァ…とんだ災難だガネ全く
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			今のままじゃどうすることも出来ないようだな…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			とりあえず持つのは面倒そうだからドルドルで体作れ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			幸い体は動かせるようだから私が自分で匣を持っておくとするカネ…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			体はこの部屋とは別の所にあるから持ち上げるのは不可能なのをお前に教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			しょうがない…ドルドルアーツ！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 88 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			生首状態でドルドルを使うのは無理があった
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			僕のキラークイーンに持たせることはできるか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			出来る
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=90 (1D100&lt;=90) ＞ 47 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			キラークイーンは匣を持ち上げた
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			いつでも爆弾にできるな…ルフィ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			しばらくはこれでいいだろう…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			煙が出た後で部屋に変わったところはないか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			頭を預けるには少々おっかない相手だが赤髪よりはマシと思うしかないガネ…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			部屋に変わったところはない
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			扉の先が気になるな…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			豪水は持っていくべきか
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　壁面の一つに扉がある。<br>
+			　鍵穴は見当たらず、鍵はかかっていない。<br>
+			　だがひどく重い。こちら側からは開きそうにない。<br>
+			　大きく「壱」の文字が書かれている。
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			体側は今何かやれることはあるのカネ？
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			体側は辺りを調べる事が出来る事をお前に教える
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			キラークイーンって扉を爆弾にして消し飛ばすとかできたか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			では足元の水に注意しながら周囲を探ってみるガネ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			出来るがKP判断なことを教える
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			他にできることが無くなったらKPに聞いてみるか
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ではその前に匣に変化が起こる<br>
+			あんまり覚えてないけどキラークイーンは大体の物爆弾に出来るからなァ…<br>
+			でも今回は何故か出来ない事をお前に教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　探索者はある変化に気付くでしょう。　<br>
+			　いつの間にか首の入った匣に文様が浮かび上がっています。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			「第1の爆弾」<br>
+			触ったものを爆弾にして爆破する<br>
+			爆弾にしたものに触ったヤツを爆破する<br>
+			ことが出来るのを教える
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			というわけで更に何か起こります
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			お…おいなんかあったのカネ<br>
+			私には箱の様子が分からんのだ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			何だ⁉(^^)何だ⁉(^^)
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ニャンクスが現れた
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			なんだ今の不気味な猫…スフィンクスの類かなんかか！？
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			という訳で自由行動に戻っていいよ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			よく見るとニャンクスって怖いだろ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			ニャンクスに目星だ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			じゃあ匣に見聞色
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ccb&lt;=60 見聞色 (1D100&lt;=60) ＞ 30 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=90 (1D100&lt;=90) ＞ 32 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			よくやった！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			★ニャンクスについて<br>
+			ったねェ猫だ<br>
+			言葉は話せるみたいだ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			匣についての情報は少し待ってくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			わかったガネ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ニャンクスに話しかけるか<br>
+			お前は何だ？
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			一体なんだガネこの不気味な猫は…
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			こいつはスタンドなのか…！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>KP</b>
+			匣に書かれている英語の意味は<br>
+			1=生贄<br>
+			2=触手<br>
+			3=棘<br>
+			4=虫
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャンク</b>
+			しかしこいつの顔おれに似てないか？
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ではニャンクスに話しかけた
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			確かに言われてみればマヌケなツラだガネ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			コイツ…これしか喋れないんじゃあないか？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分違う
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			一応自己紹介のつもりだったのかもしれんガネ<br>
+			他の質問もしてみよう
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ここがどこか教えろ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分匣の中
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			匣の中…？理解できないな
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			匣の中にいるのは私だガネっ！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ここから出る方法を教えろ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分豪水が入ってるコップに書かれてる
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			豪水…あの祭壇の水のことカネ？
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			コップを見るぞォ～！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			見た
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			コップに文字が彫ってある。<br>
+			見たこともない文字だ。だがあなたはその意味を理解するだろう。<br>
+			　「ツメゲリ部隊は怒りで、チャカ様は知で以て支払う」とある。
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			こんなことなら箱を開ける前にもっと調べておくんだったガネ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			おいニャンクスとやら…このコップの文言はどういう意味だガネ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分そのまんまの意味
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			答えになっとらんガネ！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>KP</b>
+			ログ用に匣の模様を記載する<br>
+			来い<br>
+			<br>
+			『altar』<br>
+			　┏　①　┓<br>
+			  ④  　　　② 　<br>
+			　┗　③　┛<br>
+			①四<br>
+			②八九<br>
+			③参七<br>
+			④四九<br>
+			<br>
+			『tentacle』<br>
+			　┏　①　┓<br>
+			  ④  　　　② 　<br>
+			　┗　③　┛<br>
+			①壱六<br>
+			②壱四五<br>
+			③五八<br>
+			④九七<br>
+			<br>
+			『needle』<br>
+			　┏　①　┓<br>
+			  ④  　　　② 　<br>
+			　┗　③　┛<br>
+			①七九<br>
+			②弐<br>
+			③壱零<br>
+			④九八　<br>
+			<br>
+			『insect』<br>
+			　┏　①　┓<br>
+			  ④  　　　② 　<br>
+			　┗　③　┛<br>
+			①壱参零<br>
+			②弐零<br>
+			③四弐<br>
+			④九四
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			怒りと知…何もわからないな…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけどこれ以上は誠意
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			教えてほしければ餌でも寄越せということなのカネ…
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			豪水でもあげるか
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			でもなァ…ここには蝋燭と爆弾と豪水しかないもんな…ルフィ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど豪水は飲まない
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			贅沢なニャンクスだな…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			なら箱の模様はどういう意味なのか教えるガネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			まァ聞いたところでこれも答えは出なさそーだガネ…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分変な頭の体が辺りを調べたらわかる
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			ここはギャルディーノに任せるとしよう…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			くっ…感覚だけで調べるのは辛いガネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			じゃあとりあえず体の方で辺りを探ってみるガネ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			頑張ってくれ(^^)
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			調べる場合は技能振ってくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 77 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ちょっと待てさっきから出目悪いガネ…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			床のぬるぬるに滑って転んだ<br>
+			HP-1
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ ギャルディーノ ] HP : 13 → 12
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			もう一度目星を振る事は出来る
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ぐわ痛ァ！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 81 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			おわァアアア～～～っ！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			転んだ<br>
+			HP-1<br>
+			成功するまで振れる
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ ギャルディーノ ] HP : 12 → 11
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 84 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ ギャルディーノ ] HP : 11 → 10
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 8 ＞ スペシャル
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			【床】<br>
+			　粘度のある液体が床に溜まっているようだ。<br>
+			　時折、弾力のある何かの感触が素足を伝う。<br>
+			　ぬるりと滑る球体や、固く小さく尖った欠片。<br>
+			　気を付けて歩かなければ滑って転びそうだ…と気づいた後には遅かった。
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			や…や…やっと何か見つけたガネ…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			【壁】<br>
+			　壁にはドアノブが付いている箇所があり扉があるようだ。　<br>
+			　手で触れると漢数字が彫ってあるのが分かる。<br>
+			　漢数字は上から時計回りに「四→八九→参七→四九」
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			これは…ドアノブ…つまり扉か？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			開けてみてくれないか？
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			何やら漢数字のようなものも彫ってあるぞ…四…八九…三七…四九
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			試してみるガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			開ける場合はどの番号の扉を開けるか宣言してくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			メタ的に考えて箱の数字と関係ありそうだけど見えてないからなァ…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			2人に教えられたって事にしてもいいよ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			扉は4つあるということでいいのか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			うわ！ありがとうだガネ！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			ALTER…つまり生贄と同じ模様のようだな… <br>
+			数字は1だ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			扉は4つ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			&nbsp;
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			これだけでは何も分からんガネ…どちらにせよ開けてみるしかなさそうだ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			四番の扉を開けるガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			+++++++++++++++++++++++++++++++++++<br>
+			　一歩足を踏み出すと、素足に蠢く感触が絡みつく。<br>
+			　ぬめり、身をくねらせ、足を這い上がろうとする無数の何か。<br>
+			　慌てて足を引くならば名残惜し気に、だがそれは離れるだろう。<br>
+			　だが、すぐにまた、ぬるりっと足を這い上がる。<br>
+			　否応なくあなたは知ることになる。<br>
+			　この部屋の床一面には、みっしりと触手が生息している事を。<br>
+			+++++++++++++++++++++++++++++++++++<br>
+			★絡みつく触手の悍ましさにSANc　0/1d2
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=60 (1D100&lt;=60) ＞ 82 ＞ 失敗
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ ギャルディーノ ] SAN : 60 → 59
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			お…おわァアア～～～っ！！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			どうしたギャルディーノ！？
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			なんだガネこれはァ～っ！！気味が悪いガネっ！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			触手のようなものが絡みついてきたぞ！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			2人は裸のおっさんが触手に絡まれている様子をつい想像してしまった<br>
+			あまりの気持ち悪さにSANc1/1d5
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			1d100&lt;=50 (1D100&lt;=50) ＞ 46 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=50 (1D100&lt;=50) ＞ 25 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ シャンク ] SAN : 50 → 49
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			きっしょ。
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			悪ィな私の痴態がSAN値食っちまった
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ 吉良吉影 ] SAN : 50 → 49
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ 吉良吉影 ] SAN : 50 → 49
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			気味が悪いな…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			目も見えない状況であんな部屋に入るのは御免だガネ！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			じゃあとりあえず別の扉を開けるか
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			しかし触手…触手か<br>
+			箱に書いてあった文字と一致はしているようだガネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			分かった<br>
+			なら次は八九の扉だガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			【壁】<br>
+			　壁にはドアノブが付いている箇所があり扉があるようだ。　<br>
+			　手で触れると漢数字が彫ってあるのが分かる。<br>
+			　漢数字は上から時計回りに「四→八九→参七→四九」
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			と言いたいところだが八九の扉はない
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			別の部屋になってるもんな　ルフィ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			一旦最初の部屋に戻ったと思ってたガネ…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">メモ</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			四は触手部屋
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			4番の扉を開けて別の部屋に入った扱いになっている事をお前に教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			触手の上を歩いてもとりあえず害はないのカネ？
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			じゃあもう扉はないのか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			長居すると触手に捕まる
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			扉を見つけるのに目星が必要なら振るガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			扉があるかは技能で調べてくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 17 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ドルドルで触手の動きを止めればいいんじゃねェか？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			よくやった！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			【壁】<br>
+			　壁には扉があるようだ。　<br>
+			　手で触れると漢数字が彫ってあるのが分かる。<br>
+			　漢数字は上から時計回りに「壱六→壱四五→五八→九七」
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			一応試してみるカネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 2 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ドルドルで触手を固めた<br>
+			これで安全になった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ドルドルアーツ！杭！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			壱六は棘、五八は生贄につながってそうだな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			これでひとまず安心だガネ<br>
+			扉は…上から壱六…壱四五…五八…九七だな
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			となると九七と壱四五が気になるな
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			九七を開けてみるカネ？
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			じゃあ九七を開けるガネ　来い
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			九七を開けるという事でいいか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			一応ドルドルの実で鎧みたいなの作れないか教えるガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			うわあり！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 54 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ドルドルで鎧を作った
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			キャンドルチャンピオンとまではいかんがないよりはマシだガネ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			改めて九七の扉を開けたガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			+++++++++++++++++++++++++++++++++++<br>
+			　一歩踏み出せば、ぐじゅりと無数の何かを踏みつぶした音。<br>
+			　固い外殻と、柔らかな消化器官、溢れ出す体液。<br>
+			　だがすぐにまた、小さく素早いそれは足の合間を這いまわる。<br>
+			　ともすれば足を這い上がるそれらは、何百何千とひしめいている。<br>
+			+++++++++++++++++++++++++++++++++++<br>
+			★ドルドルの鎧でガードしているのでSANcはない…よかったな
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			うぐっ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			うぐっなんだか分からんが足元にうじゃうじゃいるぞォ～！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			踏みつぶしちまったようだガネ…これは虫か？
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			虫ってことはinsect濃厚に
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			後はneedleだけか<br>
+			何にせよこんな部屋にも長居は無用だガネ！<br>
+			次の扉を探す！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 4 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			【壁】<br>
+			　壁には扉があるようだ。　<br>
+			　手で触れると漢数字が彫ってあるのが分かる。<br>
+			　漢数字は上から時計回りに「壱参零→弐零→四弐→九四」
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			出目が戻ってきたの嬉しいだろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			スペ処理の前に2人の部屋に異変が起こった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			次は壱参零…弐零…四弐…九四だガネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　2人のいる部屋の壁にはいつの間にか血の手形、引っ掻いた跡が浮かび上がっている。<br>
+			　SANc　0/1d2
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			なんだこれは！？
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			1d100&lt;=49 (1D100&lt;=49) ＞ 11 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=49 (1D100&lt;=49) ＞ 8 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ギャルディーノも匣の中から異変を見ているのでチェックしてくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			わかったガネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=59 (1D100&lt;=59) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			手形とか引っ搔いた跡に見聞色したら何かわかったりするか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ギャルディーノはこれはカウントダウンではないかと直感した
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			やっていいよ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			ccb&lt;=60 見聞色 (1D100&lt;=60) ＞ 52 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			よくやった！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			格が違う
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			この手形は血が古かったり新しかったりする<br>
+			それに形、大きさもバラバラな事から複数人の手形だとわかった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			バ<br>
+			ラ<br>
+			バ<br>
+			ラ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			こんな状況で一つ嫌な仮説が浮かび上がってきたのだガネ…扉の数字…もしかするとカウントダウンなのではないカネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			いいや…スペだから言うと扉をしらみ潰しで開けてクリアされないように扉を開ける回数が制限されてるだけだな…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			🌈考察外れたｗ🌈
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			なるほど
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			へ〜！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			もしかして二人の方の部屋の異変がそれ？
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			そう<br>
+			2人の部屋の壁に血の手形やら引っ掻いた跡がついた
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			いや…いやいや違うマズいぞ二人とも！<br>
+			これは３人全員へのカウントダウンだガネ！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			急ぐぞ<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			どうやら扉を開ける毎にカウントが進むようだガネ！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			次はどうする？<br>
+			まだ見てない棘の可能性がありそうな四弐かまだ行ってない右側の弐零あたりを知りたいが
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ならば四弐だな…吉良もそれでいいカネ？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			ああ それでいい
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			では行くガネ…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			虫がいる部屋に出た
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			虫から虫か…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			また虫のようだガネ！どうなっている！？
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			どうやらこの謎解きに関しておれはIQ28のようだな…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ちなみにさっきの部屋と同じ部屋だ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ちょっと待てMr3持ってきたの後悔するぐらい真面目な謎解き卓だろ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			弐零を開けてみてくれないか？
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ああ…分かったガネ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			5…行きてえなァ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			では開けるって事でいいか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			教えるガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			臓物の部屋に出た
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			うぐっ…今度は触手とも違うが気味の悪い感覚なのは変わらんガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			一応言うと最初にギャルディーノが転びまくった部屋と同じ部屋なのをお前に教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			生け贄に戻ったようだな…ギャルディーノ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			この感覚は最初の部屋だ！振り出しだガネ～っ！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			サイコロの展開図と扉が対応してるのは間違ってなさそうだけどなァ…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			並んでる面に行けるのかと思ってたけどそういうわけじゃなさそうだなァ…
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			四以外を開ければ分かるかもな…ルフィ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			最初の部屋　漢数字は上から時計回りに「四→八九→参七→四九」<br>
+			触手　漢数字は上から時計回りに「壱六→壱四五→五八→九七<br>
+			虫　漢数字は上から時計回りに「壱参零→弐零→四弐→九四」
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			そろそろ次のカウントダウンが怖いが…開けてみるカネ？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			僕は四九が知りたいな…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			赤髪もそれでいいカネ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			いいことを教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			では四九を開けるガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			触手の部屋だった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			また触手だガネ！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			触手は蝋燭で封じられてるのか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			封じられている
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			棘に行かないと5 6には行けないのか…？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャンク</b>
+			前に来た部屋みたいだな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			私のドルドルアーツが残っているということはそのようだガネ…
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			旅行するなら、どこへ行きたい？
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			この状況で何故くまになっとるのだガネ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			扉選びはほかの2人に任せることを教えたかったことを教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			へ～！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			でもなァ…おれもIQ28だからなァ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			正直私も手詰まりだガネ　一度あのニャンクスとやらに話を聞いてみないか？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			それがいいな…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分誠意<br>
+			具体的に言うと何かして楽しませて
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			じゃあ見聞色武装色覇王色全部使って覇王化する<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			首だけの私では芸も何もない　ここは赤髪に任せるガネ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			3b100&lt;=60　覇王化 (3B100&lt;=60) ＞ 63,98,84 ＞ 成功数0
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分覇王じゃない
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			覇王化をお前に教えない
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			吉良は例のキラークイーンで何かできないカネ…！？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			じゃあ匣をおいて<br>
+			キラークイーンに私を持ち上げさせる<br>
+			空中浮揚マジックだ…
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			多分キラークイーン見えないだろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			スタンド使いじゃないと見えないから多分見えない
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=90 (1D100&lt;=90) ＞ 25 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			よくやった！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			よくやった！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分ヒント言う
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			情報タブに記載する<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			Thanks.
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分これが君達の辿った道筋<br>
+			四→壱六<br>
+			九七→壱参零<br>
+			四弍→弍零<br>
+			弍零→四<br>
+			四九→九七
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分法則がある
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			…（意味深に無言）
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>KP</b>
+			後は知りたければどこの扉から入って出てきたか調べる事が出来る<br>
+			目星とかは必要ない
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ちょっとトイレで離席するガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			戻ったことを教えるガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャンク</b>
+			なにもわからないことがわかったのを教える
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			分からない場合はニャンクスにもう一度聞いてくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			この猫もどきのお陰で部屋の向き関係はある程度特定できそうだガネ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			しかし聞いて答えるならそれにこしたこともないガネ　他に何かないのカネ？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分出方は2つ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分1つ目はツメゲリ部隊みたいに豪水飲む<br>
+			飲んでないけど多分飲んだ人は死ぬ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			コップに文字が彫ってある。<br>
+			見たこともない文字だ。だがあなたはその意味を理解するだろう。<br>
+			　「ツメゲリ部隊は怒りで、チャカ様は知で以て支払う」とある。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			豪水入りスープで確定
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど2つ目は謎を解く
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど謎を解くヒント聞く？
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			勿論だガネ！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			教えろ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分ヒントは「乗」と「和」
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>KP</b>
+			情報タブに記載したぞォ！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			わかった気がするなァ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			拝見だァ～！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			分かったのカネ！？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			4の2乗つまり16だ…<br>
+			だから16である壱六の部屋に出た
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			あ…ああ…それは私にもなんとなく理解は出来てるガネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			だが九七から壱参零はどういうことなのだガネ？
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			81+49だ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			IQ280
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			吉良の説明のおかげでおれもわかったことを教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			どこにも対応していない数字の部屋が多分出口だ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			Mr3がこんなIQ2.8なわけあるかァ～！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			戦闘力はMr4に劣るけど頭が良いから地位上げて貰ってたもんな　ルフィ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャンク</b>
+			棘の壱零を目指す<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			今日ほどお前達に感謝したくなった日もなかろーガネ…
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			正直理解しきれてないんでラジコン指示してほしいと思ってんすガネ…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			一度九七を通って4の部屋に行ってから壱参零で行くぞ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			分かったガネ<br>
+			さっさとこんな場所からは抜け出そう…！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			97→130と進むって事でいいか教えろ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			うん
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			教えるガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			では進んだ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			教える
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			その前に部屋に異変が起こった
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　2人がいる部屋の天井からぼたぼたと血が垂れて来ている。<br>
+			　呻き声、引き攣った悲鳴、這いずるような音が近づいているようだ。<br>
+			　SANc　1/1d4
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			1d100&lt;=49 (1D100&lt;=49) ＞ 54 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d100&lt;=49<br>
+			こわい (1D100&lt;=49) ＞ 81 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=59 (1D100&lt;=59) ＞ 94 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			1d4 (1D4) ＞ 4
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			1d4 (1D4) ＞ 1
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ シャンク ] SAN : 49 → 45
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			1d4 (1D4) ＞ 3
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ 吉良吉影 ] SAN : 49 → 46
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			うぐっ怖すぎだァ～！！
+		</p>
+		<p class="player p6">
+			<b>system</b>
+			[ ギャルディーノ ] SAN : 59 → 58
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			次にギャルディーノの描写に入る<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			分かったガネ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			+++++++++++++++++++++++++++++++++++<br>
+			　一歩足を踏み出した瞬間、本来なら激しい痛みが突き上げていただろう。<br>
+			　細く、鋭く、尖った、残酷なる鉄の棘。<br>
+			　それは床一面にびっしりと敷き詰められドルドルの鎧がなければ素足を苛んでいた事だろう。<br>
+			+++++++++++++++++++++++++++++++++++<br>
+			★部屋に入場する毎に1d4のダメージだったがドルドルの鎧で防いだのでダメージなし…よかったな
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			痛そう
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			今度は今までのどれとも違うぞ！恐らく棘のようだガネ！！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			なら そこに出口がありそうだな…
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			扉を探してくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			分かったガネ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 62 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			【壁】<br>
+			　壁には扉があるようだ。　<br>
+			　手で触れると漢数字が彫ってあるのが分かる。<br>
+			　漢数字は上から時計回りに「七九→弐→壱零→九八」
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			壱零が怪しいと思ってることを教える
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			シャンクと同意見だ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			七九…弐…壱零…　！<br>
+			あったぞ赤髪！吉良！壱零の扉だガネ！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			では壱零を開けるガネ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			たぶんこの部屋に来そうな気がするんだよなァ…<br>
+			扉から顔を背けておくか…ルフィ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			　ギャルディーノが扉を開くと、まばゆい光があふれ出した。<br>
+			　まるで網膜を焼き尽くすかのような光の海。<br>
+			　その中で、奇妙な猫の声が響くだろう。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分グッドエンド
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ぐわァ眩っ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			+++++++++++++++++++++++++++++++++++<br>
+			　ふいに何かがあなた達の身体を持ち上げる。<br>
+			　それには蝙蝠に似た翼と、牛のような角、そして長い尾があった。<br>
+			　顔があるべき場所はのっぺりとして何もない。<br>
+			　それは、あなた達をきわめて慎重に抱え上げ上へ上へと飛んでいく。<br>
+			　あまりの速さに風景は形を結ばぬままに過ぎ去っていく。<br>
+			　そうして、ますます光は強くなり、唐突にそれは終わりを告げる。<br>
+			　…──どさり、と。<br>
+			　僅かな衝撃とともに、あなたの体は元いた場所に投げ出される。<br>
+			　そこは見慣れた場所。<br>
+			　さっきまで宴をしていた酒場。<br>
+			　こうして一つの物語が幕を閉じたのだった。<br>
+			+++++++++++++++++++++++++++++++++++
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			どうやら…戻ってこれたようだな
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			さっきまでのは何だったんだろうな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			はっ！？あの踊る赤髪は！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			あーあー顔に助六がついてべちゃべちゃだ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			こわいから飲み直しだァ〜〜〜！！！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			分からんが…一つ言えるのは散々な目にあったということだけだガネ…
+		</p>
+		<p class="player p8">
+			<b>ダンスシャン</b>
+			お前らとっくに宴は終わってるのに何寝てんだ？
+		</p>
+		<p class="player p8">
+			<b>ダンスシャン</b>
+			まァ飲み直すなら付き合うか<br>
+			宴だァ〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			宴だァ～～～～！！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			宴だァ〜〜〜〜〜！！！！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			宴だガネ～～～～～～～！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			ちなみに答え合わせはこれ
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			2人のいた部屋の扉に「壱」って書いてあるからそこを目指すとクリアだった
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			忘れてたことを教える
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			豪水飲むとどうなってたのか教えろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			飲んだ奴は死んで残りは出られる
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			どうしても出られない人の為の救済で確定
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			ニャンクスに無理やり飲ませることはできたか教えろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			状況的に私が生贄に捧げられるの確定
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			へ～！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			一応ニャンクスの正体はノーデンスっていう旧神なので無理
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			へ〜！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			あの場所にはニャンクスに連れてこられたのカネ？
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			でも前やった匣夢卓はノータイムでニャンクス殺しにかかったのでなかった事にした事をお前に教える
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			殺せそうなものはとりあえず殺そうとするシャンカーの殺意怖いだろ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			誰かがすぐに豪水飲んで終わりそうだな…ルフィ…
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			シナリオ背景<br>
+			<br>
+			　とある旧神は、人の世の探索のため、自身のほんの一部を切り離した。<br>
+			　それは気ままに、そして興味深く世を眺めて過ごしていた。<br>
+			<br>
+			　ある日、信心深い男が旧神の欠片を見つけた。<br>
+			　『神であれば祀らねばならぬ』<br>
+			　男は疑いもなく決意し、そして祭壇として匣を造った。<br>
+			　そうして供物として娘を捧げ、妻を捧げ、最後に自身を差し出した。<br>
+			　それは旧神の望みではなかったが、人とは得てしてそんなものだ。<br>
+			<br>
+			　旧神を閉じ込め、贄を捧げられた匣はそうして牢獄となったのだ。
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			グビッ！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			正直最初にギャルディーノに豪水飲ますか悩んでたのを教える
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			シナリオ背景うわあり！
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			首だけじゃ抵抗しようもないもんな　ルフィ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			シナリオ背景的には信心深い男の生贄にされたっぽい事をお前に教える
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			狂信者怖すぎだァ〜！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			最期に覇王化しとく<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			3b100&lt;=60 覇王化 (3B100&lt;=60) ＞ 55,60,91 ＞ 成功数2
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			おしい
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			シャンクスの覇王化は格が足りない
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			覇王化をお前に教えない
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			覇王色抜きの覇王化<br>
+			シ<br>
+			ョ<br>
+			ボ<br>
+			シ<br>
+			ョ<br>
+			ボ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			前回の卓は本来ならニャンクス殺しにかかった時点でノーデンスに皆殺しにされるけどそれだと10分ぐらいで終わっちゃうもんな　ルフィ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			無茶苦茶だ…想像以上…！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			二度とIQ求められる卓でギャルディーノ使わねェから！！
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			キャラと合ってなくてもいいんだ…乗り越えろ！
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			鎧作れるから良い方だと思ったことを教える
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			覇気しかないシャンクだと力不足だろ
+		</p>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ドルドルが応用力あって助かったと思ってんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			ともかくKPシャンとPLシャンお疲れシャン　謎解きで全く役に立たなかったけど楽しかっただろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			おれはIQ28のシャンカー<br>
+			正直おれも参加シャンだったらクリア出来なかったと思う
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			お疲れシャンだァ～！<br>
+			真面目な謎解き卓も楽しかっただろ
+		</p>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			おつかれシャンだァ〜！<br>
+			ヒントないと解けなかったの悔しいだろ
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			お疲れシャンだァ〜〜〜〜！<br>
+			ログは後で取って流す<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			関係ないけどこれやってる時にダイパリメイクが<br>
+			発表されたことを教える
+		</p>
+		<p class="player p0">
+			<b>KP</b>
+			へ〜〜〜〜！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>吉良吉影</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ギャルディーノ</b>
+			へ～～！
+		</p>
+		<p class="player p3">
+			<b>シャンク</b>
+			へ～！
+		</p>
+	</div>
+</body>
+</html>

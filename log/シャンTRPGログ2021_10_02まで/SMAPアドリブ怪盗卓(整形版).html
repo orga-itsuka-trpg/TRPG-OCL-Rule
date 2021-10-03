@@ -1,0 +1,9682 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [情報] タブ */
+		.t0 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t1 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [メイン] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名さん,匿名さん)] タブ */
+		.t3 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(シャロ,匿名さん)] タブ */
+		.t4 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステータス] タブ */
+		.t5 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(キム,匿名さん)] タブ */
+		.t6 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,匿名さん)] タブ */
+		.t7 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,キム)] タブ */
+		.t8 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,ゴロー)] タブ */
+		.t9 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,草彅)] タブ */
+		.t10 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,中居)] タブ */
+		.t11 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：GMティマス */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：noname */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：シャロ */
+		.p2 { color: #ffc107; }
+		.p2 .diceroll { background-color: #ffc107; }
+
+		/* 発言者：GMティマス */
+		.p3 { color: #9c27b0; }
+		.p3 .diceroll { background-color: #9c27b0; }
+
+		/* 発言者：中居 */
+		.p4 { color: #888888; }
+		.p4 .diceroll { background-color: #888888; }
+
+		/* 発言者：プレーンシャンクス */
+		.p5 { color: #e91e63; }
+		.p5 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：慎吾 */
+		.p6 { color: #888888; }
+		.p6 .diceroll { background-color: #888888; }
+
+		/* 発言者：つよぽん */
+		.p7 { color: #795548; }
+		.p7 .diceroll { background-color: #795548; }
+
+		/* 発言者：キムタク */
+		.p8 { color: #e91e63; }
+		.p8 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：ジャニー喜多川 */
+		.p9 { color: #888888; }
+		.p9 .diceroll { background-color: #888888; }
+
+		/* 発言者：ジャ○ー喜多川 */
+		.p10 { color: #888888; }
+		.p10 .diceroll { background-color: #888888; }
+
+		/* 発言者：ゴロー */
+		.p11 { color: #795548; }
+		.p11 .diceroll { background-color: #795548; }
+
+		/* 発言者：山寺宏一 */
+		.p12 { color: #888888; }
+		.p12 .diceroll { background-color: #888888; }
+
+		/* 発言者：ゴロー */
+		.p13 { color: #f44336; }
+		.p13 .diceroll { background-color: #f44336; }
+
+		/* 発言者：MJ */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：慎吾 */
+		.p15 { color: #cddc39; }
+		.p15 .diceroll { background-color: #cddc39; }
+
+		/* 発言者：情報屋 */
+		.p16 { color: #888888; }
+		.p16 .diceroll { background-color: #888888; }
+
+		/* 発言者：system */
+		.p17 { color: #888888; }
+		.p17 .diceroll { background-color: #888888; }
+
+		/* 発言者：武器屋 */
+		.p18 { color: #888888; }
+		.p18 .diceroll { background-color: #888888; }
+
+		/* 発言者：MJ */
+		.p19 { color: #e91e63; }
+		.p19 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：？？？ */
+		.p20 { color: #888888; }
+		.p20 .diceroll { background-color: #888888; }
+
+		/* 発言者：古畑任三郎 */
+		.p21 { color: #888888; }
+		.p21 .diceroll { background-color: #888888; }
+
+		/* 発言者：コナン */
+		.p22 { color: #888888; }
+		.p22 .diceroll { background-color: #888888; }
+
+		/* 発言者：ルパン */
+		.p23 { color: #795548; }
+		.p23 .diceroll { background-color: #795548; }
+
+		/* 発言者：五ェ門 */
+		.p24 { color: #795548; }
+		.p24 .diceroll { background-color: #795548; }
+
+		/* 発言者：レジギガス */
+		.p25 { color: #888888; }
+		.p25 .diceroll { background-color: #888888; }
+
+		/* 発言者：次元 */
+		.p26 { color: #795548; }
+		.p26 .diceroll { background-color: #795548; }
+
+		/* 発言者：ジャ○ー喜多川(地獄) */
+		.p27 { color: #888888; }
+		.p27 .diceroll { background-color: #888888; }
+
+		/* 発言者：修羅中居 */
+		.p28 { color: #888888; }
+		.p28 .diceroll { background-color: #888888; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>GMティマス</b>
+			【概要】<br>
+			GMが「スタート地点」と「ゴール地点」を決めて　その間にある「イベント」をPLが1人1個ずつ決めてぶっつけ本番でやる卓を教える<br>
+			技能とイベントは各々秘匿会話でGMに送る　シャンパラと一緒<br>
+			HPが0になっても退場にはならずその場復活　あるいは別地点で復活を教える　どっちにするかはGMが決めろ<br>
+			その代わり「死亡回数」が増える　最終的に死亡回数が最も少ないPLの優勝を教える<br>
+			<br>
+			【能力値】<br>
+			強さ…STRとCONに該当<br>
+			賢さ…INTに該当　他に「アイデア」という項目を追加して賢さの値の5倍に設定する<br>
+			美しさ…POWに該当　他に「幸運」という項目を追加して美しさの値の5倍に設定する<br>
+			速さ…DEXに該当　　他に「回避」という項目を追加して速さの5倍に設定する<br>
+			<br>
+			上記4つをそれぞれ2d6+6で決めることを教える<br>
+			<br>
+			HP…強さと一緒<br>
+			SAN…美しさ×5　幸運と一緒<br>
+			死亡回数…初期値は0 死んだら+1<br>
+			<br>
+			【技能】<br>
+			賢さ×30で「振り分けポイント」を求める　そのポイントを使って様々な技能を自由に作ることができる<br>
+			1つの技能につきポイントを1~80まで振り分ける<br>
+			その値は成功率として扱われ　高ければ高いほど成功しやすいのを教える<br>
+			全技能の成功率の合計は保有ポイント以上になってはならない<br>
+			<br>
+			技能はメインと秘匿会話　どちらで使っても良いが必ずGMに使用宣言を行い許可を貰わないといけないことを教える<br>
+			許可を貰ったら 100面ダイスを振る　ココフォリアでは「1d100&lt;=[使用技能の成功率]　技能名」と書き送信を教える<br>
+			1d100が成功率よりも低い数字の場合　技能ダイスは成功し　その場で使えることを教える<br>
+			失敗した場合　その技能は「死ぬまで」使えなくなることを教える<br>
+			所有技能が全て使用不能になった場合　その場で爆死する<br>
+			<br>
+			またTRPGには「クリティカル」と「ファンブル」の概念があることを教える<br>
+			1d100をやった際にダイスの目が1～5であった場合はクリティカルとなり良い出来事が起こる<br>
+			ダイスの目が96～100の場合はファンブルとなり悪い出来事が起こる<br>
+			このゲームではファンブルが出たらその場で爆死を教える<br>
+			<br>
+			【ダメージダイス　SAN値チェック】<br>
+			何かしらの攻撃を受けた場合はダメージを受けた側がダメージダイスを振ることを教える<br>
+			基本的には以下の感じにするぞォ～～～！！<br>
+			小ダメージ…1d3<br>
+			中ダメージ…2d3<br>
+			大ダメージ…3d3<br>
+			<br>
+			SAN値チェックは1d100&lt;=[SANの値]でダイスを振り　その結果でSAN値がどれほど減るのか決まるのを教える<br>
+			基本的には以下の感じにするぞォ～～～！！<br>
+			小…(0/1d3)←(成功/失敗)<br>
+			中…(1d3/1d6)<br>
+			大…(1d6/2d6)<br>
+			<br>
+			【最後に】<br>
+			何でもありとは言え　TRPGの基本はGMPLの相互協力なことを教える<br>
+			わかったかミズゴロウ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			この卓は何てんだ？
+		</p>
+		<p class="player p0">
+			<b>GMティマス</b>
+			これはアドリブ怪盗卓といいまして
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャロ</b>
+			参加するわ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			シャロって何のキャラか分からないけどもしかして怪盗卓にちなんでシャーロックホームズか？<br>
+			初見だからイベントの例を教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GMティマス</b>
+			ステータス勝手に決めていいよ<br>
+			推奨は聞き耳目星戦闘系かな
+		</p>
+		<p class="player p2">
+			<b>シャロ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>シャロ</b>
+			お前に教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャロ</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 6[5,1]+6 ＞ 12<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 10[5,5]+6 ＞ 16<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 6[1,5]+6 ＞ 12<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 8[5,3]+6 ＞ 14
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GMティマス</b>
+			たとえばラッキールウが誰か犯すとか
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			天から降り注ぐものがすべてを滅ぼすとかそんなんでいいよ<br>
+			多分ごちうさだと思うのを教える<br>
+			一瞬ミルキィホームズに引っ張られたんすがね…
+		</p>
+		<p class="player p0">
+			<b>GMティマス</b>
+			ちなみに今回ぶっちゃけ怪盗らしいことあんまりしない
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>シャロ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GMティマス</b>
+			宝盗むことには変わりないのを教える
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			それは怪盗卓なんだろうか<br>
+			PLが怪盗っぽいイベント送れば良いかァ…
+		</p>
+		<p class="player p0">
+			<b>GMティマス</b>
+			美術館から盗むばっかなのもつまらなそうだし…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p2">
+			<b>シャロ</b>
+			【技能】480<br>
+			見聞色 80 聞き耳目星読心複合<br>
+			カフェイン中毒 80 対象を発狂させる<br>
+			手先の早業 80 盗めたり色々できる<br>
+			隠密 80 単独行動したりバレないように行動できる<br>
+			トランプ投げ 80 攻撃技<br>
+			変装 80 別人になる　変装というか変身<br>
+			<br>
+			【イベント】<br>
+			江戸川コナンが敵として立ちふさがる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャロ</b>
+			送ったことを教えるわ！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャロ,匿名さん)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>noname</b>
+			参加したいけどキャラ決まらねえなあ・・・
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			参加したいけど遅れることを教える<br>
+			9時までには来るから埋まってなかったら入る
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャロ</b>
+			choice　男　女　無機物<br>
+			じゃあ代わりに決めてあげるわ！ (choice 男 女 無機物 じゃあ代わりに決めてあげるわ!) ＞ じゃあ代わりに決めてあげるわ!<br>
+			？？？？？？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>シャロ</b>
+			にゃんでぇ…
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もう一回やれ
+		</p>
+		<p class="player p2">
+			<b>シャロ</b>
+			choice　男　女　無機物 (choice 男 女 無機物) ＞ 男
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			かっこなしchoiceは改行をスペースと勘違いするドジっ子なのを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>noname</b>
+			じゃあ中居さんにしよう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			中井さん！！！！！
+		</p>
+		<p class="player p2">
+			<b>シャロ</b>
+			へ～
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			レスキュー開始！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			はしゃぎすぎ！！！！！！！！！！！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 6[4,2]+6 ＞ 12<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 11[6,5]+6 ＞ 17<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 9[5,4]+6 ＞ 15<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 9[4,5]+6 ＞ 15
+		</p>
+		<p class="player p2">
+			<b>シャロ</b>
+			一番怪盗っぽい動きできるの来たわね
+		</p>
+		<p class="player p5">
+			<b>プレーンシャンクス</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 11[5,6]+6 ＞ 17<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 4[3,1]+6 ＞ 10<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 4[3,1]+6 ＞ 10<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 6[3,3]+6 ＞ 12
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 8[2,6]+6 ＞ 14<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 6[4,2]+6 ＞ 12<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 8[3,5]+6 ＞ 14<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 7[6,1]+6 ＞ 13
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ヤバイ今は亡きSMAPが集まってきた
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			マズイアイドルが増えた
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			おっはー！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			とりあえず人数はこれくらいでいいかぁ…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			そうだね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			いいよ！！！！！１１！！！
+		</p>
+		<p class="player p5">
+			<b>プレーンシャンクス</b>
+			まずいアイドルに詳しくないから俺は変えられない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			まずいSMAP卓になった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕らを知らないのかい？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			木村君なら定型で喋るだけで行けそう<br>
+			何だこの卓
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>プレーンシャンクス</b>
+			エミュ出来ないけどキムタクで行く<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			SMAPの死体コレクションとか面白そうだろ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャロ,匿名さん)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			カフェイン中毒 80 対象を発狂させる<br>
+			→地デジ化 80 対象を発狂させて裸にさせる
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>中居</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			何かと「ちょ待てよ」で大体木村君になるはず
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			気は確かかい？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			袂を分かったSMAPがTRPGで終結するの悲しいだろ<br>
+			画像だけで爆笑してる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			2人足りないね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			吾郎くんがいないの寂しいね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			なんだよこれ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			これ一本で行くぞ<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もう好きにしてくれ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャロ,匿名さん)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			トランプ投げ 80 攻撃技<br>
+			→満足バー投げ 80 攻撃技
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			森くんハブるな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			GMもジャニーさんになれ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕そんなSMAPメンバー詳しくないんだよね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			これが今の正装だからやだ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			強さ17<br>
+			賢さ10 アイデア50<br>
+			美しさ10 幸運50<br>
+			速さ12 回避60<br>
+			技能値300
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			草薙君はジーンズとギターとお酒飲んで暴れてるイメージ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			強さ 14 HP14<br>
+			賢さ 12 アイデア 60<br>
+			美しさ 14 幸運 70<br>
+			速さ 13 回避 65
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！<br>
+			俺もノリで変えただけで何も知らないぞ
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			スリーピース！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャロ,匿名さん)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p4">
+			<b>中居</b>
+			強さ12 HP12<br>
+			賢さ17 アイデア85<br>
+			美しさ15 幸運/SAN75<br>
+			速さ15 回避75<br>
+			技能値510
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			俺もモーレスターぐらいしかしらないちん
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			まともに進行できるの？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			がんばる
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			がんばる！！！！！！！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			がんばる
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			代表作の内容1つでも知ってりゃなんとかエミュできるだろ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			世界にひとつだけの花歌ってろ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			任侠ヘルパー見てたよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			中居君は模倣犯しか知らないな
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			人にやさしくとかもう内容覚えてねえなァ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			まずいSMAPの出てるドラマとかまったく知らない
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			HERO見たこと無いのかい？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あー見たことある
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			えらい
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			キムタクは確かシャン狼の方にエミュ上手いのいた記憶があるのを教える<br>
+			マズイ曲もSMAPに支配され始めた<br>
+			吾郎ちゃんで来ていい？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			来い
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			いいよ！！！！！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			勝手に話を進めるな<br>
+			いいよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			すまん
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			聖者かい？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			聖者
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			辛いアサオス食え
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			吾郎ちゃんはごめんね　ほんこわでしか知らないんだ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			嫌・・・
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もう4人も5人も関係ねぇ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			あとはもう森くんエミュできる人間が来ない限りは定員だな
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(キム,匿名さん)</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			技能値300<br>
+			<br>
+			ちょ待てよ！80 待ってもらう<br>
+			歌う80 SMAPの曲を歌う<br>
+			SMAPの覇気80 思いつかないので覇気を使う<br>
+			吾郎60 吾郎を呼ぶ<br>
+			<br>
+			イベントはポップスターと化した吾郎ちゃんがPOP STARを歌って応援してくれる
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			稲垣君は映画に詳しいのと金持ちのおっさんの友人がいるイメージ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			らいおんハート80<br>
+			世界に一つだけの花80<br>
+			SHAKE80<br>
+			青いイナズマ80<br>
+			マヨちゅちゅ40
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			森くん来られてもどう接すればいいのか分からないことを教えるよ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			画像とかはお願いできる？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			キムタクとモーレスターが一番エミュ楽そう
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			画像はないのでポップスターまんまでもいいよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			曲も勝手に変えていいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			森君はレーサーだから知識さえあればそれっぽく出来そう
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			正直スマップはぷっすまと黒バラしか見てなかったんだよね
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ポップスター持ってないんだよなァ…
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			曲は持ってるから変えとく
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			今満足バーのCM見返して復習してるよ
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			あとスマップスマップ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ポップスターも持ってるから出しとく
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			お願いします
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ツヨシはダンスやってるからな<br>
+			吾郎ちゃんはワインで変身できるし技能に困らないだろ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！<br>
+			なんで皆そんなに知らないのにSMAP集まってんだよ！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			どうしよう自信無くなってきた
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			がんばれ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			がんばる
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			うろ覚えSMAP怪盗卓とか字面が面白いだろ<br>
+			出オチの予感しかしないだろ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ルウが慎吾に変えたから便乗しただけだよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ジャニーさん！？
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			うわ出た
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			YOUやっちゃいなYO
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			怪盗のリーダー来たな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もうなんだよこれ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ジャニーズ<br>
+			地獄から蘇ってきたの確定
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p4">
+			<b>中居</b>
+			モーニングレスキュー80　モーニングレスキューを飲む又は飲ませる、身体強化+回復するけど効き目が強いと偶に覚醒しちゃうかも<br>
+			辛い朝80　辛い朝で絶望させる<br>
+			田舎をdisる歌80　田舎をdisって当たりを過疎らせる<br>
+			目星開始！80<br>
+			あ？てんやわんやよ！シネッ！80　鼻毛神拳を繰り出す、リーチが長くて使いやすい攻撃だよ！！！！<br>
+			修羅化30　修羅になって滅茶苦茶強くなる、こわい<br>
+			登攀開始！80　レスキュー隊員だからね<br>
+			<br>
+			ツヨシが全裸になる勢いで神格化してしまう！！！！止めなきゃ！！！！！！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			地獄に落とすな
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p4">
+			<b>中居</b>
+			これでいい？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			いや…地獄から這い上がってきたYO
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			エミュ楽そうですね
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			イベント：フードファイトが起こる<br>
+			優勝者の胃袋でビッグバンが発生して宇宙が誕生する
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			これしか知らないYO
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			稲垣君は謹慎中の設定にしてこれで出航しよう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 5[2,3]+6 ＞ 11<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 8[5,3]+6 ＞ 14<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 6[5,1]+6 ＞ 12<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 8[4,4]+6 ＞ 14
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			イベントどうするつもりなのか気になるだろ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった<br>
+			？？？
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			ＧＭが分からないなら変えるか
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			wikiの知識でなんとかする<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			稲垣くんやりたいけどエミュがわからないだろ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もう個人的にはシナリオ進められる気がしないだろ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			みんなそんなSMAP<br>
+			知らないから大丈夫だよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			進められる気がしなくたっていいんだ…乗り越えろ！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			先が見えないと不安になるってよく言うけど、俺は逆に楽しみになるよ。どうしようかなってワクワクする。何でもできるんだから。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			イベント：殺人事件が発生する<br>
+			古畑任三郎が現れて犯人を見つけ出す<br>
+			犯人と被害者はPL間でランダムで決定される
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			これつよぽんみたいで好き
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			強さ/HP11<br>
+			賢さ14 アイデア70 技能値420<br>
+			美しさ12 幸運/SAN60<br>
+			速さ14 回避70
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もうヤケクソだ<br>
+			全員の死体を俺の基地でコレクションする
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			SMAPエミュできなかったら爆死させろ<br>
+			これもう怪盗卓、じゃなくてうろ覚えSMAP卓だろ、、、、<br>
+			SMAノイアこわい
+		</p>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			YOU殺っちゃいなよ
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			まずいジャニーさんとどう向き合えばいいのかわからない
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			”無理”という言葉を壁と思うかバネと思うか、それだけで人生は大きく変わる
+		</p>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			過去のことは水に流しちゃいなYO
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			まずい木村くんが定型っぽいの使い始めた
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ジャニーさんにはフレンドリーに接すれば大体いけどう
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			おじーちゃんもおばーちゃんもおにーさんもジャニーさんも
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			お～ねがい♪シンデレラ~♪
+		</p>
+		<p class="player p9">
+			<b>ジャニー喜多川</b>
+			ジャニーさんの技能ってなんなんだYO
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			いーたーだーきーまーす<br>
+			おっはーでマヨチュチュ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			まん！まん！満足！一本満足！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			レスポンス遅くてすまん
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			https://motiv.top/word/smap/<br>
+			SMAP名言集をお前に教える
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p4">
+			<b>中居</b>
+			いいよ！！！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			うわぁ　ありがとう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょありがとう！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			！？<br>
+			まずいゴローちゃんがきた
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			これ以上増えるな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>慎吾</b>
+			そんなまとめられた言葉に意味は無い<br>
+			僕たちがやれば　それはスマップになる
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			来たか<br>
+			ゴロー
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			頭痛くなりそう
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			6人アドリブで回せるのかい？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ゴローちゃんくるなら普通にポップスター来ることにする
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			後は森くんだけだな　ルフィ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			頑張るしかねぇ…<br>
+			もうこれ以上は無理！無理です！
+		</p>
+		<p class="player p11">
+			<b>ゴロー</b>
+			GMが言うならやめておくのを教える
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			森君枠はジャニーさんが担ってるから
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			ノリで参加しただけだから無理なら降りるYo
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			多分今回だけだ…！！！<br>
+			乗り越えろ…！！！
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			ゴローちゃんが可哀想だ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ参加しても
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			ゴローちゃんが消えた
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			おっはー失せろ<br>
+			お前の後釜にはおーはーが就く…よかったな
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			GMも可哀想だ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			聖者かい？
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			SMAPは5人いてこそだYO
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			どんなことあっても殺す
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			ゴローちゃん入りなYO
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			参加できる・できないじゃなく、やるかやらないか。
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			正直SMAPあんまり詳しくないしなァ…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			木村くんのそれどこから拾ってるの？
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ジャニーさんが天に召された<br>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			キムタク　名言で検索して適当にコピペしてる
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			原作と一緒<br>
+			よくやった！ジャニーは死んで正解だった<br>
+			ゴローさんは孤独のグルメエミュで良いじゃん
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			……(←意味深に無言)
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ジャニーさんは接しにくいからいなくなって正解だね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！<br>
+			つよぽんそういうところ割とありそうだろ！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			その線は…
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			割とみんなそう思ってそうよね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ちょっと端末変えるから少し時間くれ(^^)
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待つよ！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			タッキー＆翼で行くぞ来い
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もうやめてくれ…
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			秘匿会話はもう一度送った方がいいのかな
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			TOKIOならわかるんだけどなァ…
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			Si 俺たちはいつでも　二人で一つだった
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			こっちで対応するから大丈夫
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ジャニーズ詳しくないけどマドカダイゴならエミュいけるかも
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			Shフィギュアーツ予約させろアホンダラ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…<br>
+			孤独のグルメエミュなんてやったことないが…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			慎吾のは西遊記好きだったなぁ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			きたか<br>
+			ゴローちゃん
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			な゛ま゛か゛
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			SMAP揃ったから出航だ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			あ　知ってるんだね
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			おれ達もうなまかだろ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			待ってくれ！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			来たか<br>
+			SMAP
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			俺は正当な視聴者<br>
+			モンキーマジックの方が好きだった
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ジャニーさんまだいたのか…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			それはそう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			その世代の年齢って…
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ジャニーさんは見守ってくれてるんだね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			ジャニーさん会釈会釈！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 4[2,2]+6 ＞ 10<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 6[2,4]+6 ＞ 12<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 7[6,1]+6 ＞ 13<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 4[3,1]+6 ＞ 10
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			でもaround the worldもカッコよくて結構好きなんだよね
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUヤっちゃいなYO
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			地獄から見守っていてくれてると思ってんすがね…
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			おっはー失せろ失せろ失せろ
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			わかるのを教える
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ジャニーさん最後までこの卓見届けてね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			見ていてくれる！そういうのもあるのか
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			……(←意味深に無言)
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			アカウント名も変えろ
+		</p>
+		<p class="player p14">
+			<b>MJ</b>
+			なんで目を離したらSMAP卓になってんだよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			マイケル・ジャクソンはなんなんだよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ヤバいトップアイドルが来た
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			格が違う
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			あ　僕マイコーのファンなんだよね
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			うぐっ勝てないぞォ～！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			一緒に写真撮ったこともあるんだよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			マイケルくんもスカウトしたかったYO
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			観戦者もアイドルになるべきなのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			強さ 10 HP10<br>
+			賢さ 12 アイデア 60 技能360<br>
+			美しさ 13 幸運/SAN 65<br>
+			速さ 10 回避 50
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			そうだね　
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			モーレスターキャラでもいいんじゃない？
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			アイドルはアイカツしか知らないからなァ…
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			俺は正当なGM<br>
+			ケツアクメマラソン卓とは別の意味で泣きそう
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			がんばれ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			山ちゃんといいジャニーさんといいマイコーといいゲストが豪華だなこの卓
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			がんばれ
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			がんばれ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			俺もアイカツならわかる
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			乗り越えろ！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			辛いGMを救え
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			クリティカル出さないとSMAPから抜けれない
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUやっちゃいなyo
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			イケメンたちのケツアクメみてえなァ…
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			ジャニーさんはエミュ楽そうでいいなあ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			レスキュー開始！！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			焦るんじゃない<br>
+			俺はTRPGがやりたいだけなんだ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕のエミュもこれでいいのか分からないよ
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			おっはー！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ゴローちゃんから秘匿来たらイベントまとめて出航するのを教える
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			シンゴー！シンゴー！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			草薙君は穏やかなしゃべりの印象だからそれで良いと思う
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			うわぁ　ありがとう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			焦らなくていいからじっくりキャラメイクしてくれ(^^)
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん！<br>
+			その前に今回のスタートとゴールを確認したいんだ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			それはそうだね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			そういえば言ってなかったな…ルフィ<br>
+			すまん
+		</p>
+		<p class="player p14">
+			<b>MJ</b>
+			Thanks.
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			剛はいいよね<br>
+			地デジ宣伝しててさ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			いいんだ　乗り越えよう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			今日の目標は迷宮の奥にあるお宝だ<br>
+			それを手に入れて帰ってこい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			その為のチーム<br>
+			その為の“SMAP”だろ？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			慎吾も僕と一緒に宝くじ宣伝してるじゃないか
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もちろん警察もいる
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>慎吾</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			へ〜！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			次の企画は怪盗アイドルだね。
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			トレジャーハンターだね　ワクワクしてきたよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　そういうタイプか
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			そういうドラマあったかな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			おしゃれ怪盗スワローテイルをお前に教える
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			今の銭形の声は俺が務めてる…よかったな
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			アイカツネタ振られても困るよ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			人からはいつまでも怪盗って呼ばれる人間でいたい。・・・
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			おしゃれ怪盗スワローテイルってなんだ!?(^^)なんだ!?(^^)
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			スマップスマップのコントで多分やってるよね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			山寺君ジャニーズ所属しない？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			あ～スマスマでやってそうだね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			気にするな
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			シンゴママに恨みあるからジャニーズはやだ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			山さんどういうキャラなんだよ…
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そんなこと言っちゃだめちん！！！！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あー雑談欄が滅茶苦茶だ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			山ちゃんはおはスタのおーはーを慎吾ママのおっはーに奪われたとか言ってた記憶があるしそれか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			nonameくんもアイドルになりなよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			へ～！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！<br>
+			正当なエミュだったのかよ！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			山寺はオラフ役取られた時もずっと愚痴言ってたしYO
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			へ～！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			へ〜！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			え？なんでみんなそんなに詳しいの？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			イベントは迷宮の途中に大衆食堂があって食事を取る<br>
+			<br>
+			ダブってしまった 80<br>
+			人間火力発電所 80<br>
+			モノを食べる時はね 誰にも邪魔されず自由で なんというか救われてなきゃあダメなんだ 独りで静かで豊かで… 80<br>
+			がああああ 80<br>
+			稲垣メンバー 40
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>中居</b>
+			オラフ役はもうやりたい人いなさそう
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ヘイヘイ嫌な顔しない　キミとあえるから<br>
+			明日からハレルヤ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			よし！とりあえず送り終わったぞ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			これでSMAPの5人が揃ったね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ゴローちゃんのイベント来たしそろそろ始めるぞォ！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			そろそろ始まりそうだね　ルフィくん
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			おっは～！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			出航だよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			出港開始！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUたちやっちゃいなyo！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			もし今日雨が降っていたならば、僕は卓に出なかったかもしれない。
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			はいはーい毎度ー情報屋でーす
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			お腹もペコちゃんだしそろそろ行くか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			やあ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			来たね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			あ！情報屋さんだ！！！！会釈会釈！！！！！
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			ここに集まってもらったのは他でもないんだ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ来たよ！
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			耳寄りな情報…聞きたいでしょ？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			聞きたいなぁ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			うん！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー　いいじゃないか<br>
+			こういうのでいいんだよこういうので
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			聞きたいか聞いたくないかじゃなく、聞くか聞かないか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			あ　もう5時か　小腹空いたな……
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			じゃあ…これ👌貰えない？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			２時を回ったか…
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！<br>
+			時間5時か2時かどっちだよ！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			みんないくら持ってるんだい？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			代わりにモーニングレスキューじゃダメ？
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			まあ後でもいいよ？それも楽しいし<br>
+			ま、いいか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕も満足バーしか持ってないなぁ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…昼食代くらいしか持ってないぞ
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			どうしてもと言うなら僕が払うよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ジャニーさん！？
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			これは嬉しいねぇジャニーさん
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			地獄に帰りなよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ありがとうございます！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			急に復活するな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			ジャニーさんありがとう！！！！！
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			じゃあ丁度いただきまーす
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ勝手に地獄に堕とすなよ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			&gt;地獄に帰りなよ<br>
+			何言ってんだお前ェ！！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p16">
+			<b>情報屋</b>
+			さて今回のお宝情報だ<br>
+			聞き逃しちゃ駄目よ？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うおォん　ありがとう
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			わぁ　お宝だぁ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p16">
+			<b>情報屋</b>
+			ちょっと待てなんで変わってんだよ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>中居</b>
+			！？
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			なんか謝りそうだなこの情報屋
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			GMが変えたんじゃないんだ…
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			朝の情報伝える人じゃん
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ勝手に変えられたのかよ…
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			来たか<br>
+			謝罪担当
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p16">
+			<b>情報屋</b>
+			とにかく今回はある迷宮についてです
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ヒュージキャノンぶっ放しそうな情報屋がTOKIOになってんすがね…<br>
+			いつもカタログで謝らされてる人だ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			迷宮かぁ…小腹空いたなぁ
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			その一番奥にはなんでも願いが叶う宝珠があるというらしいです
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			モノを食べる時はね 誰にも邪魔されず自由で なんというか救われてなきゃあダメなんだ 独りで静かで豊かで…
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			へ〜！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			へ～！<br>
+			みんなには叶えたい夢ってあるかい？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			宝珠で手に入れた幸せと努力で手に入れた幸せはね。どっちも同じ幸せだけど、俺は努力してゲットした幸せの方が楽しいと思うよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー　そういうのもあるのか
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			モーニングレスキューをもう一度店頭に並べたい
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			スマップの再結成かな
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			勿論確かなスジからの情報ですが<br>
+			たしか4階層あるというのは聞きました
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			補充しよ
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			香取…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p16">
+			<b>情報屋</b>
+			地下4階にお宝があるそうです
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ振って
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			事務所からかな
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うーん…階層がダブってしまった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ早速出発しようか
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			とても恐ろしい迷宮とは聴いておりますのでお気をつけください。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			手を抜くほうが疲れる
+		</p>
+		<p class="player p16">
+			<b>情報屋</b>
+			大変申し訳ございませんでした。
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			振る？
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			僕たちが迷宮に向かえばそこはSMAPのコンサートだから
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			といったことだよ
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUたちがCANと思ったならDOしちゃいなYO！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			地獄戻りなよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			迷宮のことを「コンサート」っていうのか<br>
+			あはっ　オモシロすぎるぞこのメンバー
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あと中の情報はわからないみたいだね<br>
+			とても恐ろしいとは聞いた
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ地獄ってそんな気軽に行き来できるもんなのかよ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			草薙君が辛辣すぎる<br>
+			まともなジャニーズがキムタクしかいねェじゃねェかアホンダラ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			何があるか分からないって　楽しいよね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			さっさと迷宮行くか何かしろ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			楽しんでるヤツっていいな、って思う。そういうヤツって他の人に影響を与えてくれるくらいになるだろうし。自分はいつも、そうありたいと思う。楽しんだ者勝ちなんだよ。きっと
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			そりゃキムタクしか残らなかっただろうがアホンダラ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			迷宮行けって…そんなに怒鳴らなくたっていいでしょう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			……(←意味深に無言)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			とりあえず皆にモーニングレスキューふるまう
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			うわぁ　ありがとう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			モーニングレスキュー振っていいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			史実で性癖がまともじゃないから例外なのを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 90 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			🌈<br>
+			SHAKE歌うのを教える
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			みんなで武器を買いに行かないかい？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			俺も歌う
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということでモーニングレスキュー振る舞えなかったよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			つらい
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			勝手に振れ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 77 ＞ 成功
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			2d10&lt;=14 明日は休みだ仕事も無い早起きなんてしなくてもいい　キミと昼まで眠る (2D10&lt;=14) ＞ 13[5,8] ＞ 13 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			なんでシャンパラやってんだ慎吾失せろ失せろ失せろ
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ 慎吾 ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			慎吾は死にました。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			あーあーシンゴがバラバラだ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			じゃあ武器屋行く？
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			クトゥルフだろがシャンパラだろうがやることは変わらないから
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			いく
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			いく
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			強そうな武器買いたいなぁ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			慎吾が走って帰ってきました。
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			いく
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			スミマセン<br>
+			武器ください
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			おかえり～
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			事務所に領収書付けといていいyo
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			あと単品で装備も
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ジャニーさんちょくちょく出るな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ジャニさんあざっす
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			センキュー
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			はい何が欲しいですか？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			この店には何があるんだい？<br>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			武器というならなんでも
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			つよそう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p18">
+			<b>武器屋</b>
+			なんでだよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ君を買う
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			高くつきますよ？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			NPCはTOKIO縛りかな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			同じジャニーズ仲間だろ？
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			S200d1000 (200D1000) ＞ 92411[156,682,80,782,286,4,786,727,779,36,479,199,678,666,548,589,681,842,385,361,882,12,415,442,110,578,700,767,171,863,96,230,84,123,12,882,454,985,745,678,760,846,106,25,238,873,27,849,15,44,619,655,868,750,607,381,538,564,965,806,758,140,304,414,457,273,729,935,28,227,868,269,330,467,125,617,748,189,720,600,345,658,430,588,844,830,139,784,29,41,444,75,824,985,647,706,31,57,740,540,239,127,919,132,339,45,966,194,443,592,56,798,216,103,634,989,106,373,557,289,867,301,862,687,276,288,580,371,473,887,688,256,369,830,552,633,63,82,530,60,852,188,764,138,34,982,763,389,496,219,403,677,714,428,253,864,256,426,13,164,299,329,792,400,810,898,511,382,627,37,579,97,190,50,89,704,35,307,136,73,310,27,414,18,41,243,396,338,816,892,971,551,702,845,991,433,715,386,136,600] ＞ 92411
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			落ち着け…<br>
+			武器屋を二人に増やして片方持ち帰ればいいじゃないか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			92411億円くらいです
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			たかい
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 ダブってしまった (1D100&lt;=80) ＞ 99 ＞ 致命的失敗
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p14">
+			<b>MJ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p18">
+			<b>武器屋</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			ゴローを殺します
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！で値下げする<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 82 ＞ 失敗
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			🌈
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			失せろ失せろ失せろ＞ゴロー
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ ゴロー ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			だめです
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			みんなスター性がないなぁ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			がーんだな…出鼻をくじかれた
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			というか僕らは怪盗だろう？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			辛い朝を見せて武器屋の心を挫く<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 51 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			武器屋を手先の早業で盗むよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=80 武器屋の店先に並んだいろんな武器を見ていた (1D100&lt;=80) ＞ 36 ＞ 成功
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			このモンブランがオススメです<br>
+			あるGMにとても効果的です
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 39 ＞ 成功<br>
+			じゃあそのモンブラン盗んだ
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			Schoice[死ね,殺す,挫ける] (choice[死ね,殺す,挫ける]) ＞ 挫ける
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			武器屋は挫けました。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			よくやった！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ナイスだね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			よくやった！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もうこいつどうするか勝手にしろ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			連れていくよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			あとモーニングスター買っとく
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			青いイナズマで武器屋を焼き尽くす<br>
+			ccb&lt;=80 青いイナズマ (1D100&lt;=80) ＞ 43 ＞ 成功
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			はい…武器屋ついていきます…
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			じゃあ適当に武器ください
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			何やってんだシンゴ！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			ひどい
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			僕たちがいる<br>
+			それだけでスマップは充分
+		</p>
+		<p class="player p18">
+			<b>武器屋</b>
+			㌧㌧武器屋は死にました。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			なんだこれ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			今なら武器取り放題だよ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ今までの武器屋仲間にする時間なんだったんだよ…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ武器屋にあるもの全部ぶんどって遺跡に行こうか
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			なにかあったら用意する<br>
+			一人一個までにしろ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			じゃあアイアンマンスーツもらう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			アドリブ卓なのにGMがPLに振り回されるの笑うだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			マヨネーズもらう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			じゃあ高田純次が朝に突撃するときに発射するバズーカもらうわ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			マーク何がいい？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ僕はモンスターボール
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			じゃあお箸ください
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ステータスとか情報に持ってったもの書いとけ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			箸ぐらい買えよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			もう勝手にしろ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			書いたよ<br>
+			じゃあお宝ゲットしに行こうか
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			キャラに書いた
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			書いたよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			箸でかすぎ！！！！！！！！！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん　これでいいんだ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			よしじゃあ迷宮に行くぞ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			出航だね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということで来ました迷宮の外<br>
+			なにもありません
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			よーし　さっそく向かうか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			迷宮の外観はどんな感じなんだい？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			な<br>
+			に<br>
+			も
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ゾッ！？！！？？！？！？？！！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ゾッ！！！？？？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			寂しいところだなぁ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			強いて言えばホントになにもない<br>
+			迷宮があるなんて思えない<br>
+			目星振れ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80　見聞色 (1D100&lt;=80) ＞ 54 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 31 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 75 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			いや…確か迷宮は地下って言ってたな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			石像がありますね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			そこの石像が怪しいね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			怪しい石像だね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			あやしいちん！！！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			壊せ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			S2d10 (2D10) ＞ 9[3,6] ＞ 9
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ壊すの確定なのかよ…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=80 青いイナズマが石像を責める (1D100&lt;=80) ＞ 63 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			9くらいダメージ食らわせろ<br>
+			3d6ダメージ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			3d6 (3D6) ＞ 12[5,1,6] ＞ 12
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			よくやった！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			よくやった！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			よくやった！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			青い稲妻で石像は粉々になりました。
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			シンゴは偉いよね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ゲッチュ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ウン　うまい
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			さて…階段がありましたね<br>
+			入ってもいいですよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			罠が怖いけど行こうか
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			目星で確認してから入る
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！<br>
+			確認した方がいいだろ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 59 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			そうだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ようやくまともに進行しそうだな　ルフィ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			中居くんの警戒心は格が違うね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			階段の下にはさっきと似たような石像が大量に並んでる
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			こわい！！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			これテレビで流したら視聴率取れるかなァ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			焦るんじゃない<br>
+			俺は罠がないか確認したいだけなんだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			知るか
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよさっきまで何もなかった筈だろ…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			全部動き出しそうだね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ごめんね説明不足
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			まああとは大丈夫そうかな
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ進もうか
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			素直に謝れるヤツっていいな、って思う。そういうヤツって他の人に影響を与えてくれるくらいになるだろうし。自分はいつも、そうありたいと思う。謝れた者勝ちなんだよ。きっと
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			じゃあSMAPどもは階段を降りるよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			降りるよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			わぁ　本格的でドキドキするなぁ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わぁ！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			なるほど　中はこうなってるんだな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			迷宮は基本的には4階層だね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p19">
+			<b>MJ</b>
+			TBSでSMAPが出てきた事を教える
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			マジで？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あとはちょいちょい部屋がある
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			へ〜！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			へ〜！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ちょっとテレビつける
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOU見ちゃいなyo
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			降りるだけなら簡単そう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			勝手にしろ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ガチじゃん
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			終わったぞ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…<br>
+			間に合わなかった
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			今エレファントカシマシがやってるやつ？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			木村くんが歌ってるところで変わっちゃった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			部屋調べたいなぁ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			この階は部屋他に何個ある？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			２つくらい
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			全部調べちゃおうか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p19">
+			<b>MJ</b>
+			&gt;慎吾<br>
+			そう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			どっちから調べようか
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった<br>
+			1か2で教えろ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			1！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ナンバーワンじゃなくてもいい
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			特別なオンリーワン
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			目星振れ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ひとつください
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			一人一人違う花を持つ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 36 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 22 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 34 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			①終わりの始まり
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			という言葉が刻まれているよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			🌈反応遅くて見逃した🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ア…ごめんなさい<br>
+			それ来週からなんですよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということであとはそうだねー
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			何の暗示だろうね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			終わっても楽しいと思えるのは、努力した人の特権
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			聞き耳振って
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 13 ＞ スペシャル
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 83 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 モノを食べる時はね 誰にも邪魔されず自由で なんというか救われてなきゃあダメなんだ 独りで静かで豊かで… (1D100&lt;=80) ＞ 72 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			聞き耳は初期３０かあ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			地上からサイレンが聞こえるね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			まあそれくらいかな
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あとは2の部屋だよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…<br>
+			警察にバレてしまった
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			まあ石像壊したし
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			どんどん調べちゃおうか
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			俺が壊せって言ったけど
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ぼく目星系持って無いんだよね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			やる時にやらない奴は嫌いだ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ダメじゃないかシンゴ～
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			2の部屋ね<br>
+			そうだな～
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ポップスター流せ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			メロディが聞こえてくるよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			SMAPの曲？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			踊りたくなってくるね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いや平井堅
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			なんで？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			ポップスター開始！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			がーんだな…出鼻をくじかれた
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			聞いてないけどたぶんポップスター
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ関係ないだろ…
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			SAN値で振れ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p19">
+			<b>MJ</b>
+			きたか<br>
+			ポップスター
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=85 (1D100&lt;=85) ＞ 87 ＞ 失敗
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			1d100&lt;=60 (1D100&lt;=60) ＞ 28 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 29 ＞ 成功
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 1 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			85で失敗するのつらい
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=65 (1D100&lt;=65) ＞ 80 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			平井、あいつもいい男なんだ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			やるじゃんシンゴ～
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			中居くんとゴローちゃんは踊り出すよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			平井堅おっはー！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			なんで？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			はしゃぎすぎ！！！！！！！！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うおォん　俺はバックダンサーだ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ポップスターは楽しそうだね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			無防備なゴローを地デジ化する<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 32 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　人間火力発電所でポップスターのアフロを燃やす
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよこの時間なんなんだよ…
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			S1d10 (1D10) ＞ 8
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ダンスは8日くらい続くよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			そして疲れて死んだ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			困ったなぁ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			はしゃきすぎ！！！！！！！！！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			踊りすぎだよみんな
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ ゴロー ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ゴローちゃん達は死んだ
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ 中居 ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			他の人たちはまあなんとかなった<br>
+			早く部屋を出た方がいいね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			出ようか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			出よう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだな
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			出る！！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ごちそうさま
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			部屋を出ると中居くんとゴローちゃんのクローンが来るよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			やぁおかえり
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			おかえり
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			おかえり
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あとは何もないかな…
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ふう…疲れた
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			S1d4 (1D4) ＞ 1
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ下の階層に行こうか<br>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			誰かが降りてくるね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ジャニさんとか？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　火力発電所を置いて堰き止める
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ちげぇよ<br>
+			振っていいよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			マイコーかな
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 人間火力発電所 (1D100&lt;=80) ＞ 38 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			山ちゃんかも
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うおォん　これは人間火力発電所だ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			すごい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			MJだったらやべぇからサイン貰うわ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			火力発電所から声が聞こえるよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			？？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			？
+		</p>
+		<p class="player p20">
+			<b>？？？</b>
+			これ取り除いて欲しいんだけど
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			こわいなぁ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			二人いた！？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ごめん見えてなかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			つよぽん2人いるじゃん
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			見えてなくて<br>
+			すまん
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん　まあそういうこともある
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ゴローちゃんはどうする
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うーん…つよぽんがダブってしまった<br>
+			助けてあげる
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			火力発電所は消えたよ<br>
+			…
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			レスキュー開始！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			神様からの２番目の奇跡は一緒に生きていく人と知り会うタイミング。
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			誰も居なかったね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			炎　体　焼き尽くす
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			聞き耳
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ふーん　こういうのもあるのか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 30 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 80 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ダブってしまったで横のつよぽんもついでに増やす
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			走ってるような音が遠くから聞こえるよ<br>
+			あとはわからない
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			草彅剛のものまねはちょっと初挑戦だったけどぶっつけ本番で上手くいったわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！で走りを止める<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 88 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽんは燃えて死んだよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			おわァアア～～
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ つよぽん ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			すぐにクローンが送られてくるよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			田舎煽ったらあのツヨシ怒ってこっち来ない？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			来なさそうだね<br>
+			音も聞こえなくなった
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOU、やっぱジャニーズ来なyo
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			じゃ今度こそ下行こうぜ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			地下1階はこれくらいかな
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			おそらく…あいつは俺たちには不釣り合いなメンバーだったんだろうな…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			前任者の僕は反逆者だったよ<br>
+			今度の僕は完璧で幸運なアイドルさ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ちゃんとつよぽん増えてる？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			じゃあ先に行こうか
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			いく！！！！
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			？？？のこと？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			いく
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			俺はゆったりと階段を下る
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			手先の早業でバズーカ盗むよ<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 34 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ<br>
+			振って
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			いや、横のつよぽん
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			死亡数は増えてるよ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			隠密でこっそり中居くんに向かって撃つよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			2000年の流行語大賞をおっはーからおーはーに変えてくれたら入ってもいいよ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 72 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			バズーカはその後捨てるよ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			いや　ダブってしまった効いてるのかななんて
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あと中居くんは爆発して死にました
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あー
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			なんで？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			原因見聞してもいいかい？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			増えてないってことで
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ 中居 ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 58 ＞ 成功
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			バズーカが落ちてるね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			最低だよ木村くん…
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！俺じゃねえって！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			…
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			キムタク何やってんだお前ェ！！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			失せろ失せろ失せろ＞木村
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん！こういうのもあるのか
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			キムタクは死にました。
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			すぐにクローンが来ます
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			SMAP同士で闘うの悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			仲間割れなんてやめよう　僕らは一つ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			死んどいてアレだけどこれはガチで俺じゃねえって<br>
+			もういいけど
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			キムタク幸運振って
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 85 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			うん
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			焦るんじゃない<br>
+			俺は宝石が欲しいだけなんだ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			バズーカは誰に取られたかはわかりませんでした
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			心を一つにして地下2階へ行こうよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということで下に降ります。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！で振り直す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 70 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			何があるんだい？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			思ったより罠のボリュームあるなあ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			Schoice[バレた,バレない,バレない] (choice[バレた,バレない,バレない]) ＞ バレない<br>
+			わかりませんでした。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ結局わからないのかよ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			同じように部屋があるね。今回はひとつだけ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			すまん
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			入ろうか
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,キム)</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			え〜〜〜〜〜〜〜〜〜<br>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕は怖いからシンゴ先に入ってよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			目星…はいいか
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			じゃあ入るよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			文字が刻まれているよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			②戦争の終結
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			こわいね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			壮大だな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			S1d100 (1D100) ＞ 97
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			①終わりの始まり<br>
+			②戦争の終結
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			壁が迫ってきました。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！で壁止める<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 33 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			部屋の中だけ？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			1d100で97以下で逃げれます
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			火力発電所でつっかえさせる
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			部屋の中だけ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 7 ＞ スペシャル
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=97 (1D100&lt;=97) ＞ 31 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			1d100&lt;=97 (1D100&lt;=97) ＞ 57 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=97 (1D100&lt;=97) ＞ 32 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=97 (1D100&lt;=97) ＞ 83 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			はいみんな大丈夫ですね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			よかったぁ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			よかった
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うおォん
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			SMAPなんだから余裕だね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			中居くんからモーニンスグターを盗むよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			”無理”という言葉を壁と思うかバネと思うか、それだけで人生は大きく変わる
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80　手先の早業 (1D100&lt;=80) ＞ 54 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			これテレビで放送できたら絶対視聴率取れるだろうなァ…
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			隠密でキムタクを殴って武器は捨てるよ<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 32 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			このわざとらしいトラップ感！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			Schoice[キムタク,慎吾,つよぽん,ゴロー,中居] (choice[キムタク,慎吾,つよぽん,ゴロー,中居]) ＞ 慎吾
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕らはダンスをやってるからね<br>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			慎吾くんは背後からひと突きされて死にました。
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			さっきからやべえよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			シンゴー！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			放送できる？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			原因見聞するよ
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ 中居 ] 死亡回数 : 2 → 3
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			Schoice[キムタク,つよぽん,ゴロー,中居] (choice[キムタク,つよぽん,ゴロー,中居]) ＞ つよぽん
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p17">
+			<b>system</b>
+			[ 中居 ] 死亡回数 : 3 → 2<br>
+			[ 慎吾 ] 死亡回数 : 1 → 2
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			……(←意味深に無言)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			S1d100&lt;=100 登場 (1D100&lt;=100) ＞ 39 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			何が起こってるのか分からなくてこわいよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			なんで？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			古畑任三郎と江戸川コナンが現れました。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			まずい別番組が始まった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			あ！コナン君だ！会釈会釈！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよなんでこんなところにいるんだよ…
+		</p>
+		<p class="player p21">
+			<b>古畑任三郎</b>
+			お前に教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			やばいSMAPの天敵が現れ始めた
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			古畑も良い男なんだけど僕は江戸川が好みだなァ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p22">
+			<b>コナン</b>
+			追ってきた
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕ら怪盗だからまずくないかい？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			でもコナンの映画とか割と色んな人が声優やってるからなぁ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ショタコンくさいのは失せろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あとキムタクは誰かに殴られたよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			1d6ダメージ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			なんでだよ！？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			奥の扉、アニメでCM入りする時の奴だった!?<br>
+			全伏線、回収開始
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			1d6 (1D6) ＞ 6
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			恥を知りなさい！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			待って　一つずつ見聞していいかい？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			コナン君を人間火力発電所に改造して動けなくする<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 36 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] HP : 17 → 11
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 シンゴが殺された原因見聞 (1D100&lt;=80) ＞ 14 ＞ スペシャル
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			コナンくんは人間火力発電所になったよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 木村くんが殴られた原因見聞 (1D100&lt;=80) ＞ 39 ＞ 成功<br>
+			！？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うおォん　名探偵つよぽんだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			僕実は何回かコナン出たことあるんだよね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ処理追いつかないだろ…
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			好きに決めていいよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			中居くんのせいにする
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			犯人分かっちゃった
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			キムタクが爆発したのも殴られたのも中居くんがやったことだよ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			マジかよつよぽん
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			何やってんだよ中居！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			最低だよ………中居くん
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			古畑は中居くんを逮捕したよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほう　そういうのもあるのか
+		</p>
+		<p class="player p21">
+			<b>古畑任三郎</b>
+			大人しくしろ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			マズイうちの稼ぎ頭が捕まった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			こうなったら辛い朝を見せて全員自殺させる
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！で止める<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 76 ＞ 成功
+		</p>
+		<p class="player p21">
+			<b>古畑任三郎</b>
+			ムショに入るんだな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ちょっと待って…古畑任三郎ってこんな喋り方か？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 57 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p21">
+			<b>古畑任三郎</b>
+			知らん
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			止まっている間に人間火力発電所にする<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 48 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p21">
+			<b>古畑任三郎</b>
+			刑事ドラマあんまりみない
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			ちなみにこれは僕のものまねじゃないよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			中居くんは火力発電所になったよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			オワァァアア～～！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			そして爆発してしんだよ
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ 中居 ] 死亡回数 : 2 → 3
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			つらい
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			真実はいつも一つだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			どっちかと言うと船越英一郎だな…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p22">
+			<b>コナン</b>
+			そうだね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			そうだね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そうだつよぽん<br>
+			お前は名探偵なんだ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということで
+		</p>
+		<p class="player p22">
+			<b>コナン</b>
+			真実はいつも一つ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			古畑はドラマでSMAP（本人役）を逮捕したことがあることをお前に教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			はい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			っべーわコナンやるじゃん<br>
+			やったのつよぽんだけど
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p22">
+			<b>コナン</b>
+			つよぽんが慎吾を殺した犯人だよ！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			なんで？
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p22">
+			<b>コナン</b>
+			なんやかんやさ！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そうだつよぽん<br>
+			お前は犯人なんだ
+		</p>
+		<p class="player p21">
+			<b>古畑任三郎</b>
+			死ねつよぽん
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>中居</b>
+			なんとなく思ってたけどやっぱ証拠捏造技能だったか
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			おわァァアア～～～
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽんは逮捕され、拷問にかけられ死にました。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そんな率直に古畑さんに死ねって言われると笑うだろ
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ つよぽん ] 死亡回数 : 1 → 2
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			めちゃくちゃだ…噂以上…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p21">
+			<b>古畑任三郎</b>
+			これで一件落着
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			二人は帰ったよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ただいま
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			出演料僕が払うからこれテレビで放送しようよ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			おかえり
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			古畑任三郎を稲垣メンバーでメンバーに加える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			───えぇ～、非常に難解な事件でした<br>
+			果たして誰が悪いのか？罪を犯したのは事実ですが、そのどれもが誰かを想っての、小さな犯罪です<br>
+			ですが…殺人だけはいけませぇん<br>
+			アイドルという華やかな舞台の裏には影もある<br>
+			彼は完璧に演じきりました。役者たちもひっじょうにいい演技をしています<br>
+			…ですが皆さん<br>
+			本当に演じていたのは、どちらなんでしょう？<br>
+			木村拓哉でした
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			おかえり
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということで死んだ人も復活したね
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			おれはゆったりとこの事件の真相から出る
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			今の僕は完璧で幸福なアイドルだからもう大丈夫だよ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=40 (1D100&lt;=40) ＞ 42 ＞ 失敗<br>
+			うおォん
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			なんでキムタクの方が古畑のエミュ上手いんだアホンダラ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということでこの部屋でやることは終わりだね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ下の階に行こうか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			知らん
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			そうだね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			じゃあ地下三階だよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			大衆食堂があるよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			なに食べてもいいよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			回復ポイントかな？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよこれ誰のイベントか<br>
+			バ<br>
+			レ<br>
+			バ<br>
+			レ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			マヨチュチュするよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			モーニングレスキュー注文する
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			勝手にしろ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			満足バー１つ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			せっかくだし入っていくか
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよキムタクって何好きなのかわかんねえよ…
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			満足バーが届いたよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			うわぁ　ありがとう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			モーニングレスキューも来たよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			まん！まん！満足！一本満足！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			チョコなのにヘルシー！！！！！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			スイマセン　カツ丼ください<br>
+			あと単品でとんかつも
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかりました
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80　モーニングレスキュー (1D100&lt;=80) ＞ 19 ＞ 成功
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=40 マヨチュチュ (1D100&lt;=40) ＞ 90 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			好物わかんねえからとりあえず叙々苑食うわ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ccb&lt;=80　満足バー (1D100&lt;=80) ＞ 56 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			叙々苑が来たよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			すごい
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そういうのもあるのか！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			木村くんだけ豪勢だなぁ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			芸能界といえば叙々苑っしょ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			手先の早業で盗んでもいい？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということで食事取りました？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			取った
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよそれ許可取るもんじゃねえだろ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			というより飲んだ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			普通に食え
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…カツが来ない
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			グビッ！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			食った
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			カツ丼も届いたよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…<br>
+			カツがダブってしまった
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			とれなかったのを教える
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			じゃあ今から
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			かわいそう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			毒ガス訓練を開始する！！！！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよそれ別の漫画だろ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕満足バーだから割と平気じゃないかい？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			心配するな計算上死ぬ！！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			それ関係あるのかよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			おわァァアアア～～～～
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			慎吾以外死にました。
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ つよぽん ] 死亡回数 : 2 → 3
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			辛い朝の辛さと比較して耐えたい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！<br>
+			で止める<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 67 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 3 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			キムタクはなんとか耐えるよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			中居くんはむしろ余裕そう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			中居すげ〜
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			キムタクは1d10ダメージ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			むしろはしゃぎすぎ！！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			1d10 (1D10) ＞ 1
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ガスを火力発電所の排ガス入れに入れて耐える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			中井くんの朝<br>
+			キ<br>
+			ツ<br>
+			キ<br>
+			ツ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] HP : 11 → 10
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 35 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			あっさり死んだつよぽんがバカじゃないですか
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			1d10ダメージで
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			1d10 (1D10) ＞ 5
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ ゴロー ] HP : 10 → 5
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			悲しいでしょう
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			つらいつらいつらいつらいつらいつらいつらいつらいつらいつらい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということで毒ガス訓練が終了しました。<br>
+			改めて地下3階です。
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ただいま
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p19">
+			<b>MJ</b>
+			アサオス食え
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			おかえり
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			訓練で疲れすぎた皆にモーニングレスキュー振る舞う
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			みんな揃いましたね<br>
+			いいよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			聖者かい？
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80　レスキュー開始！ (1D100&lt;=80) ＞ 20 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			もぐ　もぐ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			全員1d3回復したよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>中居</b>
+			嫌・・・
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			1d3 (1D3) ＞ 3
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] HP : 10 → 13
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			1d3 (1D3) ＞ 3
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			中居っちサンキュー
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ ゴロー ] HP : 5 → 8
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うーん　ウマイ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			今日のオーダーはァ～！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということでここにも部屋があるね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			正直この卓参加じゃなくて観戦していたかっただろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			こんかいも一つだけだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			お前が参加しなかったらこの卓にはならないのを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			調べようか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			なんかすまん
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			そうだね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			例によって文字が刻まれています。
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ結局は俺が始めた物語だろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			SMAPが揃う卓とか今回限りなんだから誇れ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			③嘲笑う二世
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>中居</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			なんでYOUが謝るんだい？YOUは頑張ってるyo
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			③嘲笑う二世
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			やべえここに来て繋がりがわかんねえわ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			痛ェのはお前の方だったよな…かわいそうによォ………！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			意味深な文章だね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			これくらいだね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			山ちゃんコラさんの台詞か
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			S1d100&lt;=100 (1D100&lt;=100) ＞ 55 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			木村くんは分かるよね<br>
+			頭いい役いっぱいやってたし
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽんは神格になったよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			なにそれ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			全裸になる勢いだね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　SMAPのプレミア感が<br>
+			実に効いてる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			たしかに
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			無法していいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			SMAP間の呼称が分からないことを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			HEROとか？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			キムタクを謎に爆死させるのもアリ？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ここでつよぽんに何か異変が起こるよ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ウッ…！ウッ…！ウァッ…！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ダイスは？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			CCB&lt;=100 (1D100&lt;=100) ＞ 77 ＞ 成功<br>
+			こんな感じで
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			シンゴはつよぽん以外は名字＋くん付けじゃないかなァ…
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			があああで変化を止める
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ccb&lt;=100 (1D100&lt;=100) ＞ 62 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			俺もわかんねえわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			キムタクが爆死したよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			僕も
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ウッ…！ウッ…！ウァッ…！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			多分下の名前そのまま呼んでるっぽいけどわかんねえわ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 25 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			待たない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ここは全員アイデアかな
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] HP : 13 → 17
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=85 (1D100&lt;=85) ＞ 83 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=60 (1D100&lt;=60) ＞ 87 ＞ 失敗
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 32 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったな…何もわからない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			ものまねは対象の研究が重要だよ<br>
+			次からは気をつけよう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=80 アイデア (1D100&lt;=80) ＞ 42 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			まあ僕も山ちゃんの事よくわかんないけど
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			中居くんとキムタク、慎吾はつよぽんが神格化してキムタクを爆死させたとわかったよ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ちょっと待ってね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			なんでだよ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕……もう止められないみたい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！で止める<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 33 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			まいったなあ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			田舎をdisる歌でツヨシの信者を過疎らせる<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 71 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			いーーーーーーーーーーーーーーーなか<br>
+			やばすぎwwwwwwwwwwww<br>
+			wwwwwwwwwwwwwwww<br>
+			wwwwwwwwwwwwwwww<br>
+			wwwwwwwwwwwwwwww<br>
+			wwwwwwwwwwwwwwww<br>
+			wwwwwwwwwwwwwwww<br>
+			クソ<br>
+			過疎wwww
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ゴローちゃんも止めようとしたよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			がああああ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ウッ…！ウッ…！ウァッ…！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			今回はダイススレにしようか
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽんは4d100
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			4d100 (4D100) ＞ 111[29,52,23,7] ＞ 111
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			他は1d100ずつの合計
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			1d100 (1D100) ＞ 55
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			1d100 (1D100) ＞ 87
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			1d100 (1D100) ＞ 2
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			1d100 (1D100) ＞ 23<br>
+			あぶない
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			木村君と僕だけで勝ったよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			これがSMAPの力か……
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			がーんだな…何もしていない
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽんには仲間の声が届いたのでしょうか<br>
+			神格化が消えていきます
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			他のメンバーも同じだろうけど、『一人でやってみようと思わないの？』って聞かれることがある。そう言ってもらえるのはありがたいけど、その度に『この人は、チーム強さを知らないんだろうな』と思う。俺たちは、SMAPっていう集合体でやったときの、そこでしか生まれない力を知ってる。
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ただいま
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			おかえり
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽんはもとに戻りました。
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ふぅ〜〜〜
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			SMAP解散の危機は去ったようだね。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			おかえり！！！！！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			結局これなんだったんだよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			おかえり
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			現実でも去ってればよかったのに
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			その線は…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			一番死亡回数少ない木村くん殺せたからいいや<br>
+			次行こうよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			な<br>
+			に<br>
+			も
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			超えないことを…
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			教える…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよそんな理由で殺したのかよ…
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			さて<br>
+			下へ降りましょう<br>
+			宝は目の前です
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕らは一つでしょ？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うーん<br>
+			最後の階にもメッセージがあるのかな
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			お宝だね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			階段を降り、大きな扉の前に来ました。<br>
+			文字が刻まれています
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			①②③
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			勧めろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			さぁ謎解きの始まりだ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			困ったなぁ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			僕頭悪い役ばっかやってたから分からないよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			扉には何があるんだい？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うーん　ちょっと考えてみるか
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			①②③の文字の他には
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			歴史と関係するんなら俺わかんねえぞ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			叫べ！(これミスです)
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			と、書いてあります
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			正直全然わからんちん
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ごめん今のナシ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			…そのまま叫ぶってことはないよね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！？
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			木村→中居、剛、ごろう、慎吾 基本的に呼び捨て<br>
+			稲垣→中居君、木村君、剛、慎吾(たまにラジオなどで草なぎ君、香取君とも言う)<br>
+			剛→中居君、木村君、ごろーさん、慎吾<br>
+			香取→中居君、木村君、ごろーちゃん、つよぽん<br>
+			中居(真面目なとき)→木村くん、稲垣さん、くさなぎくん、香取君<br>
+			　　(砕けたとき)→木村、ごろう、いながき、つよし、くさなぎ、しんご
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			叫べ！は別のだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			へ〜！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			へ～！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			SMAP博士で確定
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			「KING」と書いてあるね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			？？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			キングカズしかわかんねえわ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あとはひらがなの石板みたいなもの
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUジャニーズ入らない？
+		</p>
+		<p class="player p19">
+			<b>MJ</b>
+			キング・オブ・ポップで確定
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			それを数字の場所に嵌め込むってことで
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			嘲笑う二世だから王子？
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			へ～！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ひらがなは何て？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			何文字だろうね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あ～んまでと濁点半濁点のもあるよ<br>
+			3文字
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			じゃあおうじで試す
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うーん　SMAP関連以外ならわかると思うんだけどな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			扉は開きませんでした。
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			だめかあ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあおうざかな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			終わりの始まりだから　お
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			そのままだね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			扉は音を立て開きます。
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			戦争の終結だから　う
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			つよぽんすごい
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			凄いよつよぽん！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			嘲笑う二世であざわらうの2番目で　ざ　かなぁって
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			やるじゃん剛
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			俺がIQ28だからこんな簡単なのしか出来なかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そうだつよぽん<br>
+			お前は名探偵なんだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p19">
+			<b>MJ</b>
+			オレ、IQ28だった！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			宝箱がありますね
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕だけの力じゃないさ<br>
+			みんながいたからここに辿り着けた　そうでしょ？
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			つよぽん…
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね！！！！！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			さぁお宝だ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			泣き事言うな　次こそ解ける!! 解けるか!!死ぬか!!　<br>
+			命の瀬戸際だ　ふんばれ!!
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ダッシュして宝取りに行く
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということで宝箱は普通に開きましたね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ドラゴンボールが入っています
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			勿論7個揃ってます
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			これが神龍を呼ぶ宝珠かぁ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			っべえわ神龍呼べんじゃん
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そういえば…願いが叶う宝珠とか言ってたな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			取ります？
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			どうする？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			この世はでっかい宝島じゃん
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			手先の早業でモンスターボールと入れ替えていい？
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,中居)</div>
+		<p class="player p4">
+			<b>中居</b>
+			辛い朝で皆のメンタル攻撃して田舎をdisる歌で過疎らせて帰らせる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			うーん<br>
+			僕らはさ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			ドラゴンボールって言ったら僕が演じたビルス様だよね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			もう願いかなってるよね
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,中居)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			そうだね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 57 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,中居)</div>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 25 ＞ 成功<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 33 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			んで　隠密でドラゴンボール持って帰る<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 1 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ドラゴンボールがモンスターボールと入れ替わりました。<br>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕らの絆こそが宝物<br>
+			”ワンピース”
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ごちです
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということでドラゴンボールをみんなで手に入れました
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			話聞いてた？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そうか…結局俺たちの絆に勝るものはないってことか
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			結局手に入れるのかよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			さぁ帰ろう！帰ってみんなで宴だ！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			宴だね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ドラゴンボールで手に入れた幸せと努力で手に入れた幸せはね。どっちも同じ幸せだけど、俺は努力してゲットした幸せの方が楽しいと思うよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ちょっと待って
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			中居くん以外の人たちはみんな疲れたような表情ですね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あとごめん慎吾見えてなかった<br>
+			すまん
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			中居君何かしたよね？
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			クタクタだよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			悪いな皆・・・ドラゴンボールは貰う・・・
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ふう　疲れた
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			みんな帰りたそうですね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p19">
+			<b>MJ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			人間火力発電所で元気を取り戻す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			裏切る気かい？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ中居どういうことだよ
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			俺にはどうしても叶えたい願いがある・・・
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ドラゴンボールは今誰の手持ちにある？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 61 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽん
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			中居君どういうこと？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そのままがあああ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			じゃあ隠密でこっそり消える
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 71 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 43 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			これ映画化しようよ。僕が払うから
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			いや別にこんなことしなくても変な願いじゃなけりゃ叶えていいけど…
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ゴローちゃんは元気を取り戻しましたね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			置手紙おいとこう<br>
+			「ごちそうさまでした　ｂｙつよぽん」
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うおォん　俺は人間火力発電所だ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あとつよぽんはもう帰ったみたいです。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			目星振れ
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 60 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 84 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			置き手紙があります。
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			「ごちそうさまでした　ｂｙつよぽん」
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そういえばドラゴンボールは？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			モンスターボールになってます
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー　そういうのもあるのか
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			なんでだよ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			つよぽんが持ってたね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			追いかける！！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			まあつまり…
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！<br>
+			とりあえず追いかけましょう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			焦るんじゃない<br>
+			俺は&quot;食事&quot;をしにきただけなんだ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			悪いねみんな
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			SHAKEするよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80　変装 (1D100&lt;=80) ＞ 47 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			あと地上近くの石像が動き出して殺そうとしてるけどどうする？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=80 今日会わない？ってつよぽんに電話 (1D100&lt;=80) ＞ 38 ＞ 成功
+		</p>
+		<p class="player p23">
+			<b>ルパン</b>
+			あ～～～～～ばよ～～～～～～～～
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			大昔にダブらせておいて結局増えてなかったつよぽんに取り押さえてもらえない？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！で止める
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			仕方ない・・・
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 92 ＞ 失敗
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			バカモーン！！！そいつがルパンだ！！！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			つよぽんはルパンでした。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p23">
+			<b>ルパン</b>
+			地デジ化で発狂させる
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p23">
+			<b>ルパン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 78 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			じゃあそれで
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			修羅化してつよぽんを倒す
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ちょっと処理するね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　わかった
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ccb&lt;=80 青いイナズマがルパン責める　炎　宝　焼き尽くす (1D100&lt;=80) ＞ 47 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ルパンをダブったつよぽんが取り押さえます。
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん<br>
+			こんなこともあろうかと１階の時点で増やしておいたんだ
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			そのままルパンとダブりつよぽんは青いイナズマで焼かれます。
+		</p>
+		<p class="player p23">
+			<b>ルパン</b>
+			おわァァアア～～～～～～～！！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ルパンは死にました。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよそんなあっさり死ぬのかよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ただいま
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			おかえり
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			危うくルパンに盗まれるところだった・・・
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			おかえり
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			おかえり
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			CCB&lt;=80　変装 (1D100&lt;=80) ＞ 33 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ルパンはさすがにもういないようですね。<br>
+			！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよまだ何かあるのかよ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			懲りないな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			つよぽん？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			今のうちにさっきのモンスターボールを拾っておく
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			つよぽんはやっぱやるしかないか・・・
+		</p>
+		<p class="player p24">
+			<b>五ェ門</b>
+			御免
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p24">
+			<b>五ェ門</b>
+			隠密で逃げる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			修羅化して五右衛門倒す
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p24">
+			<b>五ェ門</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 2 ＞ 決定的成功/スペシャル
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=30 (1D100&lt;=30) ＞ 77 ＞ 失敗
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			これ次次元と不二子来ちゃうんじゃないの
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>中居</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,草彅)</div>
+		<p class="player p24">
+			<b>五ェ門</b>
+			さらば！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよで止める
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			誰かが瀕死の状況に持ち込んだら投げて一生モンスターボールに閉じ込める
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 51 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			とか失敗してると五ェ門ちゃんはいなくなってますね
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ゴロー)</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			本気で見つからないやつです
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			がーんだな
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			まじかァ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということでドラゴンボールは盗まれました。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			一応モンスターボールの中身確認するか
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			レジギガスが入ってました。
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			おそい
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			なんで？
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			なんで？
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			なんでだろうね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			なんで？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			モンジョンにかがくへんかガス持ってこさせろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			こいつをつよぽんの代わりに新メンバーにする
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=40 稲垣メンバー (1D100&lt;=40) ＞ 32 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだね
+		</p>
+		<p class="player p25">
+			<b>レジギガス</b>
+			なめてんのか死ね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			そうだね
+		</p>
+		<p class="player p25">
+			<b>レジギガス</b>
+			ゴローは死にました。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			久しぶりに見たな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>system</b>
+			[ ゴロー ] 死亡回数 : 2 → 3
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ちょっと待て成功してるだろ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			誰かシャン化させろ
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			僕ミュウやったことあるしへんしんできたりしないかな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			早く戻した方が良さそうですね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			戻す
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うーん　しょうがない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUやっちゃいなyo
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			レジギガスは戻りました。
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			モンスターボールあるんだから捕まえちゃえばいいんじゃない？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			というか元々入ってただろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			Ccb&lt;=80　へんしん (1D100&lt;=80) ＞ 29 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ミュウになりました。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			レベルが高すぎていうこと聞かなかったのかなァ…
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			疲れてたね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			まずい外野も技能使い始めた
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>キムタク</b>
+			ジムバッチ集めないと駄目なヤツじゃん
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			じゃあさっきの新メンバーの成功分を山寺宏一さんに使う
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			みゅう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ということでルパンにドラゴンボールを取られレジギガスに殴り殺されすっかり意気消沈した4人は帰路につきました。
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			じゃあ目指そうか　ポケモンマスター
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			あ！ミュウだ！会釈会釈！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			ついでにミュウが仲間になりました。
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			っべーわミュウじゃん
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			みゅー
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			森君…？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			新メンバーを探してきたよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			新生SMAPは格が違うyo
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			これでまたSMAPが再開できますね
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			そうだね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			そうだね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			そうだね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			そうだね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			これで終わりだァ～！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			お疲れシャン！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			みゅみゅみゅ！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			終わりだァ～！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			宴だァ〜〜〜〜〜〜〜！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			お疲れシャン
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>ゴロー</b>
+			宴だァ〜〜〜〜！！！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			Ccb&lt;=80　へんしん (1D100&lt;=80) ＞ 32 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			宴だァ～～～～～～！！！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			宴だァ〜〜！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			せっかく貰ったイベントを上手く利用できなくて俺は恥だ！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUたち宝物は持って帰れたの？
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			宴だァ～！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			宝物はSMAPの新メンバーです
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			僕たちが宝物です
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			またルパン一味に負けちゃったね
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			うん　うん
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			へ〜〜！<br>
+			まあなんか見つけたならいいことだyo<br>
+			ここは僕が出すから存分に宴しようyo
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			宴だァ～～～！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			うわぁ　ありがとう
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ほー　聖者なんているんだな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			それはそれとして宝持ち帰れなかったからペナルティで全員爆死ね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			Ccb&lt;=80　へんしん (1D100&lt;=80) ＞ 65 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！
+		</p>
+		<p class="player p23">
+			<b>ルパン</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			みゅう
+		</p>
+		<p class="player p26">
+			<b>次元</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p24">
+			<b>五ェ門</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			爆発オチなんて最低
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			CCB&lt;=80 変身 (1D100&lt;=80) ＞ 86 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			🌈
+		</p>
+		<p class="player p23">
+			<b>ルパン</b>
+			🌈
+		</p>
+		<p class="player p26">
+			<b>次元</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=30　修羅化 (1D100&lt;=30) ＞ 99 ＞ 致命的失敗
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			クソがァ！
+		</p>
+		<p class="player p24">
+			<b>五ェ門</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			🌈
+		</p>
+		<p class="player p23">
+			<b>ルパン</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			S1d100 (1D100) ＞ 49
+		</p>
+		<p class="player p26">
+			<b>次元</b>
+			🌈
+		</p>
+		<p class="player p24">
+			<b>五ェ門</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			49回爆死だ
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			！！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			オワァアアア～～！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			地デジ化でGM発狂させる<br>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 15 ＞ スペシャル
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			おうかかってこいやカスコラァ
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			みゅみゅみゅみゅ！みゅー！(じゃあ俺もだいばくはつするぞ　来い)
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 37 ＞ 成功
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ 中居 ] 死亡回数 : 3 → 52
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			Ccb&lt;=80　だいばくはつ (1D100&lt;=80) ＞ 23 ＞ 成功
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] 死亡回数 : 2 → -47
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			!
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			おれを99999999999999999999人にダブらせて一人当たりの死亡回数を1未満にする
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			！！
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] 死亡回数 : -47 → 4
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			CCB&lt;=80 ダブってしまった (1D100&lt;=80) ＞ 9 ＞ スペシャル
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			！！
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			巻き込まれる前に僕は地獄に戻るよ。
+		</p>
+		<p class="player p19">
+			<b>MJ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			CCB&lt;=100 KJP r1M (1D100&lt;=100) ＞ 28 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>ジャ○ー喜多川</b>
+			YOUたちじゃあね。
+		</p>
+		<p class="player p17">
+			<b>system</b>
+			[ キムタク ] 死亡回数 : 4 → -43<br>
+			[ ジャ○ー喜多川 ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			おっは～！！！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			またね～！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			またね～！！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			またね～！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			またね〜！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			またね～！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			ケツアクメのケツにモーニングレスキュー流してここをモーレスター卓にする
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p23">
+			<b>ルパン</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			第三のケツアクメ卓失せろォォォォォ!!!!((((✊))))
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p26">
+			<b>次元</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			:死亡回数=3e^-20
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 86 ＞ 失敗
+		</p>
+		<p class="player p24">
+			<b>五ェ門</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			🌈<br>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			お前らの技能とイベント教えろ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			またね〜〜〜〜〜！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p7">
+			<b>つよぽん</b>
+			【技能】480<br>
+			見聞色 80 聞き耳目星読心複合<br>
+			地デジ化 80 対象を発狂させて裸にさせる<br>
+			手先の早業 80 盗めたり色々できる<br>
+			隠密 80 単独行動したりバレないように行動できる<br>
+			満足バー投げ 80 攻撃技<br>
+			変装 80 別人になる　変装というか変身<br>
+			<br>
+			【イベント】<br>
+			江戸川コナンが敵として立ちふさがる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p27">
+			<b>ジャ○ー喜多川(地獄)</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			技能値300<br>
+			<br>
+			ちょ待てよ！80 待ってもらう<br>
+			歌う80 SMAPの曲を歌う<br>
+			SMAPの覇気80 思いつかないので覇気を使う<br>
+			吾郎60 吾郎を呼ぶ<br>
+			<br>
+			イベントはポップスターと化した吾郎ちゃんがPOP STARを歌って応援してくれる
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			モーニングレスキュー80　モーニングレスキューを飲む又は飲ませる、身体強化+回復するけど効き目が強いと偶に覚醒しちゃうかも<br>
+			辛い朝80　辛い朝で絶望させる<br>
+			田舎をdisる歌80　田舎をdisって当たりを過疎らせる<br>
+			目星開始！80<br>
+			あ？てんやわんやよ！シネッ！80　鼻毛神拳を繰り出す、リーチが長くて使いやすい攻撃だよ！！！！<br>
+			修羅化30　修羅になって滅茶苦茶強くなる、こわい<br>
+			登攀開始！80　レスキュー隊員だからね<br>
+			<br>
+			ツヨシが全裸になる勢いで神格化してしまう！！！！止めなきゃ！！！！！！！！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ロシナンテ！！享年26歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			僕が神格化したの中居くんのせいかよ
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			迷宮の途中に大衆食堂があって食事を取る<br>
+			<br>
+			ダブってしまった 80<br>
+			人間火力発電所 80<br>
+			モノを食べる時はね 誰にも邪魔されず自由で なんというか救われてなきゃあダメなんだ 独りで静かで豊かで… 80<br>
+			がああああ 80<br>
+			稲垣メンバー 40
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			山ちゃんがさらっとコピペ改変しててダメだった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>慎吾</b>
+			イベント：殺人事件が発生する<br>
+			古畑任三郎が現れて犯人を見つけ出す<br>
+			犯人と被害者はPL間でランダムで決定される<br>
+			<br>
+			らいおんハート80<br>
+			世界に一つだけの花80<br>
+			SHAKE80<br>
+			青いイナズマ80<br>
+			マヨちゅちゅ40<br>
+			没イベント：フードファイトが起こる<br>
+			優勝者の胃袋でビッグバンが発生して宇宙が誕生する
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ古畑任三郎とコナン別のイベントだったのかよ…
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			怪盗と来たらやっぱり探偵が相手に出てこないとね
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			それはそう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			古畑任三郎RPする気なかったのは本当にすまなかった
+		</p>
+		<p class="player p27">
+			<b>ジャ○ー喜多川(地獄)</b>
+			暇だったから僕がやればよかったね。
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			それはそう
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			───えぇ～、人はとにかく何かを忘れていく生き物です<br>
+			皆さん昨日の夕食はなんだったか思い出せますか？…では一昨日は？…ではその前、さらにその前は？？そろそろ厳しいでしょうかﾝｯﾌｯﾌ…<br>
+			まあ仕方ないことです、人の記憶のキャパシティにも限界というものがありますから。とはいえ忘れてはならない記憶というものもありますねぇ<br>
+			そう例えば、苦難を乗り越え立った表彰台の景色、一世一代のプロポーズの記念日、ええとそれから────<br>
+			<br>
+			──そう、古畑任三郎のエミュとか。
+		</p>
+		<p class="player p23">
+			<b>ルパン</b>
+			っひゃ～！SMAPあまり知らなさそうなのに完走できてすげェなァGMは！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			いつの間にか地獄に落ちてる・・・
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			木村君は凄いね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			たまたまメモってたのがあった
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			みゅー
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			こんなGMに付き合ってくれて…ありがとう！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			お疲れシャン！！！！！！！！！！！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			こんなSMAPに付き合ってくれて…ありがとう！
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			すごく楽しかったよ　GMもお疲れシャン
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			お疲れシャン！
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			SMAPを！解散する！！！
+		</p>
+		<p class="player p27">
+			<b>ジャ○ー喜多川(地獄)</b>
+			YOUたちお疲れジャニ
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			お疲れシャンだァ～～～！！！！！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			お疲れシャン<br>
+			またね〜〜〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			お疲れシャン
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			あと木村くんの武器で中居くん殺したの<br>
+			僕
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			ちょ待てよ！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			また怪盗で立てたいのを教える<br>
+			今度はしっかりした盗みにしたいだろ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			ごめんね
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			いいよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			うわぁ　ありがとう
+		</p>
+		<p class="player p15">
+			<b>慎吾</b>
+			ありがとう
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			また立てたら行くよ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			うわ！ありがとう！<br>
+			ログ取るぞォ！
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			今度は何卓になるんだろうな
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			またね～！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			またね〜〜〜〜〜！！
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			ごちそうさま
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			またね～！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			またね～！
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			またね～～～！！！
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			まあまだスレはないんだけどね
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			まじかぁ
+		</p>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			じゃあ僕がたてるよ
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			怪盗っぽいシステム加わるといいかもね<br>
+			うわぁ　ありがとう
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			それはそう
+		</p>
+		<p class="player p4">
+			<b>中居</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			怪盗っぽいの…変装とかは基本装備にしようかな
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			NPCに見つかる行動したら即死亡でいいんじゃない？
+		</p>
+		<p class="player p13">
+			<b>ゴロー</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p12">
+			<b>山寺宏一</b>
+			http://img.2chan.net/b/res/782536234.htm
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p28">
+			<b>修羅中居</b>
+			折角だから修羅になっとく
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			きもい
+		</p>
+		<p class="player p8">
+			<b>キムタク</b>
+			きも
+		</p>
+		<p class="player p27">
+			<b>ジャ○ー喜多川(地獄)</b>
+			YOUスマップ辞めろ
+		</p>
+		<p class="player p3">
+			<b>GMティマス</b>
+			死ね
+		</p>
+		<p class="player p28">
+			<b>修羅中居</b>
+			ひどい
+		</p>
+		<p class="player p7">
+			<b>つよぽん</b>
+			さやシャン並みにきもい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p19">
+			<b>MJ</b>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>GMティマス</b>
+			中居は15000回爆死
+		</p>
+		<p class="player p28">
+			<b>修羅中居</b>
+			オワァアアアア～～！！
+		</p>
+	</div>
+</body>
+</html>

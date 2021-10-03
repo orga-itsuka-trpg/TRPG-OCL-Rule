@@ -1,0 +1,11271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [メイン] タブ */
+		.t0 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t1 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [記録] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名さん,匿名さん)] タブ */
+		.t3 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：GM */
+		.p0 { color: #673ab7; }
+		.p0 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：うちはイタチ */
+		.p1 { color: #673ab7; }
+		.p1 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：Zちゃん */
+		.p2 { color: #888888; }
+		.p2 .diceroll { background-color: #888888; }
+
+		/* 発言者：夢野幻太郎 */
+		.p3 { color: #cddc39; }
+		.p3 .diceroll { background-color: #cddc39; }
+
+		/* 発言者：ワルプルギスの夜 */
+		.p4 { color: #9c27b0; }
+		.p4 .diceroll { background-color: #9c27b0; }
+
+		/* 発言者：ある星  */
+		.p5 { color: #c51b23; }
+		.p5 .diceroll { background-color: #c51b23; }
+
+		/* 発言者：宮下藤花 */
+		.p6 { color: #4caf50; }
+		.p6 .diceroll { background-color: #4caf50; }
+
+		/* 発言者：一方通行 */
+		.p7 { color: #607d8b; }
+		.p7 .diceroll { background-color: #607d8b; }
+
+		/* 発言者：noname */
+		.p8 { color: #888888; }
+		.p8 .diceroll { background-color: #888888; }
+
+		/* 発言者：Zちゃん */
+		.p9 { color: #222222; }
+		.p9 .diceroll { background-color: #222222; }
+
+		/* 発言者：メイプル */
+		.p10 { color: #e91e63; }
+		.p10 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：夢野幻太郎　 */
+		.p11 { color: #ffeb3b; }
+		.p11 .diceroll { background-color: #ffeb3b; }
+
+		/* 発言者：system */
+		.p12 { color: #888888; }
+		.p12 .diceroll { background-color: #888888; }
+
+		/* 発言者：ブギーポップ */
+		.p13 { color: #4caf50; }
+		.p13 .diceroll { background-color: #4caf50; }
+
+		/* 発言者：アリババ */
+		.p14 { color: #9e9e9e; }
+		.p14 .diceroll { background-color: #9e9e9e; }
+
+		/* 発言者：アリババ */
+		.p15 { color: #00bcd4; }
+		.p15 .diceroll { background-color: #00bcd4; }
+
+		/* 発言者：ある星 */
+		.p16 { color: #c51b23; }
+		.p16 .diceroll { background-color: #c51b23; }
+
+		/* 発言者：バーザム-V */
+		.p17 { color: #673ab7; }
+		.p17 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：シャンクス */
+		.p18 { color: #e91e63; }
+		.p18 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：　 */
+		.p19 { color: #888888; }
+		.p19 .diceroll { background-color: #888888; }
+
+		/* 発言者：亜空の瘴気ヴァニラ・アイス */
+		.p20 { color: #222222; }
+		.p20 .diceroll { background-color: #222222; }
+
+		/* 発言者：マッドフォレスト */
+		.p21 { color: #4caf50; }
+		.p21 .diceroll { background-color: #4caf50; }
+
+		/* 発言者：ミスティーレディ */
+		.p22 { color: #888888; }
+		.p22 .diceroll { background-color: #888888; }
+
+		/* 発言者：カナエール */
+		.p23 { color: #e91e63; }
+		.p23 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：アローヘッド */
+		.p24 { color: #3f51b5; }
+		.p24 .diceroll { background-color: #3f51b5; }
+
+		/* 発言者：コンバイラリリル */
+		.p25 { color: #8b0000; }
+		.p25 .diceroll { background-color: #8b0000; }
+
+		/* 発言者：Imposter */
+		.p26 { color: #e91e63; }
+		.p26 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：シャンクス（亡霊） */
+		.p27 { color: #e0e0e0; }
+		.p27 .diceroll { background-color: #e0e0e0; }
+
+		/* 発言者：ミルクちゃん */
+		.p28 { color: #888888; }
+		.p28 .diceroll { background-color: #888888; }
+
+		/* 発言者：コンバイラ */
+		.p29 { color: #8b0000; }
+		.p29 .diceroll { background-color: #8b0000; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			ドミドミ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 13[6,7] ＞ 13<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 7[5,2] ＞ 7<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 15[8,7] ＞ 15
+		</p>
+		<p class="player p2">
+			<b>Zちゃん</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 3[1,2] ＞ 3<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 20[10,10] ＞ 20<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 16[9,7] ＞ 16
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			1d3+3 (1D3+3) ＞ 2[2]+3 ＞ 5
+		</p>
+		<p class="player p2">
+			<b>Zちゃん</b>
+			1d3+3 (1D3+3) ＞ 2[2]+3 ＞ 5
+		</p>
+		<p class="player p3">
+			<b>夢野幻太郎</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 11[10,1] ＞ 11<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 5[1,4] ＞ 5<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 11[6,5] ＞ 11<br>
+			1d3+3 (1D3+3) ＞ 3[3]+3 ＞ 6
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			2d10+200 (2D10+200) ＞ 11[6,5]+200 ＞ 211<br>
+			2d10+100 (2D10+100) ＞ 10[3,7]+100 ＞ 110<br>
+			2d10-10 (2D10-10) ＞ 4[2,2]-10 ＞ -6<br>
+			1d3+3+10000 (1D3+3+10000) ＞ 2[2]+3+10000 ＞ 10005
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 12[5,7] ＞ 12<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 17[7,10] ＞ 17<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 6[5,1] ＞ 6<br>
+			1d3+3 (1D3+3) ＞ 3[3]+3 ＞ 6
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 10[5,5] ＞ 10<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 7[2,5] ＞ 7<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 10[5,5] ＞ 10<br>
+			1d3+3 (1D3+3) ＞ 2[2]+3 ＞ 5
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 20[10,10] ＞ 20<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 19[10,9] ＞ 19<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 8[2,6] ＞ 8<br>
+			1d3+3 (1D3+3) ＞ 2[2]+3 ＞ 5<br>
+			ムキムキすぎねェかァ？
+		</p>
+		<p class="player p8">
+			<b>noname</b>
+			x3 2d0 #1<br>
+			(2D0) ＞ 0[0,0] ＞ 0<br>
+			<br>
+			#2<br>
+			(2D0) ＞ 0[0,0] ＞ 0<br>
+			<br>
+			#3<br>
+			(2D0) ＞ 0[0,0] ＞ 0<br>
+			1d3+3 (1D3+3) ＞ 3[3]+3 ＞ 6
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			準備はいいか？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			教えるよ！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			覚悟は出来てるよ〜
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>夢野幻太郎</b>
+			教えよう
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			教える
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			教える
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			教えます
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			教えておこう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーはいでは<br>
+			久しぶりの意思を持った抽選機くんカモン！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			出航だ
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			来たかァ…抽選機ィ
+		</p>
+		<p class="player p3">
+			<b>夢野幻太郎</b>
+			！　…来ましたか
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！！！！
+		</p>
+		<p class="player p3">
+			<b>夢野幻太郎</b>
+			！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			意思を持った抽選機くんの過去の悪行<br>
+			・サスケをイカれた女とばかり組ませる<br>
+			・アンもどをうちはに付き纏う妖怪みたいにする<br>
+			・ジエンモーランと撃龍槍を組ませる
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わあ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			今回はどうなりますやら
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はてさて
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			アッハハハ、楽しみだろ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			誰と組む事になるか、楽しみだ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えー開始前ですが
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			！！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ガ<br>
+			　オ<br>
+			　　ン<br>
+			　　　！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			削られたな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			イタチが粉微塵になって死にました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			唐突だな
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			なにそれ
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈敗北者～！🌈
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			イカレてんのかァ！？
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			効果か？それとも告知だろうか？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			イタチさんが…KONAMI人になって死んだ！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			就職<br>
+			おめでとう！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			雑談の会話は伏線だった…ってコト！？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そういう事
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			へ～！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ええはい…死にました…<br>
+			開始前なので対抗技能は振れません…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……では、無視できるか？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			えェ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			意味わかんね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			こわいわぁ～～～～
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてまだ誰にもタッグ告知ができていない
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 こわさ (1D100) ＞ 38<br>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			どうなってんだ…
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ゲーム開始もまともに出来ねェPLのクズども
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			もはや何がなんだか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			なにも返す言葉がない
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			1d100 クズ度 (1D100) ＞ 7
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ぜ<br>
+			ん<br>
+			ぜ<br>
+			ん
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			真っ当で確定だな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ドミナントの力…こんなはずが…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			早速すぎるだろう
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ではタッグ決定お願い致します、GM<br>
+			その…ここで手こずってもこのあとの体力が…(意味深に無言)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			schoice[ジェルマ,テゾーロ] (choice[ジェルマ,テゾーロ]) ＞ ジェルマ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>system</b>
+			[ うちはイタチ ] 残機 : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			グランドクロス現象が起こったかと思ったがまあ問題なかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			よかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			へ〜！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			へ～！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			へ～！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あっやべ<br>
+			🌈間違えた🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ほあああああああ<br>
+			まあいいや<br>
+			このまま通すか
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			何を間違えたのだろうか？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かったよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			いいでしょう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いや…抽選から伝えるタッグを間違えた
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			なるほど
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			わかりました
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			なるほど
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			まあいいでしょう
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			つまり相方って言われた人は…相方じゃないって事！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			そういう解釈は不可能です　可能だったら無法を超えたなにかでしょう
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			このまま通すらしいからその心配はねェだろ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			なるほど
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			まぁ何とかなるだろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			……さて盤面に出てる奴らに関しては終わった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			出てる奴ら
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			…？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			もう秘匿会話して良いか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さあここからが地獄だぞ
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ドクターヘルで確定
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			GMが死ぬだけだ、何も問題ないよ〜！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			問題しかないようだが
+		</p>
+		<p class="player p8">
+			<b>noname</b>
+			GMは死なないわ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			誰だテメーは
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			メインに出て来たってことは殺せるってことだなァ？
+		</p>
+		<p class="player p8">
+			<b>noname</b>
+			なんだ(^^)！？なんだ(^^)！？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			このnonameにロケットパンチぶちかましていい？
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			まぁいいやさっさと死ねェ！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			x3 choice[い,い,よ] #1<br>
+			(choice[い,い,よ]) ＞ い<br>
+			<br>
+			#2<br>
+			(choice[い,い,よ]) ＞ よ<br>
+			<br>
+			#3<br>
+			(choice[い,い,よ]) ＞ い
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			い<br>
+			よ<br>
+			い
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			いよい
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			いよい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			いよい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			待ってろよ…待てって言ってんだろ！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			いよい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まあうん
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			待ちます
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった　待とう
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			開始前に暴れるのはよくないよ…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			やめようね！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			はいでは
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			はい
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			はい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			出航前になんかある人は言ってください
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では開示を
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			俺の能力などたかが知れている
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			きたか　開示
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どうぞ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			漢字使い　M14　起こっている現象や物質から部首<br>
+			を抜き足しし現実改変する<br>
+			imitation　M14　起こっている現象を記録し、現象1つにつき1度再現する　現象1個につき1回のみの使い捨て<br>
+			隠密　14<br>
+			単語帳　10　M現象と部首あわせて技能値分保存できる　パッシブ<br>
+			施設知識　8<br>
+			うそつき：０　「　　　　　　　　　　」
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			唐突にミュータントなこと自白しだしたし殺していい？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			なるほど
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			いいよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			うそつきですのでMではないです
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			唐突だな　確かに事実だが
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			アッハハハ！！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			ほへ～
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			つまり嘘を吐いたのか…まあいいだろう
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			いいんだ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			完璧で幸福な市民が嘘つくのかよ…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			嘘をつけるのは人間だけの能力<br>
+			つまり完璧に人間ですね
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;夢野幻太郎
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			でもそれ噓じゃねぇの？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			それも嘘ですよ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			あ、死んだ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			やめろ開始前に殺し合うな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] 残機 : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] 残機 : 5 → 6
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			まずい皆の殺意が予想より高い
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			開始前に殺されたので俺には権利があると思うが
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 たかさ (1D100) ＞ 86
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			た<br>
+			か<br>
+			た<br>
+			か
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			た<br>
+			か<br>
+			た<br>
+			か
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			まぁいいや開幕殺せばいいだろ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			殺すのは結社任務が来てからにしてくれるか？ターゲットがわからなくなる
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それはそう
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			どのみち全員殺せば解決するんじゃァねェか？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			いや、任務が果たせないのは面倒だな
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			さっさと開始したいのだけれど
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			おれを…おれを出港させてください…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			出港してェなァ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			出航したいな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			このままだとログにした時プレイより開始前の方が長くなってしまう
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			出航はまだかな？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では出港するぞ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			出港だァ～～～～～～～～！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			出校だよ〜〜〜！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			出港だァ〜〜〜！！！！！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			出航だァ～～～～～！！！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			出航ですね！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			出航だァァァァァ～～～～～～！！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			&nbsp;
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			出航だァ～～～～～！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			出航だァァ〜！！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">記録</div>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] ステージ : 0 → 1
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			えーでは8人？とも街角…<br>
+			街角に収まんねえよ…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうだろうな
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			でかすぎだろ！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			そうでしょうね
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			そうだろな
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			それはそうです
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			それはそうね！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			空に　なんか　二つ　浮かんでて　怖いね。
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			やぁ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			アッハハハ！！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			もうどうしろってんだよ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			「やかましいな」団子を食べている
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			こんばんは〜！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			完璧で幸福な空模様だ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			実に晴天、星々や人も輝くようで
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			そもそもアルファコンプレックスって地下都市なんだがなァ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			いいなー乗ってみたいなーあの星
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			さっきからキャハキャハうるせえなあのでけえマネキン…
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			地下にも空があったりするだろ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ウフフ、アハハ…
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			ACとかで見た
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			へ〜！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			あんなのとお友達になれたらな〜無理かな〜
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			俺は別に人嫌いじゃないからいいよ～～～！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			どうでしょうか？根気や意思があれば可能なんじゃないでしょうか？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			地下から見て上にある星って事は地上の星？<br>
+			中島みゆきで確定
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			空と君との間には
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			星<br>
+			が<br>
+			喋<br>
+			っ<br>
+			て<br>
+			い<br>
+			る
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			これ違う歌だったな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			それはそうです
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			そうだな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			はいここで市民諸君
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			む
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			君たちに合流する市民がもう一人います
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			遅刻？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どうぞ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			誰かな〜
+		</p>
+		<p class="player p14">
+			<b>アリババ</b>
+			お元気ですか？どうもどうも
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			どうも
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			パツキンの兄ちゃんが来た
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			名前欄にはいたが。早速出てきたか
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			何だこいつ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			どうも
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			よろしくね〜
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			まあ来たところで別に何も始まってねェんだがな…
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			それはそう
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ヨロシク！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			まあいいや遅刻じゃないってんならよろしく！
+		</p>
+		<p class="player p14">
+			<b>アリババ</b>
+			協力して頑張りましょう！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ鳴らすか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ、よろしく
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！！！
+		</p>
+		<p class="player p14">
+			<b>アリババ</b>
+			！！！！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			漸くだな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			脳内に直接声が…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？？？？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！！！！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！！！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			全員に届いた<br>
+			もう動いていいよ
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かった〜
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			なんか浮いてるなぁ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			あァン？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			呼んだ？
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			浮いてるね…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いや<br>
+			ビルが浮いてるなぁ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			まァたしかに二つほど未確認飛行物体は浮いてるが…
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ああ、ふむ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			へ～！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			なんで？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			こっちに落ちてくるなぁ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			これは面白いですね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			そうか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			冷静過ぎない？みんなさあ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			驚くほどの事でもない
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてメイプルと一通と星がいないなぁ
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			そっちがその気ならやってやるよ！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			早いね、彼女たち
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			俺はどこ　ここは誰
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			………盾役が真っ先に逃げるか
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			えっ　えっ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			どうすんだよ！！ビル！！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			見失っちまったァ！俺を！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			これ本人の意志じゃないの…？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はぁ…でしたらちょうどいい剣を拾いました、これでなんとかしましょう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			メイプルは終始無言のようだが、さて誰の仕業だ？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			Zちゃんがブレストファイヤーをぶっ放した
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			誰にだ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			うおらああああああ<br>
+			ブレストファイヤアアアアアアアア
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ここら一体全て
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			いやビルでしょ信じてるよ<br>
+			？？？？？？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			どうやったんだ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ビル吹っ飛べええええええええ！！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてワルプルギスの夜はその浮いてるビルに自らの身体を叩きつけてやれしました
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			アッハハハ！！こわいわぁ～
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では虚無抜刀
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			私はちょっとビルにお邪魔するから……
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			この被害すべて、虚無に還ります
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？<br>
+			すごい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ワルプルギスさんに着いていきましょうかね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			えっそういうのアリ？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			妨害しなければ通るだろうな
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			そっかぁ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			妨害するならば振ってみるといい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ブギーポップももういないし
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			呆気にとられてばっかだぜ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			いいわよ虚無合戦で話進まないし
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			では行くぞ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			「このままだと進まないからね、先に行くよ」
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			全員何処に行くかはわかっているな？<br>
+			「ああ、わかった」
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			RPが…始まった！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あービルが落ちてくる
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			大丈夫だって<br>
+			あれ？まだビルあるのかよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では虚無抜刀、ダメージのみを無に
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			おっと空間が閉じた
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			愛で空が　落ちてくる
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			&nbsp;<br>
+			！？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？？<br>
+			空間が閉じた？
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では界時抜刀、時空間概念に風穴をあけて安全化
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			おっとなんだ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			なんです？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			空間を閉じる、とはな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			なんだなんだ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ビルが急速に何かと同化し浮遊し始めた
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			「このビルは俺になった」
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			こわい
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			「ここに来い、任務が始まるぞ」
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			「そうか」
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			早速で悪いが、お前を無限月読にしていいか？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			いや…ダメだろ
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			俺を無限月読にしても術者居ねぇだろアホンダラ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			許可は大事だ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			貴方頭がマダラなのねぇ…？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			俺だ
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			無限月読が始まったら進行クソになりそうだからなァ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			いや、お前を無限月読にしたいだけだ<br>
+			それ以降は何もしない　約束しよう
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			仕方ないにゃあ…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？？？
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			感謝する<br>
+			技能を使い、ある星を無限月読で確定させる
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			えぇ…じゃあ何のために……
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			まぁ無限月読は星に張り付くテクスチャみたいなもんだしどうでもいい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……反応を待つほかないか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			アリババが飛びました
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 3[1,2] ＞ 3 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] 無限月読 : 0 → 1
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			はい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			よし、ありがとう<br>
+			「では、よろしく頼む。無限月読」
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			「おう」
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;イタチ、夢野
+		</p>
+		<p class="player p5">
+			<b>ある星 </b>
+			「あと30分以内だから取り敢えずさっさと来い」
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			「へ～！」
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			唐突だな、死ぬか
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ うちはイタチ ] 残機 : 5 → 4
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			急にMっぽい技能使ったし反逆者っぽいから殺す！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			うわ盤面の方が変わった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			夢野はなんか出航前にミュータントCOしてたから殺す！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			人狼で確定
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ああああああ待って頭がパンクする
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			トキトキしよう
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			名案ですね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			トキトキはしない<br>
+			突っ切る
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			格が違う
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			正気かよ！？<br>
+			まあうん<br>
+			頑張ってくれ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			良い進行だな、付いて行こう
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かったよ〜
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			…しかし、随分と色々起きているようだな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			だねぇ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			あたしはあんま変なことしてないよ？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ、俺もそうだ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			私もしてないよ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーっと<br>
+			処理します
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			イタチは死にました。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかりました
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			これは確定
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。既に死んでいる
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			暴風雨が起きて突然塵が大量に巻き上がりました
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			こわい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			移動状況に関してはもうワシにもわからん…<br>
+			誰か説明してくれよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			私にもわからないよ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ワルプルギスがビルから抜けた
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			やっと抜けたわ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そこからグルンと方向を変え
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			地上に高速で突っ込んでいきます
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			大変だな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あっ待て
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			え？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			突っ込んでいくのはビル内部の<br>
+			不自然にチリが舞い上がっていない部分
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			そう<br>
+			そう？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			…そういうことです？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ステルスっぽいの見つけたァー！<br>
+			ヒャッハー！ハンティングの時間だぜー！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			さっさと来い
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			よくやった！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてそのワルプルギスの夜が突っ込んでいく場所に全員闇に包まれワープします
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			犯人は夢野幻太郎
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ええと
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ワルプルギスの夜が落ちる先に全員いるのか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そう
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			あァ！？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			じゃあつまり俺の中か？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			いないが(死んでる)
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			あっ…全員巻き込んじゃうねこれ…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			いきなりついたはずなのにこんなところに！？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			どこからどこに移動してんだ俺ァ！？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ワシにもわからん
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			メイプル、守ってやってくれ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			いやそもそも
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			頼む！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ワルプルギスが停まってから集まった全員でその場で見渡したらいいじゃん<br>
+			全員いるんだろ？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			いない
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			🌈死んでる🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			居ねぇのかよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			止まってくれますか？？？？？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ぼくステルス嫌いだ…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			choice[止まる,止まるんじゃねえぞ…] (choice[止まる,止まるんじゃねえぞ…]) ＞ 止まる
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ステルス炙り出すために全体が面倒なことになってんじゃねェかァ！！！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] 残機 : 6 → 5
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			バイドがいるかもしれないからな。死んでもそっちには行かん
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			も〜仕方ないな〜
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			あたしもとりあえずルームの方に向かったはずだけどそこから強制転移でもされたの？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			メイプルさん！？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			そうみたいだ<br>
+			どうせ月闇だろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			はいではまだ理解できていない人がいるみたいなので説明しましょう
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			まあいいやとりあえず夢野犯人らしいから殺しとこっと！！<br>
+			失せろ失せろ失せろ！！！！&gt;夢野
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] ステージ : 1 → 2
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			いえ、その…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			やはりか
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			失せろ失せろ失せろ&gt;夢野
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			今ワルプルギスさんが突っ込んできているので先に失せろ銃当たるのではそれ？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			この浮いてるビルがブリーフィングルームのあるビルです
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？？？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			まあいいでしょう
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			しらねェ死ね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			おわァアアア～っ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			がんばれ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			それくらいでは動じません<br>
+			わかりました
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			えーよくわかんない
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] 残機 : 6 → 6
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			…？<br>
+			死ななかったようです
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？？？？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			もういい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ、では開示します
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			つまり
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			？？？？？？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はい
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			つまり？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ここはなんか浮いてるビルであり<br>
+			バイドに侵食されており<br>
+			目的地です
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			知っている
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			説明ありがとうございます
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ああ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			よォくわかったァ！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ブリーフィングルームはすぐ近くですか？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ビルん中
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてそこにワルプルギスが突っ込んできます
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			無限月読だ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			止まってくれよ！！！！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			何で止まんねぇんだよ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			んじゃあのマネキンぶっ飛ばすか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			そして私も混沌とするので先に行って置きますね<br>
+			今、「全員」ここに突っ込んでいます
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			どうしてぼくが止まるの…？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			お前が飛んできてるから
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			死にたくないんだよ！！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			だろうな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			メイプルが毒を撒き散らしました
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ワルプルギスが…止まっ…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			何やってんだテメェ！！？？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			こわい
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			なんで！？！？！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] HP : 6 → 1
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			たはは〜…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ついでに私の死なない理由ですが…整理しておきますね<br>
+			メイプルさんごめんなさい。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			さっさと情報に纏めとけ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			不屈の守護者　0<br>
+			パッシブスキル<br>
+			死ぬ瞬間、1度だけHP1で耐えることが出来る。この効果は死亡時リセットされる<br>
+			これをコピーしておいてありました
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ああそう
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			いいよ〜！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			こいつ人の技能までばらすのか…
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			なぁもう来る来ないどうでもいいからさっさとブリーフィングしないか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			そうなんですよね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			やかましいッ！！！<br>
+			おれはお前らがさわぐとムカつくんだ！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そうだね〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ワルプルギスが…止まっ…！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			た…と思う
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			へ～！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			へ〜！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			それはよかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			GMなら自信持ってくれぇ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ここで粘ってもアレだし止まっとこっか…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			よく言った！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			よかった止まった！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			よく言いました！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			止まって正解だった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			これでブリーフィングが始められるか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ちなみに毒に関してはワルプルギス止めるのに使ったやつだから気にしないでね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ああ、わかったよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			……わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかったわ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった<br>
+			取り敢えずワープしたなら全員いるって事でブリーフィングできるだろう、イタチは知らん
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			犠牲になったよ〜
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			そうですねぇ……
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			このイタチは多分犠牲にならないイタチ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			どっちでもいい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			だな
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			さァ話は終わりだ！ブリーフィングやるぞォ！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ、そうしましょう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			イタチお前何処にいるんだ<br>
+			最悪爆死させて連れてくる
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			さっき死んだままになってんじゃアねェの？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			クローンの復活処理が間に合ってないんじゃないかな？<br>
+			メインで好き勝手発言しているから忘れられてるだろうが
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。運ばれて向かっているはずだ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあもうイタチもここに復活しろ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			気軽に霊界通信？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			では。技能の結果通りに
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			よし全員揃ったなァ！！！ブリーフィングだァ！！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			もう命が軽すぎるわね
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			グビッ！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 命の軽さ (1D100) ＞ 40
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			部屋に入りますか？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			入る！！！！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			入るよ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			入る！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			GO！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			私も入るよ〜
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			入ってこい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			入るといい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			入る…入……
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			はい入ります
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			入れる？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			入れてるので大丈夫です
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ワルプルギスより星の方がデカいから入れる
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			大丈夫です
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			星サイズなら仕方ないわね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			デカすぎんだろ…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			大丈夫です
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			で<br>
+			か<br>
+			で<br>
+			か
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			行きましょう
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			今大きさを議論する暇はないだろう？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			さっさと来い
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			星さんと友達になって良かったよ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さて処理します
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ああ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ああ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			入っただけなのに…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			わかったよ〜
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アァ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			突然真っ二つになった戦闘機みたいなものがその場に落ちてきました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アアアアアアアアア！？？？？？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			引っかかったかな？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			R戦闘機だろうか？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			なんとかして欲しいな〜
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			超攻撃的文明じゃね？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			一体何者なんだ…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？？？<br>
+			被害はありそうですか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ないです
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			さて、君が何者かはどうでもいい<br>
+			ただまさか引っかかるとはね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			良かったな
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ゾッ！？！？？！？？！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さて
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			じゃァ問題ねェなァ！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			それともう一つ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			まだあるのかよォォ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まだあるのかよ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			まだあるのか<br>
+			いいだろう
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			なんだよもォォォォォォォォ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			中心から削り取られたように大きく途切れているワイヤーが壁からいつの間にか垂れ下がっています
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			成る程、こちらはダメと
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;ワイヤー
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……なるほど
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			なんかシャンクトゥみてぇな説明
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			物理はダメね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			…ワイヤー、存在…ふむ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？？？<br>
+			意味わかんね
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あ～～～<br>
+			わかった、把握
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			まあいいでしょう！そのステルスの処理は今は後回しです！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			クリームとザ・フールよ、アリババ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			どうです？私とブリーフィングを速く進めませんか？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まあいいでしょう
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			さて、改めて向かうとしようか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			入りました
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ヨシ！楽しい楽しいブリーフィングの時間だァ！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			入れたあ！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			もう喋っていいだろうか？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			呼ばれたの来ました<br>
+			アリババです…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			同じく計数名到着しました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			メイプルだよ〜
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			それで本件、なんの御用でしょう
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			やっと入れたわね
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			ありのまま今起こった事を話すぜ！<br>
+			おれはブリーフィングルームで待機していたと思ったらいつの間にかそのビルが天空の城になっていてバイドが侵食していた
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			落ちてたから接収しました
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ、ええ　心中お察しします
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			だね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			よく侵食されてないな…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			大変でしたね…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			侵蝕いちいちしてたら管理面倒だからな…ルフィ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうだな
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			えー君たちに任せる任務は本来ならとても簡単なものだった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ、それは？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ほう
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ふむ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			過去形…？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			だった…ですか……
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			単純に言いますとどのような…？
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			この徒歩で移動するのも一苦労のビルで別の部署から書類やデータを持ってくる…<br>
+			ただそれだけの言ってしまえばパシリのような仕事だったんだよ…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ほう、それがどうなったってンだ？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ほへ～
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それでそれで〜？
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			大変です。ビル内が魔境になったんですよ。
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ビルがバイドになってますね…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ビルが侵食されてますもんね…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			だった、ね<br>
+			問題はその後だ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			はい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			そうだね
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ああ、まあそうだろうね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まぁ別にビルの人ゴマちゃんみたいにしたい訳でもねぇし…
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			なので君たちにはこの天空の城で大変な苦労をかけることになる<br>
+			すまんな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まぁ何かあれば頼ってくれ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			それが新たな魑魅魍魎を生む羽目にならない事を祈るよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			……ヴァイオレット様の指示なら何なりと
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ああ、そうだね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			努力はしよう
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			これ以上に酷いことにはならないでしょうしね<br>
+			わかりました
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			まあそれはそれとしてこのビルモンスターとか飼ってるし野生のテロリストが潜んでるんだよね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			そいつら殺せばいいの？
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			この惨劇のせいで全部解放されたわクソが
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ほへ～
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			わかったよ〜
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			よかったね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			こわいわね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			恐ろしいな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ちくしょうが！！！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			テロリスト等も押さえていたものが無くなったと<br>
+			了解した
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			面倒ごとしか起きねェじゃねェか…
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			君たち…あとは頼んだよ…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			頼まれてはやるけどよォ…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			いいよ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかったけど…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 引き受ける度 (1D100) ＞ 66
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			学園都市最強なんでしょ<br>
+			なんとかしなさい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			何を頼まれたんだ<br>
+			全部か…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			なんとかして欲しいならひとまず仲間内で殺し合おうとするンじゃねェよ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			だって反逆者だもんねー<br>
+			ねー
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			だね〜
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			すっす
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			あっちなみにモンスターとかテロリストに関しては私に任せてくれれば10分で制圧するから<br>
+			君たちは運悪く私の倒してないのに遭遇した時を考えてね
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			了解いたしました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			OK
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかったんよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			さすがです！！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかったよー
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			りょーかい！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			質問はあるかな？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			無い
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			具体的に何をどうしろと…？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			支給品とかある？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			時間制限は今回は無さそうかな？<br>
+			いわば殲滅だろうしね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			逃げた色々をこのビルにもう一度しまうでいいんですよね？
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			君たちはもう元々の仕事だけやってくれりゃいいよ<br>
+			魑魅魍魎に関しては全部私が倒す
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			つまりお使いね
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わーった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			了解です
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかりました
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			わかったよ！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			支給品に関しては…なんか君たち多くない？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			そっすね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			そうですね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			何処の部署からデータやら持ってくればいいのかとか聞きたいわぁ…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			そうだなァ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			何人もいる
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まあ……それはそうなんよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 人いる (1D100) ＞ 82
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			だからリーダー以外の係は決めない…<br>
+			適当にみんなで分けてね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかりました
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かったよ〜
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかりました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			じゃあ私がリーダーやるね！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			あと制限時間はないよ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			それ以外は全員その他で良いンじゃねェ？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			うわあり！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			任せたぜリーダー！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			その他…それで構いません
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			そして目的の場所はここからまァ…<br>
+			全力で走って30分はかかるところだな<br>
+			途中にテレポーターとかもあるけど
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			バイドの中でテレポートなど碌な気配がない　避けるぞ　来い
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そうだね〜チーム名は… 楓の木かな！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			まあこの状況何処が何処に繋がってるかわかんねえけどな！！！ギャハハ！！！！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			楓でした。またね
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			楓の木<br>
+			リーダの名前とかかってていいですね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			リーダー権限で決める事かぁ…
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			とりあえずお前たちこれをただのおつかいだと思うな<br>
+			ロケーションが洞窟じゃない洞窟大作戦くらいに思っておけ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった　宝を探す
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかりました
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			お宝がいっぱいある…ってコト！？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			うーん、無闇に殺し合わないこと！後は〜楽しくやろっ！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			了解です
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			破ったらお仕置きだよ〜！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかったよー
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			だね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった。全面的にお前を支持する
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			よろしくお願いします
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			じゃあ私は外で一狩り行ってくるから
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			頑張ってください！！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			がんばって
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった、ステルスは調べるが危害は加えない
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			頑張ってねー！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			またね〜！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			殺し合いって仲間内でだけ？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			仲間でなければ倒していいだろうか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			と、バーザムは出て行きました<br>
+			そこで全員の目に直接映像が映し出されます
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			結社任務です<br>
+			これ伝え終わったら休憩ね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			真の仲間じゃないと思ったなら殺っても良いけど…もしそういう場面じゃなかったら制裁するね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかりました
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			他に質問のある方は？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかったわ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			いらっしゃらなければ終了ですね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ない
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ない
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ない
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ないよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では終了で
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			伝えきったかな…伝えきったかも…
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			把握したぞ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			把握しました
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			こっちは大丈夫だ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			こちらは問題ない
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			まだちょっとあります<br>
+			すいません
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			あたしも大丈夫だよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			了解です
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			こっちも大丈夫ね
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			問題ないよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			大丈夫です
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			いいよ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ休憩
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			レイリーさん聞いてくれ！おれァ驚いた！<br>
+			おれの風呂の…“栓が抜けてた”んだ！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			マジか…
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			悲しいだろう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……かなしいな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			悲しいですね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			…大丈夫？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			湯船にお湯を溜めながら入った
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			入れはしたのね
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			悲しいだろ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			湯船に入ると入らないじゃ全然違うからよかったかな？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			マシではあるでしょうが…この季節辛いでしょう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			夏でよかった<br>
+			冬だったら死んでいた
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			想像したくないわね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			冬は不味い　本当に不味い
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			だなァ…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ、本当に死ぬかと思いますね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			風呂の蓋開けた時の絶望感
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーっと…もうステルスの存在自体は隠さない
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			秘匿タブの回復をしたいから全員一回秘匿を送れ<br>
+			全員だ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかったわ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかったよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ん…たぶん全員いる
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では再出港で支給品発表…の前に
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			君たちトラブルシューターに合流する人物が一名いる　入ってこい
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			お前に教える
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			NPCかな…？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			PCなの…？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			えぇ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;シャンクス
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ええ…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			殺せばわかるんじゃないかな
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			おわァアアア～～～っっ！！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			手が早すぎない？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			早速だな
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			シャン卓なのにシャンクスが入ってきてもPCか疑われる現状に笑っちまった
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ シャンクス ] 残機 : 6 → 5
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			儚い
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ざまあねえ！！！！！！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			死んだな<br>
+			PCか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			シャンクスが…死んだ！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			シャンクス大臣は死んだね！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まぁ良いでしょう
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			まあいいでしょう
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			まあいいじゃん
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			まあいいでしょう　もうそのクローンは用済みです！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お頭の命をなんだと思ってるんだ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			まあいい<br>
+			チリ紙
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			腕と権力の付属品
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			何人もいるしいいかなって
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			どうせ何人もいるしいいじゃん
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			じゃあこれで支給品の発表？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			x3 choice[な,に,も] #1<br>
+			(choice[な,に,も]) ＞ な<br>
+			<br>
+			#2<br>
+			(choice[な,に,も]) ＞ な<br>
+			<br>
+			#3<br>
+			(choice[な,に,も]) ＞ に
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			だな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあいいでしょう<br>
+			シャンクスが帰ってきました<br>
+			ではこれより支給品を発表します
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			七人で確定
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			お前に教える
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			来たか　支給品
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			どうみてもNPCだ…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ワクワク
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			しるきぃ☆×3<br>
+			カメラ、レコーダー<br>
+			幸福薬×10<br>
+			通信端末×3<br>
+			ポケットテレポーター<br>
+			仲良く分けなさい
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			しるきぃ☆ってなんだよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			しるきぃ☆。
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			しるきぃ？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それはそう
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			…これは？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			しるきぃ☆？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			通信端末でも貰うか…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			しるきぃ☆気になるね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			しるきぃ…？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			じゃあ通信端末1個貰っとくね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			エネルギー弾を発射するマシンガンです
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では残りの通信端末を
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			まあ、貰えるものはもらっておこうか<br>
+			幸福薬をもらうよ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			へ〜！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ちなみにゴミです
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			じゃあ私はしるきぃとポケットテレポーター貰っておくから
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			片方くれよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			な<br>
+			に<br>
+			も<br>
+			貰わなかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			いらねぇ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			しるきぃは1つだけ取るから残り2つは好きにしていいわよ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			カメラとレコーダーをもらおうか
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			幸福薬だけでももらうかァ…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			うわ！ありがとう！しるきぃもらーい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			じゃあ幸福薬も二個くらい貰っとこっと
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			じゃあシャンクスに幸福薬3つ、Zに2つか<br>
+			残りはぼくが保有しておくとしよう<br>
+			他に欲しいものがいなければの話だがね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			あっ、シャンクスさん<br>
+			リーダー権限で無闇に殺し合わないことと楽しくやることをモットーにお願いします！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			じゃあ幸福薬2つもらうわね<br>
+			一人だけ5個ってのも怖いし
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			出てきた瞬間にむやみに殺されたやつに言うことか？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			確かに、独り占めに近しいからな<br>
+			ん？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			それもそう
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			嫌ならお前以外は全員同盟だぞ？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それもそう
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			おいおい、冗談はよしてくれよ<br>
+			集まってなかったのは君だろう？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			文句言うんじゃないわよ<br>
+			失せろ失せろ失せろ＞シャンクス
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まァ…無暗ではないさ<br>
+			ひどい
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			おわァアア～～っっ！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ダメだった
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ シャンクス ] 残機 : 5 → 4
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			流石に哀れだな　助け舟を出そうか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			かわいそ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……先に死んだか
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まぁいいでしょう
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 可哀想度 (1D100) ＞ 34
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まさか一切抵抗しないとは夢にも思わなかったわ<br>
+			まあいいでしょう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あ<br>
+			ん<br>
+			ま<br>
+			り
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			サンジだな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			今のはむやみに殺したには…仲間じゃないから入らないか…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			真の仲間じゃないしね〜
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			本人が断ったんだからなァ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			まあいいでしょう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			それにそうだ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まぁ…配給は済んだかな？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			終わったろう　多分
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			じゃあそろそろ出発かね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			大丈夫だよ～
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そうだね〜
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			大丈夫ね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ええ、どうぞ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			だね
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あっでは<br>
+			もうそろそろ自由行動をどうぞ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			シャンクスも戻ってきた
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			お前に教える
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			じゃア行くかァ……そこに行くまでの道とかはどうなってる？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			覇王化教えてほしいな〜
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			とりあえず扉を開きますか
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] 残機 : 5 → 4
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			覇王化は技能にない・皇
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			えぇ…
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			おわァアアア～～～！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			星が…消滅した！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			無限月読ェ！！！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			星が死ぬとビルはどうなる！！！！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			星が爆発して…死んだ！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			……少し待て<br>
+			君が死んだ場合ここはどうなる
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そのまんまです
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ビルにワープさせられた、ということは…そもそも分離しているでしょうし
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			やったな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			もんだいねぇ、コアが焼けただけだ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ならいいか
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			悲しいな
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] ステージ : 2 → 3
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ちなみにドアは誰が開けますか？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			……
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			誰が開ける〜？
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			わかった　おれが開ける
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			ガチャッ！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ドアには何か書かれています
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			読む　来い
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			…！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			クトゥルフかなんかか！？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			このラクガキを　見て　うしろをふり向いた時
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			後ろを振り向く　来い
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			やっぱりな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			おまえらは<br>
+			死ぬ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			勝手に振り向くな殺すぞ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			こわい
+		</p>
+		<p class="player p19">
+			<b>　</b>
+			ド<br>
+			　ド<br>
+			ド<br>
+			　ド<br>
+			ド<br>
+			　ド<br>
+			ド<br>
+			　ド<br>
+			ド
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			やはりですか
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			俺の中で何やってんだお前ェ！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			そこにいるのね…ヴァニラ・アイス
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ガ<br>
+			オ<br>
+			ン
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			イザナミだ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			また幻術なの！？
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お頭は…粉微塵になって死んだ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			技能を使用する　来い
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			おい待て死に過ぎだろ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			悲しいな
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			おわァアアア～～～っっ！！！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			次は…お前たちの番だ
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ シャンクス ] 残機 : 4 → 3
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			ヒドラ！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			やっと顔を出したわね
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			そうかい
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			なんかいるなァ…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はぁそうですか
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			じゃあ行くか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			2d10&lt;=14  (2D10&lt;=14) ＞ 16[9,7] ＞ 16 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			顔を出したな？失せろ失せろ失せろヴァニラ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			Zちゃんはルストハリケーンを放った
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			外れたよぉ〜！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			うおらああああああああああ！！！！！！<br>
+			ルストハリケーン！！！！！！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			失せろ失せろ失せろ&gt;ｳﾞｧﾆﾗ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			悪いが君はぼくの敵にはなり得ないからぼくとしては真っ向からやる気はないのだが…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ヴァニラは消えました
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			だろうね
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			へ〜！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			そうかい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……ふむ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ふむ…では今度対策をしましょう
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ケッ<br>
+			逃げやがったか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			もう一度！ヒドラ！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			バイドは空間まで侵食する事を教える
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			なんだよあれ！！！！<br>
+			対処法を教えろ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			じゃァ任務地に行くか<br>
+			歩いて30分だったか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			夢野源太郎が突然ドロップキックを受けて爆散しました
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			えぇ…？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			まあいいでしょう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ワルプルギスの一部がガオンされました
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			痛いわね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			早く逃げるぞ！！！<br>
+			部屋を出たいです
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			亜空間バスターでも使って吹っ飛ばすか…？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			はいでは部屋を出ました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			出たな
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] 残機 : 6 → 5<br>
+			[ 夢野幻太郎 ] HP : 1 → 6
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			どこに取りに行くんだっけ<br>
+			階数とかあるのかな
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			階数とかは聞いてないわね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			とりあえず歩いて探すかぁ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			とりあえず1階行っとけばいいんじゃない？<br>
+			傘立てとかもあるかもだし
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			だな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			部屋の外にはビームサーベルらしきもので焼き切られた獣の死体が転がっています
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			獣
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			V様すっご
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			頑張ってるなァ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			流石だね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			助かるなぁ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			バーザムつええ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			すんげェェ～！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			バイドも殲滅できそうだな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			テロリストもな
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			だろうな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			じゃあ一階に行きますか？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			だな
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			そうしようか
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			じゃあそれでいいわ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一方通行が何処かに走り去って行きました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			いいよ〜！<br>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			なんだ、どっか行ったのか
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			は？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			ヒドラ！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			何故だ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あとアリババがなんかしてます
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			どこか用事でもあるのかな？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			失せろ失せろ失せろアリババ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			リーダー的に単独行動ってあり？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			いや普通に任務の目的地に向かってるんですけど！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			単独行動はよせ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			(それはそうでしょうね)
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			うーん🤔
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			おわァアアア
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ アリババ ] 残機 : 6 → 5
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			こんな大勢で動いたらさっきの奴の的にされるだけだろうがァ！？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			うるせェ
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] HP : 6 → 1
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			(というか、ですね　一方通行さんは通信端末持ちなのでいざとなればそれこそZさんが監視できます、安全ですしいい人ですよ)
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			成る程、故に散らばって探索するべきと
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ワルプルギスが消えました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ええ…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			おや？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			あ、消える前にビル内に雨降らしといたから
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			なんで？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			あァ？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			(？)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			アリババが戻ってきました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ああ…ステルス対策か
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			雨が不自然に途切れてる場所があればアイツの位置が分かるでしょう？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			頭いいね！ワルプルギスさん！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あ～…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			あたしサンダーブレークできないから雨降らされても困る
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			でそれはそれとしてテメェどこ行くんだ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			IQ280
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ポケットテレポーター使って目的地だけど<br>
+			じゃあね～～～～
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			戻りました！！あいつの対策しようとしたのに酷いですよ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			さらばだ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			(それはそうでしょうね)
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			仕方ねぇ、俺も一緒に連れてくか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かったよ〜ばいばい〜
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			喋ってやるといい。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一方通行はもういません
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			へ～！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			じゃあ、ぼく達は一階にだね
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			では俺達も行こうか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			行きましょう！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そうだね〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			するとヴァニラの死体となんかきもいのがその場に現れました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			(^^)
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			(！)
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			キッモ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			うねうねしてる…
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			おっとまてころすな
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			君が倒したのかい？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ああ。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			…成程？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			うわあり！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ありがとうね！！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			ヌゥゥゥゥゥゥ…
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			おれもトラブルシューターだ<br>
+			仲間に入れてくれ(^^)
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			え〜〜〜〜………………<br>
+			いいよ〜〜〜〜〜！！！！！！！！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			そんで皆さんにもヴァニラ対策の手段を渡せるんだが…いるか？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			(！！！)
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			一応対策あるし私はいいかな〜
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			バイドから物を受け取れるか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			こわいから話だけ聞く
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まあ俺は今更だから貰う
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			まあ必要になったらいってくれ(^^)<br>
+			ちょっと視界が琥珀色になるだけだ(^^)
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			それはそうだろうな
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			まああたしもいいや<br>
+			必要になったら後で貰うね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			夢野幻太郎がなんかしてます
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			一方さん何処行ったんだろうね
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！ なにコソコソしている！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;夢野
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			失せろ失せろ失せろ夢野
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			目的地行ったって言ってたぜ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			こそこそ(布団に入る音)
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			失せろ失せろ失せろ&gt;夢野
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！<br>
+			マッドフォレスト乗り心地良さそうだし乗っていい？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			大丈夫なの？それ乗って
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			大丈夫かな〜？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			俺が言うのもなんだけどお勧めしない<br>
+			あ
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			いいんじゃない☆<br>
+			finalじゃ主人公ものってるんだなんとかなるだろ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			どうだろうか
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] 残機 : 4 → 3
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			おわァア～～～～！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			お前は何故自爆を続けるのだ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			とりあえず1階行こっか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			いきましょう！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			まだついていなかったのか！？
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] ステージ : 3 → 4
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			行こ行こ〜
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			わかった<br>
+			必要とあらばいつでも乗ってくれ(^^)
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かったよ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			処理します
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ワカッタ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			分かったよ〜！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			だああああああああああ
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎　 ] 残機 : 0 → -1
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？？？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			？？？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			おや？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？？？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			(^^)!????
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			何やってんだお前ェ！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ふむ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			なんだこの残機！？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			は？
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] 残機 : 5 → 4
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			すいません、コマ切り替えの失敗です
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ああ、盤面に出てない方減らしたのか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			しまわれる対策の方です、ええ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あるある
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			仕方がなかったっ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			仕方…ないよね…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			仕方がなかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			とりあえず死人は戻ってきた
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			もう1階ついたでいいかな？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			そうなんじゃない？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えー<br>
+			メイプルが死にました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			悲しいだろう
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			なるほど？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			スズメバチには気を付けよう！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			5蜂
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			今はもうセッション開始後なので…序盤のあれなら技能で抵抗出来るかと
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			えぇ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			スズメバチ相手なら…仕方ないよね…
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			そう…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			それで、一階には辿りつけたのかい？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ メイプル ] HP : 200 → 1
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>メイプル</b>
+			死んだかと…思った！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一階に着きました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			一階には何があるかな？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一階には焼き切られた羽根や肉や死体などが放置されています
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			すんげぇなV様
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ならどうでもいいか<br>
+			V様の成果だろう
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			すんげぇ～～👀✨
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			それはそうです
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			すごいね〜
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			やるなァ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			流石だな…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			どこ行けばいいかわかりますか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			15階だとわかります
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			へ～！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			へ～！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			へ～！　では向かいますか
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ちなみに亜空間潜航すると移動力二倍で壁貫通できるんだが…全員のる？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			やだ<br>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			私はポケットテレポーターあるしいいわ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			シャンクスがいつの間にかなんかしてる
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			じゃあ15階行けばいいと教えてくれた人に！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			0に0かけても0だよ〜
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			2d10&lt;=6　プロパカンダ<br>
+			 (2D10&lt;=6) ＞ 12[4,8] ＞ 12 ＞ 失敗<br>
+			明るい未来のエネルギー！光子力をお願いします！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			おや、どうしたのかい？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			失せろ失せろ失せろ&gt;Z
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！何コソコソしている！<br>
+			！？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			失せろ失せろ失せろ&gt;Z
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			は？反逆行為じゃねーし
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			だそうだ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			お前らが失せろ失せろ失せろ&gt;アリババ夢野
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			でしたら引っ込めますね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			そうなのか？<br>
+			ゴメン
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			仲良くだよ〜
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			おっと、そちらは私も反逆行為をしていないので…リーダーいわく仲良くですよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			シャンクスはその場から失せました
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ほら、銃は収めましたので
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			あいつは消していいよ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			だそうですので消えますね<br>
+			2d10&lt;=14　月闇 (2D10&lt;=14) ＞ 9[4,5] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			えぇ……
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			(^^)!????
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			先は目的地へ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてシャンクスは認識できなくなったのです。
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			マッドフォレスト！出番だよ！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			定型なしか…
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			シャンクス、いなかった！？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			亜空間で削り取ってやれ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			チッ…
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			2d10&lt;=14 亜空間潜航<br>
+			とりあえず追っかけやす<br>
+			 (2D10&lt;=14) ＞ 13[5,8] ＞ 13 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			アリババがコソコソしている
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！何をコソコソしている！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			何こそ！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			もうそれ定型なのね…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;アリババ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			一応シャンクス止めようとして
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			許すよ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			突然イタチがたぎった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			じゃあ俊敏とかで避けといて！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			マグネットパワーオン！！！磁流波エネルギー全開！！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			避けた<br>
+			？？？？？？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			………ふむ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ふむ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ステルス参加者たちが引き寄せられていく…！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			「さて、全員吊り出せるか」
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			逃がさないぞ！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そろそろ狩るよ…♠︎
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			失せろ失せろ失せろステルス参加者達
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			しるきぃぶっぱします<br>
+			当たるだろ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			2d10＜＝14　念のため有効性はともかく月闇で戻っておきます (2D10&lt;=14) ＞ 13[6,7] ＞ 13 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			なんか…戻ってきた！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ぬああ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			このチームではプロパガンダは反逆行為ではないということらしいですがお互い矛は収めたので…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			サスケの命が終わった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			サスケェ！？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			サスケが…死んだ！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			サスケェ！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして引き寄せ効果はなくなり引き寄せるはずだった相手に対する攻撃は全て同士討ちとなる<br>
+			サスケじゃなかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			サスケじゃねぇのかよ！？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			すまねえ<br>
+			疲れてる
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			サスケではないのか
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			まあね…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 疲れ (1D100) ＞ 16
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			イタチの命が終わった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			お疲れ様です
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			イタチまた死んでる
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			イタチが…死んだ！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			犠牲になったよ…
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			犠牲になったのだ…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			悲しいだろ
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ うちはイタチ ] 残機 : 4 → 3
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			降り注ぐビル<br>
+			飛び交うしるきぃ☆<br>
+			そしてなぜか落ちてくるアクシズ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			…
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			来たね…アクシズ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			この世の終わりのような光景だな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			このアクシズシステムとして受け入れた方がいいでしょうね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			終わるのか……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			世界の扉が開きました
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;世界の扉
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			オーラロードか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そこから最終回仕様のまどかが現れました
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			あ？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			(^^)!?
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まずい天敵だ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			世界創造してみんなで世界移動していい？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ぷるぷる<br>
+			私悪い魔女じゃないわよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			いけるか…？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			失せろ失せろ失せろ&gt;アルティメットまどか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ワルプルギスの夜…<br>
+			調理完了です
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			おわァアアア～～～～～っ！！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			じゃあ円環の理に導かれたってことで魔法少女化していい？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			するとどうなるの？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			擬人化するんじゃない…？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それはそう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			光子力の存在が失せました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			そう…<br>
+			そう…？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			へ～
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			へ～！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			はぁ！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			いえ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてZちゃんの頭がブチ抜かれました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ワルプルギスの夜 ] 残機 : 6 → 5<br>
+			[ Zちゃん ] 残機 : 6 → 5
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そこで全員闇に包まれました
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わあ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！？
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			おや
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			目的地にワープしました<br>
+			死人も戻ってこい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			きたか　目的地
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			うわ来たよ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			戻ったぞ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			前任者の私はアルまどに浄化されたけど今度の私は…私は…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			まだいたのか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			来たか…一方さん…
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			浄化されたなら私は一体…？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			来たぞ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			さあね？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			お前らが来たンだよ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			自分で決めるといい
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まぁいいじゃん
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 来た度 (1D100) ＞ 42
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			まあいいじゃん
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			まあいいじゃん
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			まあいいでしょう<br>
+			とにかく目的のモンは見つけたぞォ！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			まあいいじゃん<br>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			よくやった
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] HP : 1 → 0
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			前任者はいつの間にか反逆者に頭ぶち抜かれた反逆者だったけど今回のあたしは反逆者を絶対にぶち殺すよ！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			星が死にすぎだろう
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			また星が死んだな
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			！！！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			おわァアアア～～～！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			殺意が高い
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			悲しいよ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			儚いな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			呆れたな…今どき流行らんぞ、バイド差別など！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			積極的区別だ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そもそもバイドってよく分かってないや…たはは…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一方通行が背後から一突きされました
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ガハッ！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			シャンクスで確定
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] 残機 : 3 → 2
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			何かがコソコソしてる
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			何をコソコソしてるの！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] ステージ : 4 → 5
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どっかにいたシャンクスも刺された
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			🌈
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			おわァアアア～～～っ！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ある星  ] HP : 0 → 6<br>
+			[ シャンクス ] 残機 : 3 → 2
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			アリババが爆発しました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			畜生！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ アリババ ] 残機 : 5 → 4
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			見てないけど多分ファンブル
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ コンバイラ ] 残機 : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			提督までいるのかよ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ふむ…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ コンバイラベーラ ] 残機 : 5 → 4
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			進化してるじゃねえか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一方通行の死体の近くにはインポスターの死体が転がっていた…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 一方通行 ] 残機 : 6 → 5
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			えぇ…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			インポスター…「の」？「による」ではなく？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			意味わかんね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			インポスターが死んだのか…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			電光掲示板に何か書いてある<br>
+			「ツイテルタノシイアリガトウを三回唱えると神様が願いを叶えてくれるらしいよ。知らんけど。」
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			意味わかんね
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			意味わかんね
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ツイテルタノシイアリガトウ<br>
+			ツイテルタノシイアリガトウ<br>
+			ツイテルタノシイアリガトウ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			死人戻ってこい
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			戻ったぞ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ただいま戻りました<br>
+			完璧で幸福です
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			インポスターに殺されちまったみたいだが今度の俺は完璧だァ！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			こんな頭のおかしいところにいられるかァ！とっとと資料を持って帰ンぞォ！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それはそうだね〜
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかったワープしよう
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった<br>
+			できるのか？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			神威とか使おう
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			それ持ってなくない…？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			資料を読みますか？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			なンでお前が使えるンすかね…
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			眼盗んでんじゃねぇよ
+		</p>
+		<p class="player p22">
+			<b>ミスティーレディ</b>
+			&nbsp;
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			なんか増えてんぞ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			気にするな　無法技能だ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			読むぞォ！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			なんか来た
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アアア！？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			カナエール？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			失せろ失せろ失せろ&gt;カナエール
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			無慈悲
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			Zちゃん要望どうり出てきたよ～
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			今だ！ブレストファイアーだ！！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			VIPRPGかよ！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			オワァアアア～～～～！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			意味わかんね
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ カナエール ] 残機 : 6 → 5
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			うっとおしいんじゃ死ねオラアアアアアアアアアアアア！！！！！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			悲しいな
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			VIPRPGもいるのか…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			知らねェ奴が出てきた瞬間に死ンだんですがねェ！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			もう訳がわからないよ〜
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			カナエールは死んだな
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 10 → 9
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>一方通行</b>
+			資料を！！！！！！読むぞォ！！！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			もういいから資料を読め、一方坊
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			アローヘッド？？？？？<br>
+			頼んだ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			マッドフォレストじゃないの！？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			お願いします！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			このラクガキを　見て　うしろをふり向いた時<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			おまえらは<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			<br>
+			死ぬ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			バイドなので持ってるんでしょう、大量に
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			またかよ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			またかよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			あ、対策済みです
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			はぁ…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			くどい
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			ドドドドドドドドド
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			アロへはおれじゃねェ！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			同じネタ擦ってンじゃねェェェェェ！！！！！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			別なの！？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			失せろ失せろ失せろ＞ヴァニラ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			俊敏 2d10&lt;=100
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			🌈
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			しつこい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			失せろ失せろ失せろ&gt;ヴァニラ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ガ<br>
+			オ<br>
+			ン<br>
+			とりあえず読んだやつは確定で死にます
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			俺は‼本来！来るはずだった！<br>
+			タッグ相手がこなくて！<br>
+			孤独だったんだ！！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			あ、GMさん
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			亜空間潜航して食われた奴ら救助する　来い
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			がアアアアアアアアアっ！！？？？？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			悲しいだろう
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 一方通行 ] 残機 : 5 → 4
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			読んでないのでスルーするぞ　来い
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			さっき付けたヴァニラ相手の死亡耐性使用していいでしょうか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			読んだないな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			読めねぇ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			それはそれとして夢野幻太郎は爆死します
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			貴様らも粉みじんにしないと気が済まないんだクソカスがァァァァァ！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			悲しいな
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			読んでないな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では死に際に開示しますね
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 9 → 8
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			絶対防御　0<br>
+			筋力、敏捷、器用を0にすることで得られるパッシブスキル<br>
+			この効果は全ての効果を受け付けず、奪取、コピー等もされない。<br>
+			メイプル以外には絶対に使用できない。<br>
+			防御が∞になり、どんな攻撃、能力、失せろ銃も受け付けずに無効化される。<br>
+			後HPが200固定になる<br>
+			不屈の守護者　0<br>
+			パッシブスキル<br>
+			死ぬ瞬間、1度だけHP1で耐えることが出来る。この効果は死亡時リセットされる。<br>
+			毒龍　14<br>
+			毒竜を繰り出し相手を毒に侵すことが出来る<br>
+			誰も逃れられない<br>
+			悪食　14<br>
+			隠密　14<br>
+			刃王剣十聖刃　18<br>
+			人が鍛えし始まりの聖剣に、火を灯さんとする者現れし時、星を結びて力を束ね、物語を終焉へと導く聖剣が生まれる。<br>
+			全ての聖剣の力を使える。メイプルのみ使用可能、奪われない。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？<br>
+			まだ残機あるのに？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			私の開示されちゃったか〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			イタチが背後から一突きされました
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ﾋｬｧｰ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ああそっち…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			たはは〜…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			私の手の内公開しないとまあ…はい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			なんで？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			結局嘘開示でヘイト買ってそうなのでここでやらないとどの道私動けないんと思うんですよね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			イザナミで回避するぞ　来い
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まあいいわ<br>
+			ファンブルしてたし私も爆死するから
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			メイプルが一方通行をサルベージしました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈<br>
+			いや〜危なかったね〜
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			テメーが粉微塵になれや糞がァァァァァ！！！！！！！<br>
+			2d10&lt;=16　ルストハリケーン<br>
+			 (2D10&lt;=16) ＞ 11[4,7] ＞ 11 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			やかましいッ！！！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 一方通行 ] 残機 : 4 → 5
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ルストハリケーンルストハリケーンルストハリケーン！！！！&gt;ヴァニラ・アイス
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一突きされたら大人しく死ね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			なんだなんだ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			イタチしんだ🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかった。道連れにしたいが死ぬ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ワルプルギスの夜 ] 残機 : 5 → 4<br>
+			[ うちはイタチ ] 残機 : 3 → 2
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			しかし誰だ刺してくるのは
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] 残機 : 4 → 3
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			インポスターだろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			死人戻ってこい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			もう刺されるのも面倒だな　
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			死んだり戻ったり忙しいわね
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			戻って来たよ
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			悪ィ実空間は対応できねぇ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ハチャメチャ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			前任者はとりあえずで投げ出した行動を取った反逆者でしたが今回は幸福です
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			インポスターとはなんだろうか？
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			来たか…メイン
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			するとここで
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はい
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わあ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			わかりやすいな
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			!?
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			爆弾…テロリスト…&quot;そういうこと&quot;でしょうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あ
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			あっごめん背景間違って変えちゃった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			？
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			失せろ俺
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			この爆弾に関してはおれしらない
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			🌈
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			GMじゃないのか…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 8 → 7
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>system</b>
+			[ シャンクス ] 残機 : 2 → 1
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			勝手に変えるな…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			🌈
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			どゆこと？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			タイミングがめちゃくちゃ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			シャンクスさん許すよ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ミスか、なら仕方がない
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			体色の白いきゅうりが壁を突き破って侵入してきます
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			んー…考えられるものとすればPC候補、もしくは技能によって現す正体？<br>
+			？？？？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？？？？？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			失せろ失せろ失せろ＞白いきゅうり
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			何食べたのよお前
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			なこ<br>
+			にれ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			「ベクトル操作能力を少々」
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。インポスターってアレか。あの人狼ゲームの
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			いや…知りません…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			テメェまだ生きてやがったのかァ！！？？？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ゾッ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			何食われてんのよ学園都市最強！！！！！！！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			それはそう
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			まずいおれが食われると手が付けられなくなる
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			とりあえずあいつ満場一致でインポスターですよね？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			？？？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうだったのか…鬱陶しいな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			殺害不可ギミック対策で小生は投票しますよ<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			きゅうりが背中から純白の六本の翼を生やしながら口からビームを放とうとします
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			いやアイツはインポスターじゃないでしょ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			食われたのは俺じゃなくて力場なんだが…
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			どゆこと？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			おわァアアア〜っ！！！？？？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ぜんいんのれ！亜空間たいひです！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			復讐の機会だと思ったのだがな…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では乗りますか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			へ～！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			わかった
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			2d10&lt;=14 亜空間潜航 (2D10&lt;=14) ＞ 9[3,6] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			お前に乗るよりは死んだほうがマシだと思うが
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 7 → 6
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p23">
+			<b>カナエール</b>
+			所で願い事ない？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			さあのったのった<br>
+			滅菌はしてるよ！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			しかし
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			助けて！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			無い
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			助けて
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はい？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			助けて
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			それはそれとして、防御を展開する前にィイイイ<br>
+			多重攻撃を受けたァアアアアア！！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			じゃあちょっとこのビル消し飛ばしてくれる？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そのきゅうりの首が一瞬で落とされます
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			2D10&lt;=14　ツイテルタノシイアリガトウ (2D10&lt;=14) ＞ 15[8,7] ＞ 15 ＞ 失敗
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			何をしてる、行け
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			🌈
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			🌈<br>
+			V様！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ア、あんたは…！
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			V様すんげぇ～～👀✨
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			バーザムさんは格が違う
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			流石だね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ヴァイオレットだな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			うわ！ありがとうね！！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p23">
+			<b>カナエール</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			アローヘッドが次々落ちているな
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 5 → 4
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			マッドフォレストが終わった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ポケットテレポーター持ちか安全な移動方法の方は起動お願いします
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			終わりか
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			終わった？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 亜空の瘴気ヴァニラ・アイス ] 残機 : 4 → 3
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			おわァアアア～～～っ！！！？？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 4 → 3<br>
+			[ アローヘッド  ] 残機 : 3 → 2
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			あとついでに！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……俺を一度殺した相手だろうか？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			2d10&lt;=6　プロパカンダ！ (2D10&lt;=6) ＞ 9[6,3] ＞ 9 ＞ 失敗<br>
+			バーザムさん！明るい未来の新エネルギー光子力をお願いします！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			アローヘッド死にまくってる…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ビルが倒壊を始めた
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			なんかするまでもなく崩れるわね！！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アアアアアアアアア！？？？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			滅茶苦茶
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ああもうちょっと待ってなさいな
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			そうだね〜
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			もう面倒だ。逃げたい奴は名乗り出ろ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			どうにかしろ～～～～～～
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			2d10&lt;=14 重力操作 (2D10&lt;=14) ＞ 12[6,6] ＞ 12 ＞ 成功
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			チッ…
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうでないなら何もしないでくれ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ビル浮かせておくわ<br>
+			ふわふわするけど倒壊はしないでしょ
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			突っ込むぞ、掴まれ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			許可まで取って技能を振るのが心の底から馬鹿らしくなってきたんだ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			バーザムさン！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 2 → 1
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			さっきから裏で死んでるアローヘッドはなんなんだよ
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			このふざけた状況から脱出する…！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……既に解決されたし、何もしなくても良さそうだ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			行き先は？？？
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			オーバード・バーザム・ブースト！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ここじゃねェとこならどこでも良い！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			うわでた
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			失せろ失せろ失せろ&gt;アローヘッド
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			いい時間だしさっさと逃げるわよ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			バーザムさんに掴まった！！！すごい加速だ！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そのままバーザムは掴まった奴らを連れて飛び
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			私のサイズを掴んで飛べるとかすごいわね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			その他ステルスとか別行動してた奴らを回収し
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			凄いぞ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p12">
+			<b>system</b>
+			[ アローヘッド  ] 残機 : 1 → 0
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p23">
+			<b>カナエール</b>
+			凄い
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			あっ死んだ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			すごい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			アローヘッドが死んだ…
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			死んだ・・・
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			全滅した…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			凄いですねぇ
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			うぐっありがたすぎだァ～！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アローヘッドが…最後の最後に可愛い立ち絵だけ見せて死んだ…！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			悲しいな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			システムが分からないからなぁ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして<br>
+			ブリーフィングルームに突っ込み
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			！
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ブリーフィングルームが爆発しました。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい？
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			あっやべ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アアアアアアアアア！！？？？？
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			🌈
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			ごめええええええええん！！！！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			？？？？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			？？？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			いいよォォォォ！！！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ええ……
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			おわァアアア～～～～っっ！！！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			いいよ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			まあいいでしょう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……散々巻き込まれて死んだのだから、いい加減助かりたい物だ。技能を振ってもいいか？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			おわァアアア～～～～～っ！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どうぞ
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			choice3 い い よ (choice3 い い よ) ＞ よ い い
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			よいい
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			死ぬ前に技能チャレンジしていい？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			おわァアアア〜っ！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			2d10&lt;=14 神威。神威空間にブリービングチーム毎ビルを放り出す (2D10&lt;=14) ＞ 18[8,10] ＞ 18 ＞ 失敗
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			月闇既読して移動しよ
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 一方通行 ] 残機 : 5 → 4
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			誰か願ってほしいだろ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			では私もやってみていいでしょうか？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ここで失敗するか、とことんだな
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			あっ、一方さん連れてくね
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ちょっと10回くらい……
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			みんな爆死を願う
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			2d10&lt;=18 刃王剣十聖刃  (2D10&lt;=18) ＞ 12[10,2] ＞ 12 ＞ 成功
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			俺も振るか…生き返っているのか知らないが
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			2D10&lt;=14　ツイテルタノシイアリガトウ・爆死 (2D10&lt;=14) ＞ 9[8,1] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			うるせえ俺と一緒に爆死しろ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			「どうか全員無事に生き残ることを願います」
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			する
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			来たか…爆発オチ
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかった
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			わかったよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			2D10&lt;=14　ツイテルタノシイアリガトウ・生存 (2D10&lt;=14) ＞ 10[1,9] ＞ 10 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			たはは〜…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			………巻き込まれてばかりだ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			おわァアアア～～～～～っ！！！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			安いもんだ…おれの命くらい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では爆発しましたが
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ワルプルギスの夜 ] 残機 : 4 → 3
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			全員生きてました
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ アリババ ] 残機 : 4 → 3
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ アリババ ] 残機 : 3 → 4
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			助かった！？
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ワルプルギスの夜 ] 残機 : 3 → 4
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！？
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 一方通行 ] 残機 : 4 → 5
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			不思議なこともあるものだな
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			安くなかったな…おれの命
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			一体何が！？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			すごい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			やったあああああ助かったあああああああ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			やったー
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			宴だァ～～～～～～！！！！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			やったァアアアアアア！！！！！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			よかったですね
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			宴だァ～～～～～～！！！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			嬉しい嬉しい
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			終わりだね〜
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			フフフ…書類が無事に届いたなら終わりだな
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			まあ助かったならいいわ<br>
+			宴だァ～～～～～～～！！！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			お前たち…本当に…いきててよかったなァ…！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			死ななかっただけマシか
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			なんかよくわかんないけど宴だァ～～～！！！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			宴だァ～～～～～～～～～～！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			助かったんだ！！！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			じゃあ書類を渡せ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			何人かブチ殺したかったんだけどね…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			…自分で言うのもなんですが死んだ方がよかったのでは…？
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			おれェ…本当に助かってよかったなァ！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			えーっと誰が持ってるのよ書類
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			初っ端から殺されるわ、タッグ相手がいなければ全員殺そうと思っていた
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			一方さん？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			2d10&lt;=6　この場にいる全員にプロパカンダ (2D10&lt;=6) ＞ 7[5,2] ＞ 7 ＞ 失敗
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			一方通行が読んでいたな…面白かったか？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			渡す　<br>
+			なんかもう嫌な予感しかしねェけど渡す
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			おわァアアア～～～！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			🌈
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			うわ！書類ありがとう！<br>
+			……………
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			？
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			こわい
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			なにこれ？ふざけてるの？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			一方通行さんですね
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			…
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			そういや落書きされてたわね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			あそこにあった内容はヴァニラさんが落書きを
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			なんだねこの落書きは
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ああそういう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……そう言えばそうだったな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			お前さぁ…
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			弁解を聞こうか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			ヴァニラさんの仕業だねー
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			ごめんなさい
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ヴァニラが犯人だ<br>
+			後インポスター
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			死んだ前任者が悪いです
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			突然全員眠りました
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ヴァニラが犯人です
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			はい
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			zzz
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			す<br>
+			や<br>
+			す<br>
+			や
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			スッ…スッ…スャッ…！！！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			スッ…スッ…スヤッ…！
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			私の前で居眠りとはいい度胸だな？
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ス<br>
+			ヤ<br>
+			ス<br>
+			ヤ
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			💤
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			スッ…スッ…スヤッ…！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			スヤァ…
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			スッ…！スッ…！スヤッ…！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			Zzz
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			寝ているぞ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			星が…眠る！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ダメだった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			(あっワルプルギスの魔女が位置反転した)
+		</p>
+		<p class="player p17">
+			<b>バーザム-V</b>
+			滅殺！！！！！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			おわァアアア〜っ！！！！！！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			オワァアアア～～～！！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			（ちょっと寝たかっただけよ）
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			おわァァアアア～～～～～～っ
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			おわァアアア～～～～～～～～～っ！！
+		</p>
+		<p class="player p18">
+			<b>シャンクス</b>
+			おわァアア～～～～っ！！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 夢野幻太郎 ] 残機 : 3 → 2<br>
+			[ 一方通行 ] 残機 : 5 → 4
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			元気がいいな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ ワルプルギスの夜 ] 残機 : 4 → 3<br>
+			[ コンバイラリリル ] 残機 : 4 → 3<br>
+			[ Imposter ] 残機 : 5 → 4<br>
+			[ ブギーポップ ] 残機 : 6 → 5
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			こうしてバーザムの怒りによって結局爆発オチに終わった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			おはようございまーす…
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			おわァアア～～～～！！！！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ シャンクス ] 残機 : 1 → 0<br>
+			[ アリババ ] 残機 : 4 → 3<br>
+			[ カナエール ] 残機 : 5 → 4
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうか、良かったな
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ 亜空の瘴気ヴァニラ・アイス ] 残機 : 3 → 2
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			おわァァアアアア～～～！！！！！！
+		</p>
+		<p class="player p12">
+			<b>system</b>
+			[ Zちゃん ] 残機 : 5 → 4
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			トホホ～！ステルス参加はもうこりごりだ～～～！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ハチャメチャ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			シャンクスの残機が！死んだ！！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			俺も
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			ちゃんちゃん☆
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			サスケがステルスを抹殺しようとする気持ちがよくわかった回だったよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さてもうこんな時間だ
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			人数多すぎて動けなかったしね<br>
+			まあいいわ<br>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そうだな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			結社報告…しよう！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			わかった
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			しようか
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まずは結社：ワルプルギスの夜
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			いいよ〜！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			内容なんてないんだけどね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			そうですね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			内容は…ないようです…
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			内容決めてなかったしなぁ…<br>
+			個人ノルマは3人殺して建物いくつか破壊だったけど…うん…<br>
+			ステルスも始末できなかったし……
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			黒髭+赤髪でしたか？そう聞いたのでやってみたのですが…はい…
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			攻撃でいくつかビル引っこ抜いて落としたけどこれって達成でいい…のかなあ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			失せろは効かないし不死身は効力を発揮せず隠密で殺されて死亡耐性を技能で付けたら発動は無理になりましたね…
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			とりあえず暗黒空間を最光で照らせば無効化できるんじゃない？とか話し合うのは楽しかったしそれでいいとするわ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次はチーム光子力研究所…と言っていいのかよくないのか
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			はいはいあたしでーす
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ある星が独立勢力すぎてもはやこのチームはめちゃくちゃだよ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			いや赤い星ちゃんマジでごめん<br>
+			あたし全くなんもできなかった
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			こっちもすまん
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			うんまあある星についてはアローヘッドの時に語ろう
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			はい
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次ジェルマ66チーム
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アア
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			はい！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			で…どうよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			んー一方さん分かった？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			存在自体ミュータントみたいなのばっかだったせいで監視カメラとかは役に立たなかったがまあ何人かはわかった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			流石〜<br>
+			私も少しは分かったかな〜私達は苦労が絶えなかったね〜
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アリババはどれがどれかわかんねェ…
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			お疲れ様だよ〜一方さん〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では答えてもらおう、ファイナルアンサーを
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			アリババ<br>
+			開けゴマ　20　開いたり閉じたりできる<br>
+			アリ 馬場　20　モハメドアリとジャイアント馬場っぽいことができる<br>
+			アリババ(企業)　20　できそうなこと<br>
+			<br>
+			imitation 一度のみランダムな相方以外のPCの能力値を得ます<br>
+			技能は任意相方のものとその方のもので習得状態を切り替えましょう<br>
+			<br>
+			取り敢えずこれがメイプルが抜いてくれた分<br>
+			カナエール　願いを叶える。ただし呼ばれないと何もできない？<br>
+			イタチ　万華鏡写輪眼<br>
+			インポスター　背後から一突きにする？<br>
+			ヴァニラアイス　クリーム<br>
+			ワルプルギス　なんか雨とかビルとか降らせる<br>
+			Z 光子力<br>
+			ブギーポップ　ワイヤーとか？<br>
+			他はわかんね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どうよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			シャンクスは背後から一突きかな？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			光子力って科学の力だよ？<br>
+			ミュータント能力なわけないじゃん
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			俺の技能はもっとアホだ
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			雨降らせるのもビル落とすのもM能力ではあるわね
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			ブレストファイアーかなぁ？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			人間じゃねェ時点でミュータントなんだよカス！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			imitation、合っています　M能力扱いですね<br>
+			その後にはM能力がないようですが
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			舞台装置の魔女30 パッシブ/M能力　めちゃくちゃでかい<br>
+			あと移動するだけで暴風雨とかが発生して酷いことになる<br>
+			2d10&lt;=14で振ることで攻撃とかに使える他、ステータスに補正がつく<br>
+			<br>
+			重力操作14 M能力<br>
+			ビルとか浮遊させてたやつ<br>
+			<br>
+			はい
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			もう一つあったがまぁいいでしょう
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ワイヤーはMに含まれてるよ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			オレは全部抜かれたからあってるな
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			蜂に刺されて死ぬところだったよ〜
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			ツイテルタノシイアリガトウ(神)60　技能値１４でどんな願いでもかなえる、この技能はメインでツイテルタノシイアリガトウを三回唱えた人の願いを優先する<br>
+			Mではないね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあノルマ達成でいいだろ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			許せサスケ……〇〇60(対象に〇〇の中身に書いた技を適応する)
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			？？？？？？？？？？？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			お前のそれがMじゃねェならもう無理だろ…！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			？？？？？？？？？？？？？？？？？？？？？？？？？
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			？？？？？？？？？？？？？？？？？？？？？？？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			一方さん！次からこの所属やめようね！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			？？？？？？？？？？？？？
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			ごめんなァメイプルには苦労かけて…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			GM - 昨日 20:38<br>
+			M能力枠は？<br>
+			<br>
+			Zちゃん - 昨日 20:40<br>
+			正義の心にしちゃだめ？<br>
+			<br>
+			GM - 昨日 20:41<br>
+			わかった<br>
+			正義の心2 をパイルダーオン
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			M失せろ・皇14<br>
+			違法改造・皇14<br>
+			手先の早業・皇14<br>
+			隠密・皇14<br>
+			四皇4<br>
+			教える
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			いや〜楽しかったからいいよ！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかるかンなもンよォ！！！！！！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			M技能は1度はつかおうね　みんな
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			わかるかぁ〜〜〜〜〜〜！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			結社：草稿(特典：相方に合わせる結社　タッグか人数決定時、またはブリーフィング直前に内容を決めなければならない場合決める事ができる)　<br>
+			お互いなにもなければ手持ちのログから変なものを選びます<br>
+			技能　60<br>
+			imitation 一度のみランダムな相方以外のPCの能力値を得ます<br>
+			技能は任意相方のものとその方のもので習得状態を切り替えましょう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			すまんな
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			ヴァニラさんとのおやくそくだ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			めっちゃ使ってはいたんだ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ええい次だ次だ次だ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			メイプルさんに聞かないとM能力がわからないです
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次チーム赤髪
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			おれも使ってたOCL<br>
+			！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			結構殺したんじゃない？
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			4人は殺せたな…アリババ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			夢野にワルプルギスの夜……失せろでカナエール？<br>
+			シャンクスはどうよ
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			おれからはZちゃんの光子力を無効化してから頭ブチ抜いたのと<br>
+			宮下藤花のクローンを1体分殺してきたのがある<br>
+			そして一応だがある星のクローンも1体分確保してある
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ノルマは達成だな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			結構やれたな！！俺たち
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			相方が優秀でうれしいだろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さて次最悪の勢力<br>
+			ヴァニラアイス連合軍
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			わかった
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			？
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			連合軍とは言うが個人だったからな<br>
+			終盤まで
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうだね
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			ヴァニラが可哀想だったから乱入した
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			ポメ〜
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			ありがと♪
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			途中までソロで頑張ってインポスターとミルクちゃんが加勢しにきた
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			頑張ってんな～って思った
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			ミッションは最低一人の残機を枯らす…だったな
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			シャンクスが0だろな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			シャンクス、死んでいた！？
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			👏
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			親方やらアローヘッドが勝手に滅んでくれて良かった…<br>
+			というか俺大して殺してないんじゃないか…？<br>
+			注意リソースは消費させたとは思うが…hmmmmm...
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			その分1人で頑張ったポメ〜
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			俺の技能の裁定強くしてくれてありがとうございます
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			えらいっ　みんなえらいっ<br>
+			まぁ…ちょっと無法気味だったとはいえ死んでくれたことに感謝をしよう<br>
+			『礼』だッ！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			うん、素直に死んでくれた一通とイタチに感謝
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			よくやったよお前らは…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			気にするな抵抗不可って言われたからもがかなかっただけだから
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			シャンクス助かるわぁ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次　黒ひげ海賊団チーム
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ああ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ビルが…墜落した！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ブギーポップに頼りきりだったな。無法技能も飾りに等しい
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			さて、どうだか<br>
+			今回は運が良かった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			上手くいかない事自体は多かったか、やはりまともなやり方は向かないらしい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ソロの奴は無視して<br>
+			最後　チームアローヘッド&amp;コンバイラ
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			夏の夕暮れ
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			ああ。
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			やあ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			すごいバグみたいな方法でクリアした
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			…技能貼るのが早いかな？
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			クリアした！？
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			まあうん、全部説明するのが早いか
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			あー
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			おん
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			そういう…そういう……？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			結社は表向きオハラ<br>
+			開示しないモノでバイド<br>
+			任務は夏の夕暮れの達成
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			結社は表向き海軍<br>
+			開示しないモノで地球軍！<br>
+			ある星の殺害で勝利！夏の夕暮れ発動で特殊敗北です！<br>
+			んで技能なんだけど<br>
+			私のは普通のだから後でにして
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ある星(M) 60(これは相方には知らせない)<br>
+			この星はバイドの中枢でありあるR-typeの舞台<br>
+			殺害されるたびにステージが進行する。<br>
+			だが殺害はアローヘッドにしか行えず、それ以外の死因では残機が減らない。<br>
+			また、この進行はタブで表示すること。<br>
+			<br>
+			最終ステージが終了し、残機をすべて失った場合アローヘッドを夏の夕暮れを経て覚醒させ特殊勝利する<br>
+			<br>
+			バイド -60(これらも開示しない)<br>
+			この存在を殺害するには2d10&lt;=14から始まり進行毎に1減少していく他アローヘッドの攻撃でHPを減少させる事、自身から殺害を誘導することはできない<br>
+			失敗毎にアローヘッドは残機を消費する<br>
+			俺は普通にアローヘッドがクリアした場合夏の夕暮れを起こして勝つ予定だったんだが…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			ふむふむ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			そこのコンバイラの技能にその…<br>
+			技能で夏の夕暮れ起こせるのあったから…
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			ああ。
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			バグって勝てた、コンバイラに途中襲われたし
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			バグみたいな挙動を起こしました
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			でもなァ…結社騙られてたからなァ…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			凄いねアローちゃん
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			ってパラノイア発症した
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			なるほどなぁ
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			ステージの途中でコンバイラ君が邪魔してきたんだよね<br>
+			そのせいでステージ難易度上がったけど負けたのに勝てた
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			ああ。(原作的に4面に殴りこんだ)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まァ…これは達成で良くない？
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			アローヘッドがバイド化すると勝つを別ルートで起こされたからうん…
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			！<br>
+			わあい！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お前ら本当に…よかったなァ…！
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			まあビルがいい感じにバイディックだんすだったし勝ったにちがいない　うん<br>
+			あろがとございます
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			うれしいね！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			よかったねアローちゃん！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんじゃまあ全員終わったし…<br>
+			宴だぞ諸君！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			宴だ
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			宴だァ〜〜〜〜〜〜！！！！！！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			宴だァ～～～～～～～～！！！！！！！！
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			宴だァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			宴ですね！！
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			宴・皇
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			宴だァ～～～～～～！！！！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			宴だァ～～～～～～～～～～～～～！！！！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			宴だァ～～～～～～～～～～～～～！！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			宴だぁ〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			宴だァ〜！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			宴だァ～～～～～！！！
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			宴だァ～～～～～～～～！！！！！！！！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			宴だァ～～～～～～～～～～～～！！！
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			うったげー！
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			ポメ〜
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			世界を作り替える、来い
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			！？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			2d10&lt;=18 刃王剣十聖刃  (2D10&lt;=18) ＞ 4[3,1] ＞ 4 ＞ 成功
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			【技能】<br>
+			影に仕えし者(M技能) 20<br>
+			パッシブステルス。このPCの失敗通知はメインに行かない。<br>
+			俺を見つけるには最大目標値14の探索技能を5回連続で成功させる必要がある。1回でも失敗したら振り直し。<br>
+			<br>
+			vent　14<br>
+			ありとあらゆる好きな場所へ瞬間移動ができる。<br>
+			使用後は以下の「クールタイム」に成功しないと使用不可。<br>
+			<br>
+			kill　14<br>
+			背後から一突き。この技能を3回連続成功させることで確定で殺せる。逆に1回でも失敗したら以下の「クールタイム」を成功させる必要がある。<br>
+			<br>
+			クールタイム　12<br>
+			回復技能。
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			M一方通行32  パッシブ。一方通行に出来る。振る必要がある時は16で振る<br>
+			Mベクトル操作14 ベクトルが操作できる<br>
+			化学14 <br>
+			特典　マシンエンパシー10<br>
+			結社　ジェルマ66
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			ツイテルタノシイアリガトウ(神)60　技能値１４でどんな願いでもかなえる、この技能はメインでツイテルタノシイアリガトウを三回唱えた人の願いを優先する<br>
+			<br>
+			結社：カナエール教　より多くの他人の願い事を叶える、また結社得点でツイテルタノシイアリガトウを三回唱えると神様が願いを叶えてくれるという噂が流れる
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			バイド結社　任務：黒ひげ系+バイドを増やす<br>
+			<br>
+			バイド化20<br>
+			14判定<br>
+			バイドになる<br>
+			相手は視界が琥珀色になることを通知<br>
+			相手もバイドっぽいことができるようになる<br>
+			侵蝕したり異相次元に潜り込めたりすることを教える<br>
+			<br>
+			バイド20<br>
+			14判定<br>
+			格納してるバイド機体にバイドっぽいことをやらせる<br>
+			<br>
+			進化20<br>
+			死亡時発動14でふって　次のクローンから進化する<br>
+			通常-&gt;ベーラ-&gt;リリルでいろいろ規模が大きくなってほしい
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ある星(M) 60(これは相方には知らせない)<br>
+			この星はバイドの中枢でありあるR-typeの舞台<br>
+			殺害されるたびにステージが進行する。<br>
+			だが殺害はアローヘッドにしか行えず、それ以外の死因では残機が減らない。<br>
+			また、この進行はタブで表示すること。<br>
+			<br>
+			最終ステージが終了し、残機をすべて失った場合アローヘッドを夏の夕暮れを経て覚醒させ特殊勝利する<br>
+			<br>
+			バイド -60(これらも開示しない)<br>
+			この存在を殺害するには2d10&lt;=14から始まり進行毎に1減少していく他アローヘッドの攻撃でHPを減少させる事、自身から殺害を誘導することはできない<br>
+			失敗毎にアローヘッドは残機を消費する <br>
+			<br>
+			蠢き 14 蠢く事で何かを行う<br>
+			生命 14 生命を生み出す、育むなど<br>
+			侵蝕 14 何かを侵蝕する<br>
+			破壊 12 破壊を行う<br>
+			新生 4 生まれ直して全回復<br>
+			覚醒(M) 2 覚醒する
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			開けゴマ　20　開いたり閉じたりできる<br>
+			アリ 馬場　20　モハメドアリとジャイアント馬場っぽいことができる<br>
+			アリババ(企業)　20　できそうなこと
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			クリーム　30 M<br>
+			口中に亜空間が広がっている。<br>
+			外側にひっくり返して着る事も出来、その場合常時光やどんなものも通さず、隠密状態かつ発見も干渉も行えない。<br>
+			その状態で触れたものはガオンと削り取られこなみじんになる。<br>
+			能動的に使用する場合2d10=14を振る。<br>
+			着ている間は周りが見えない為、技能を使用した後に雑談欄に『　』という名前で何らかを書き込まなければいけない（ばれたらメインでも可）。書き込んでから一分の間、クリームを対象にする事が可能。<br>
+			<br>
+			<br>
+			吸血鬼 16 M<br>
+			日の光にめちゃ当たったら死ぬ。丈夫だし力も強いので器用以外のステータスが+5される（その代わりステータス技能は全てM扱い）。タフなのでHPが満タンの時、即死でもHPが1残る。<br>
+			<br>
+			らくがき 14 <br>
+			何かに落書きをする<br>
+			また、同じエリアにいる場合落書きを見た相手の背後に瞬時移動して確定ガオン（即死）する事もできる（相手は遺言または技能を一つだけ残せる）<br>
+			<br>
+			結社は悪の救世主<br>
+			最低一人が残機0になる
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			武装16 マジンガーZが使える武装全部使える<br>
+			光子力20 光子力は凄いのでステータスが常に5倍になる<br>
+			無敵の力16 攻撃の直前に使うことで攻撃判定が数倍になる<br>
+			なんか技能16 Zちゃんは強いのでルルブに乗ってる非M技能だいたい使える<br>
+			光子力プロパカンダ6<br>
+			正義の心2 をパイルダーオン<br>
+			<br>
+			結社 光子力研究所<br>
+			大体特典はベガパンクで任務はター坊国家<br>
+			でも共産主義じゃなくて光子力の普及を目的にしてるため反逆者にはならない<br>
+			その代わりプロパカンダの技能値が6になる
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			秘密結社はワルプルギスの夜<br>
+			<br>
+			舞台装置の魔女30 パッシブ/M能力　めちゃくちゃでかい<br>
+			あと移動するだけで暴風雨とかが発生して酷いことになる<br>
+			2d10&lt;=14で振ることで攻撃とかに使える他、ステータスに補正がつく<br>
+			<br>
+			重力操作14 M能力<br>
+			ビルとか浮遊させてたやつ<br>
+			<br>
+			使い魔召喚14 M能力<br>
+			魔法少女の影みたいな使い魔を召喚する<br>
+			使い魔は探知とか攻撃とかに使える<br>
+			<br>
+			重力操作14 M能力<br>
+			ビルとか浮遊させてたやつ<br>
+			<br>
+			反転2 M能力<br>
+			普段逆さ位置にある人形が上部へ来た時、暴風の如き速度で飛行し<br>
+			瞬く間に地表の文明をひっくり返してしまう。(公式サイトより)
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			全部20振りいたのか…
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			不気味な泡 20/M/パッシブ　改訂版<br>
+			自分以外の何かしらのM能力が発動した場合、ブギーポップが現れ、下記の技能を適用する　また、このPCがゲームに存在する限り全PC必ず1つM技能を取得しなければならない　Mパッシブの場合そのPCがダイス振った場合に適用<br>
+			このPCの能力のコピー、奪取は不可<br>
+			<br>
+			世界の敵の敵 60/M/一部パッシブ<br>
+			ブギーポップにできることならなんでも出来る　原作知らない人向けに言うととにかく強く、概念や精神干渉を受け付けない　全ステが最大値まで伸びる<br>
+			判定16でこれらを行使　相手が世界規模以上であるなら判定さらに+2 特攻付与<br>
+			世界の敵の敵(物理) 超絶微細なワイヤーで切り殺す　M能力者特効の性質もある<br>
+			世界の敵の敵(概念) 概念攻撃によって概念能力者を殺す<br>
+			世界の敵の敵(強化) 自身の身体能力や器用さを限界まで上げる　亜光速まで対応可能<br>
+			14で判定する事で技能などの調査、及び違法改造が可能<br>
+			<br>
+			宮下藤花 −20<br>
+			ゲームスタートはこの状態で始める　この時適応される技能は不気味な泡のみである<br>
+			代償としてステータスのダイスを振れない
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			R-9Aアローヘッド(M) 20アローヘッドにできることは何でも<br>
+			波動砲 14 3回判定成功で拡散波動砲を発射 1d3+3ダメージ<br>
+			異層空間移動 14 異層空間を移動してワープ<br>
+			整備、改良 10 整備改良を施し次世代機になる事全ステ+2 累積する<br>
+			26世紀への旅路 2 どこまでも行こう
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			幽霊　20　パッシブ<br>
+			幽霊なので基本技能の対象にならない<br>
+			具体的に指定された場合問答無用で成仏する<br>
+			ポメスレ終わったな　14<br>
+			何かを終わらせる<br>
+			ポメ定型　14<br>
+			ポメ定型で物事を起こす<br>
+			ポメコラ　12<br>
+			ポメコラによって変わる
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			絶対防御　0<br>
+			筋力、敏捷、器用を0にすることで得られるパッシブスキル<br>
+			この効果は全ての効果を受け付けず、奪取、コピー等もされない。<br>
+			メイプル以外には絶対に使用できない。<br>
+			防御が∞になり、どんな攻撃、能力、失せろ銃も受け付けずに無効化される。<br>
+			後HPが200固定になる<br>
+			不屈の守護者　0<br>
+			パッシブスキル<br>
+			死ぬ瞬間、1度だけHP1で耐えることが出来る。この効果は死亡時リセットされる。<br>
+			毒龍　14<br>
+			毒竜を繰り出し相手を毒に侵すことが出来る<br>
+			誰も逃れられない<br>
+			悪食　14 M<br>
+			隠密　14<br>
+			刃王剣十聖刃　18<br>
+			人が鍛えし始まりの聖剣に、火を灯さんとする者現れし時、星を結びて力を束ね、物語を終焉へと導く聖剣が生まれる。<br>
+			全ての聖剣の力を使える。メイプルのみ使用可能、奪われない。
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			M失せろ・皇14<br>
+			違法改造・皇14<br>
+			手先の早業・皇14<br>
+			隠密・皇14<br>
+			四皇4
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			結社：草稿(特典：相方に合わせる結社　タッグか人数決定時、またはブリーフィング直前に内容を決めなければならない場合決める事ができる)　<br>
+			お互いなにもなければ手持ちのログから変なものを選びます<br>
+			技能　60<br>
+			imitation 一度のみランダムな相方以外のPCの能力値を得ます<br>
+			技能は任意相方のものとその方のもので習得状態を切り替えましょう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			邪魔をしてきたのはポメだったか
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			そうだろな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			めちゃくちゃに疲れたけど楽しかった<br>
+			シャンパラはこうでなくてはな
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			終わらされた！
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			一通は即死以外に効かないだろうしまともな相手なら死ななかったよなァ…
+		</p>
+		<p class="player p23">
+			<b>カナエール</b>
+			所であの時間帯に願い３つは使命達成だと思う？
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			いや〜私の技能がパクられるとは思わなかったな〜
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……やはり引き出すよりのコロスを優先するべきか
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			しかも全開示されるし
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			途中バイド化しに来られたせいでビビったよ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			初めてだよ！
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			だって私バイドになったらそこで特殊勝利生えちゃう…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			俺ァもう抵抗するの面倒だから全部食らったぞ
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			カナエールはもっと早くに出会いたかったが仕方なかったッ
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			うわあり！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			それは驚いたろうな
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			バイド帝星落とされると結社がしぬからなァ…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ダイスが腐ったのでこれで牽制するしかありませんでした
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			何が何だか
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あの流れで行き先夏の夕暮れ以外ないだろ！？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			思ったよりの大人しい卓だった
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			1d100 大人しさ (1D100) ＞ 22
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			色々な殺し方ができてよかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			そこそこだな
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			ワルプル技能74有るの…？
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			6.1までみたら話が変わっていたかもしれん
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あと一応予想もされてるけどまあアロヘはミズゴロウです
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			気づいたタイミングがね…
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			え？
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			最初に許可取ったから…
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			そうだろな
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			へ〜
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			あっやべ<br>
+			重力操作2つ乗ってたわ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			驚いたよ。本当に
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			🌈
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			まあ最終的に勝ったからよし！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			1つよ1つ<br>
+			コピペミスね多分
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			🌈
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			赤髪にしないといけないからシャンクス選んだの後悔してたけどアリババに助けられてよかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			ヨシ
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			ヨシ！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			🌈
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			ああああああああああ編集できねええええええええええええええ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			コンバイラ出てくるタイミング自体も遅かったしアローちゃんいた事自体に全く気づかなかった！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			貼り直せ
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			早く寝ないと…明日はやばい<br>
+			お疲れ様だよ！またね〜！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			長くなるしいいわよ<br>
+			内容自体は変わりないし
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			俺エクストラウィンしてみたかったんだけどこんな形はマジ予想外だ
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			とちゅうで真っ二つにされたのはうちのミスティちゃんでした
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			俺は、どう見てもM技能な能力がMじゃないって言われると、どうして良いかわからなくなる
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			へ～！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ああ、やっぱり
+		</p>
+		<p class="player p22">
+			<b>ミスティーレディ</b>
+			どうも戦闘機っぽいやつです
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			お前ダタノカ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			取得した技能にMがないと、ジェルマにとってどうしたらいいのか、わからなくなる
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			メイプルまたね〜！！色々あンがとよ！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			バレると面倒だろうから俺が残骸だけ回収した
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			またね～～～!!!<br>
+			ありがたい…
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			お疲れシャンだろ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			またね〜！！
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			私も寝ようかしら、もう2時過ぎだし
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			この技能はもう少し早めに出すべきだったな<br>
+			無理矢理M指定する能力が意味を為していなかった
+		</p>
+		<p class="player p4">
+			<b>ワルプルギスの夜</b>
+			またね～～～！！
+		</p>
+		<p class="player p10">
+			<b>メイプル</b>
+			一方さんまたね〜！ありがと〜！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			本当なら俺が死んで
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			またね～～～～！！
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			私が次の星になる予定でした！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			徹底して調べたが名前すら不明でな…バイド機としかわからなかった
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			わはは
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			でもバイドゆえ仕方がなかったっ
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			なんだけど五面で全滅だァ〜！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			知らねェ奴に囲まれてデブリーフィングしてる場面はもう笑うしかなかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			なのでてっきり……あの緑色が撃墜されたのかと思っていた
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			惜しかったな…
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			判定難易度2d10&lt;=9の予定が2d10&lt;=6になっちゃってさ<br>
+			10残機あったのに消し飛んだ！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……それは死ぬな
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			悲しいだろ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ムズムズ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			悲しいね
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			なのに倒した相手がバイドだから勝てた
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			良かったな
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			なぜならバイドの本能はただ攻撃するのみであるだからだっ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			虚しい生き物だな…
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			シャンカーといっしょ
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			まあ勝てたからいいんだよー！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			それもそう
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			バグ勝利だァ～～！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あと途中メインにアロヘ出たのは<br>
+			疲れで切り替え間違えた🌈
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			🌈
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			🌈
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			ああ。(おれもミスティでやらかした)
+		</p>
+		<p class="player p8">
+			<b>noname</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			こんな状況になると思うかァ〜！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			切り替え系はミスるよね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			……戦闘機の外見を詳しく調べれば、もっと上手くできたか
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			いや、名前で出るんじゃねえかな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			というか小生がミスって残機管理できませんでしたし
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			何が見つからんかったんだ？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			とりあえずこいつは鞭みたいな蔓でこうげきします<br>
+			亜空間に潜り込んだりします
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			マッドフォレストはよく見ると動いてて気持ち悪いなーって思いました<br>
+			まる
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			墜落機の来歴を徹底して調べようとしたが、バイド機で調べるのを辞めたのが敗因だな
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			わかる　動き方がキモい
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あー…
+		</p>
+		<p class="player p22">
+			<b>ミスティーレディ</b>
+			こいつは霧でジャミングします<br>
+			見えなくなるんだとおもいます
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			人を選びますからね…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			予想より早いペースで皆倒れていってそこそこ驚いたよ
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			こっちにすべきだったか…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ある星を無限月読に変えたのは……一応の伏線と趣味だな
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			その分サイケデリックな色使いとグロテスクで生き物のデザインはかなりいいのですけど
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まあミスティレディわかってもコンバイラに繋がらないよな
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			俺はメインにいると何回死ぬかわかンなかったからとっとと任務のとこ向かったのに途中でイビルジョーに出くわして死ぬかと思った
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			それはそうです
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			下手に殺すと怖いから近づけなかった
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			ええ…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ。それはそうだ。誰の技能で出したかも調べ上げるべきだった
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			と言うか私最初からいたのに途中から相方決まったんだよね
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			コンバイラは唐突に沸いていくというか…
+		</p>
+		<p class="player p25">
+			<b>コンバイラリリル</b>
+			タクティクスの知識になるからなァ…すまん(Thanks.)
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			相方きたよ！<br>
+			誰！？って聞いてバイドって言われておったまげた
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			それは驚くでしょうね…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			星が思ったよりも無害だった
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			敵軍の旗機なのでいろいろだせるって技能だったことを教える
+		</p>
+		<p class="player p20">
+			<b>亜空の瘴気ヴァニラ・アイス</b>
+			(泣く)
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			警戒する相手を間違えたな
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			月読発動しないかヒヤヒヤだったなl
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			俺はそもそも殺される役だからな
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			ああ。(おれもめっちゃわらってた)
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			勝手に死にまくって怪しまれた頃に夏の夕暮れする気だった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ヴァニラに報復するのを忘れていたな
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			月読出し始めた辺りからもうよくわからなくて<br>
+			て笑<br>
+			たっ
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			私が裏でめちゃくちゃにしてたよ！星だけ！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			来るか報復
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ハハハ
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			星ちゃん滅茶苦茶死にまくるから凄い焦った
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			いや、せん。もう終わったしな
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			めんご
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			力強い無法が多くて面白かったですね
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			聖者か？
+		</p>
+		<p class="player p21">
+			<b>マッドフォレスト</b>
+			ヴァニラは1回美味しくいただいたから許してやってくれ(^^)
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			わかった
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			でもこれでもしっかり判定減らしてたから…
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			ステージ難易度r-typer3にしたのはすまなかったな…<br>
+			殺しにくるようにしておいた
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あとステージ書いてるから適当にそこ行くって言われたら見つけていいよした…けどまあこんな状況だしな
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			ミスティーしか倒せなかったのはぼくの失態だな<br>
+			もう少しだけ狙ってもよかったかもしれない
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			やはり一回秘匿諸共吹き飛ばすのもいいかも知れん。残機が減って誰がいるかわかる
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			MAP兵器濃厚に
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			こわい
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			こわい
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			こわい
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			こわい
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			俺は殺されないかヒヤヒヤしてた<br>
+			技能ぶち抜いて殺されたらステージ管理バグる…
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			思ったよりも大人しくて、殺すメリットがなかった
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			おれは最終的にどこにいたんだ…？<br>
+			まぁV様がサルベージしてくれたので事なきを得たが…
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			君がぼくの敵か否か　そんな状態でも無かったしね
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			というかカナエール本当に願い叶えてくれるんだ<br>
+			文面見た瞬間から召喚された直後にブレストファイヤーで殺そうとしか考えてなかった
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			それはそう<br>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			殺意が高いですね
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			俺は襲ってくる人類の敵だからな
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ああ、俺も邪神の類かと思い殺そうとしていた
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			いきなり出てくると怖くて引き金ひいちゃう
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			とつぜんVIPRPGの文字列がでておれは…ビックリした
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			調べたらそれで俺もビビった
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			Zに関しては逆ギレ失せろの勢いが良すぎて笑ってたよもう
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			というかアルまどが私から光子力奪ったんだと思ってたから<br>
+			あの文書いたのアルまどだと思い込んでて見た瞬間ぶっ殺してやろうと思ってた
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			ダメだった
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			こわ～
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			こわい
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			どゆこと？
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			むう…これがパラノイア(妄執病)か…
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			途中まどかが来てワルプルギス浄化したじゃん？<br>
+			あの時あたしまどかに向かって失せろ放ってたから<br>
+			そのせいで光子力奪われたのかなーって思ってた
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			あのアルまどは何だったんだよ…
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			ええ…
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			敵対と反抗の因果の推察…というわけですか
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			俺が呼んだ
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			…どのように？<br>
+			ああ、開けゴマで？
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			そう開いた
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			世界の扉が果物のように開いたァ！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			らしいな
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			召喚系の技能やっぱつえ～
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			光子力を奪ったのはおれだな…図らずも相方との連携になってみたいで嬉しいだろ
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			それはそう
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			へ～！
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			そういやそうだね均等にしろくそがで残機均等に1にしようとしたのに2回も19でファンブルしかけたぞくそが
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			こわいわぁ～
+		</p>
+		<p class="player p24">
+			<b>アローヘッド</b>
+			こわい
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			ダメだった
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			5にしろ
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			判定に5出せ
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			残念だが、それだと殺し切れない者の方が多いから結果的に失敗の方が良かったかもな
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			？
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			IDにも５だせくそが
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			ポメ畜生が
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			以降地獄でポメポメするように<br>
+			🧂
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			その点シャンクスのクローン襲撃は予想外だったさ<br>
+			何せ物理で宮下藤花を狙われるとは思ってなかったからね
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			ポメ〜
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			クローン襲撃は頭がいいですね
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			クローンは無防備だからな
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			クローン襲撃に着目したのさすがだろ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			わかる
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			発想の勝利を感じます
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			ブギーポップが二重人格だというのは知ってたから意識の無いクローンなら一番楽に始末できると思った
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			すんげぇ～～👀✨
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			納得のいく文だなァ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			星のクローンってなんなんだろうな…ルフィ
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			クローン襲撃か……
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			さて、本当に二重人格かな？
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			知らん&gt;星のクローン
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			バイドのクローン…？普通だな！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			でもR-Typeの生命ならどこかいつかでクローンぐらいどんなものでもいそうですよ？
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			星のクローンも接収したが…バグったからなァ…
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			まあ星の中がステージでそこにアロヘいる扱いにしてたから一応なんとかなりはする<br>
+			そもそもバグったのはうn
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			むしろあの世界ループしてたりしてなかったりしてるからなんでもいけるかもしれない<br>
+			いけないかもしれない
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			無限月読は約束通り使わなかったが…使っても良かったな　これなら
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さて…そろそろログ取るか
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			！
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			使っても誰かは止めるだろうしね<br>
+			！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			！
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			？
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			スレがアンもどのしか立ってないけど<br>
+			まあ今日くらいは許してやろう
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			！
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			ぬああ
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			あのスレ画好きじゃねえなァ…
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			画像NGしちまってるから見れねェ🌈
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			悲しいだろ
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			🌈
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			まァ…そらそうか
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			🌈
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			嫌いなのはそう
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			普通のスレ画のも立ててきた…よかったな
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			あのスレ画は……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			………
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			！
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			よくやった！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			よくやった
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			よくやった！！！！！！！！
+		</p>
+		<p class="player p28">
+			<b>ミルクちゃん</b>
+			あろがとございます
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			よくやった！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			よくやった！！！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			よくやった！！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			よくやった！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			よくやった！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			開幕失せろされてあれやこれやされて結果的に死んだのに聖者か？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあログ取るかァ…
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			シャンクス、聖者だった！？<br>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			またね〜〜〜〜！！！
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			またね～～～!!!
+		</p>
+		<p class="player p27">
+			<b>シャンクス（亡霊）</b>
+			聖者でも相手にしているつもりか？<br>
+			またね～～～～！！！！
+		</p>
+		<p class="player p7">
+			<b>一方通行</b>
+			またねェ〜〜〜！！！！！！
+		</p>
+		<p class="player p1">
+			<b>うちはイタチ</b>
+			またね〜！
+		</p>
+		<p class="player p15">
+			<b>アリババ</b>
+			またね～～～～！！
+		</p>
+		<p class="player p6">
+			<b>宮下藤花</b>
+			またね〜〜〜！！
+		</p>
+		<p class="player p16">
+			<b>ある星</b>
+			またね〜！！
+		</p>
+		<p class="player p9">
+			<b>Zちゃん</b>
+			またね～～～～～～！！！！！
+		</p>
+		<p class="player p26">
+			<b>Imposter</b>
+			またね～～～～～～～～～～～～～！！！
+		</p>
+		<p class="player p11">
+			<b>夢野幻太郎　</b>
+			またね～～～～～～！！！
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			次号休載
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>system</b>
+			[ 秋山優花里 ] 残機 : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			今度こそまたね〜〜〜〜！！！！
+		</p>
+		<p class="player p29">
+			<b>コンバイラ</b>
+			またね～～～!!!
+		</p>
+		<p class="player p13">
+			<b>ブギーポップ</b>
+			またね
+		</p>
+	</div>
+</body>
+</html>

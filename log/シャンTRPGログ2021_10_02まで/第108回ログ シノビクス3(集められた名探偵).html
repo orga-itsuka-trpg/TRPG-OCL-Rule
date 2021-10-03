@@ -1,0 +1,10682 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [雑談] タブ */
+		.t0 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [メイン] タブ */
+		.t1 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [情報] タブ */
+		.t2 {
+			background-color: #ecf4d9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステータス] タブ */
+		.t3 {
+			background-color: #d3edfb;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,匿名さん)] タブ */
+		.t4 {
+			background-color: #d3def1;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,赤髪)] タブ */
+		.t5 {
+			background-color: #feecd2;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,ダンブル..)] タブ */
+		.t6 {
+			background-color: #fbdac8;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,白菜)] タブ */
+		.t7 {
+			background-color: #d7e7af;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,ター)] タブ */
+		.t8 {
+			background-color: #f4b4d0;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,ヤソップ)] タブ */
+		.t9 {
+			background-color: #ecf4d9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,ヱリカ)] タブ */
+		.t10 {
+			background-color: #d3def1;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ター,ヤソップ)] タブ */
+		.t11 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ダンブル..,赤髪)] タブ */
+		.t12 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ダンブル..,白菜)] タブ */
+		.t13 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ヤソップ,赤髪)] タブ */
+		.t14 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ヱリカ,白菜)] タブ */
+		.t15 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ター,赤髪)] タブ */
+		.t16 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ダンブル..,ヤソップ)] タブ */
+		.t17 {
+			background-color: #fadce9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：noname */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：GM */
+		.p1 { color: #673ab7; }
+		.p1 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：ダンブルドア */
+		.p2 { color: #7f2334; }
+		.p2 .diceroll { background-color: #7f2334; }
+
+		/* 発言者：赤髪 */
+		.p3 { color: #f44336; }
+		.p3 .diceroll { background-color: #f44336; }
+
+		/* 発言者：ター */
+		.p4 { color: #e91e63; }
+		.p4 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：フランキー */
+		.p5 { color: #888888; }
+		.p5 .diceroll { background-color: #888888; }
+
+		/* 発言者：ちず */
+		.p6 { color: #888888; }
+		.p6 .diceroll { background-color: #888888; }
+
+		/* 発言者：や */
+		.p7 { color: #888888; }
+		.p7 .diceroll { background-color: #888888; }
+
+		/* 発言者：バーソロミューくま */
+		.p8 { color: #888888; }
+		.p8 .diceroll { background-color: #888888; }
+
+		/* 発言者：ヤソップ */
+		.p9 { color: #4caf50; }
+		.p9 .diceroll { background-color: #4caf50; }
+
+		/* 発言者：古戸ヱリカ */
+		.p10 { color: #2196f3; }
+		.p10 .diceroll { background-color: #2196f3; }
+
+		/* 発言者：白菜 */
+		.p11 { color: #587026; }
+		.p11 .diceroll { background-color: #587026; }
+
+		/* 発言者：大上祝善 */
+		.p12 { color: #673ab7; }
+		.p12 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：マネキン */
+		.p13 { color: #673ab7; }
+		.p13 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：system */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：ルパン三世 */
+		.p15 { color: #2196f3; }
+		.p15 .diceroll { background-color: #2196f3; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			参加シャンはキャラ作ってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			キャラ何にすっかなァ・・・
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			誰か置いたら俺も置く　来い
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			全く何も分からないから今回は見送る<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			ちずってなんだよ…
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			なんかの卓のGMシャンのへったくそな手書きをお前に教える
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			見て使用を覚えるぞ<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			なんで知らない家のクソマップが参戦してるのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			ちずってキャラかと思っただろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			かわいそうだろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			ちなみに途中で観戦シャンから完成度高い方の地図配られてた
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			オススメのジャンプキャラ教えろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			PL多すぎで確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			6人募集なのにどこまで増えるんだァ〜〜！？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			6人用シナリオだからダイス振るなりして6人になってくれ(^^)
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			ワカッタ<br>
+			俺は抜ける
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			地獄の果てまで
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			すまん<br>
+			Thanks.
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			聖者か？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			1d100 (1D100) ＞ 71
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			1d100 (1D100) ＞ 69
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			大きい方か小さい方か教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ゾッ！？！？！？！？！？？！！？？！？
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			アイエエエ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			シノビクスだから大きいほうで確定
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			1d100 (1D100) ＞ 81
+		</p>
+		<p class="player p5">
+			<b>フランキー</b>
+			1d100 (1D100) ＞ 28
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			1d100 (1D100) ＞ 47
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			何だこのBGM!?ネオサイタマの死神か何かか…！？
+		</p>
+		<p class="player p6">
+			<b>ちず</b>
+			1d100  (1D100) ＞ 31
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			1d100 (1D100) ＞ 93
+		</p>
+		<p class="player p7">
+			<b>や</b>
+			1d100 (1D100) ＞ 33
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p5">
+			<b>フランキー</b>
+			おわァあああ～！！失せる
+		</p>
+		<p class="player p6">
+			<b>ちず</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			すまん<br>
+			Thanks.
+		</p>
+		<p class="player p5">
+			<b>フランキー</b>
+			もう一つのほう行くぞォ～！！
+		</p>
+		<p class="player p8">
+			<b>バーソロミューくま</b>
+			シノビクスは初参加だからよくわかんないのを…教える…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシもじゃ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			俺も
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			シャンクロスのサンプルキャラで戦闘のみデバッグ卓立ってるからあぶれたらそっち行け
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			俺もなんすがね…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			一応説明するけど基本はルルブを読んでわからないところがあったら聞いてくれ(^^)
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>バーソロミューくま</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			動画なら見たことあるんだけどなァ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			シナリオタイトルだけ見て古戸ヱリカにしたけどエミュわかんないな、ルフィ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			とりあえずステータスに所属派閥と技能を書いてくれ(^^)
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			シノビガミならやったことあるんすがね…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			基本的に技と奥義だけかの？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			攻撃技と奥義だけで確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			女キャラやるからにはエミュに命賭けろよ？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			本家やったことがあるならどうにでもなるだろアホンダラアホンダラアホンダラ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			いいや…知らねえな…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあ定型以外で適当に敬語使っておきますね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>GM</b>
+			攻撃技能　攻撃力＋射程＋回避への補正＝６になるように割り振る<br>
+			これを3つ決める
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイGM<br>
+			派閥と技能は公開でいいのか
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			派閥と技能は公開、奥義は秘匿で送ってくれ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			白ひげ海賊団<br>
+			アバダケダブラ6攻0射0回<br>
+			エクスペリアームス1攻2射3回<br>
+			エクスペクト・パトローナム2攻4射0回
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			あと今回指定する派閥はないから自由に決めてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>GM</b>
+			派閥<br>
+			　・百獣海賊団(斜歯忍群)<br>
+			　　　海賊の戦法を研究し、それらを活かした道具を作る集団であることを教える<br>
+			　　　技能(後述)の射程をどれか１つだけ＋１できる<br>
+			<br>
+			　・白ひげ海賊団(鞍馬神流)<br>
+			　　　海賊の世界の闇を討ち、表の世界を守る者たち　剣や槍の達人や武術家が多いことを教える<br>
+			　　　技能の攻撃力をどれか１つだけ＋１できる<br>
+			<br>
+			　・超新星(ハグレモノ)<br>
+			　　　特定の派閥に所属しないフリーの海賊　超新星同士は協力関係にあることもあるのを教える<br>
+			　　　技能の回避への補正をどれか１つだけ＋１できる<br>
+			<br>
+			　・赤髪海賊団(比良坂機関)<br>
+			　　　政府直属の海賊　諜報や工作活動が得意で世界を守るために暗躍することを教える<br>
+			　　　戦闘時以外の技能の目標値を全て－１できる<br>
+			<br>
+			　・海軍(私立御斎学園)<br>
+			　　　力を持つものを世界中から集めた養成機関　表向きには普通の海兵の顔をしているスパイの海賊たちがいることを教える<br>
+			　　　戦闘時の技能の目標値を全て－１できる　目標値がプロット値以下になった場合は、後述の回避への補正と同じように対処する<br>
+			<br>
+			　・魚人海賊団(隠忍の血統)<br>
+			　　　人に在らざる魚人の海賊　異形の力を持つ故に政府からも歴史からも虐げられてきた
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			派閥<br>
+			超新星<br>
+			技能<br>
+			宴だァ～～～!!!　攻撃力1 射程3 回避への補正2<br>
+			背後から一突き　攻撃力4 射程0  回避への補正3<br>
+			失せろ　攻撃力3 射程4 回避への補正-1
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			古手梨花かなんかか！？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p4">
+			<b>ター</b>
+			派閥　赤髪海賊団<br>
+			技能名(攻撃力/射程/回避)<br>
+			お手紙(3/3/0)<br>
+			そういうことだと思ってんすがね…(8/5/-7)<br>
+			自己紹介(6/0/0)
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			奥義<br>
+			無事でよかった　絶対防御<br>
+			であることを教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			派閥　赤髪海賊団<br>
+			技能名(攻撃力/射程/回避)<br>
+			名推理 1/2/4 推理で相手にメンタルダメージを与える<br>
+			青き真実 3/2/1　異能とかあるわけ無いだろアホンダラ<br>
+			赤き真実 99/6/-99　絶対の真実を叩きつける
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>GM</b>
+			奥義<br>
+			・クリティカルヒット<br>
+			　攻撃力４　射程２　の攻撃を１人に対して行う　自分のターンのみで使える<br>
+			　奥義破りは、攻撃を受けた人が行う<br>
+			<br>
+			・範囲攻撃<br>
+			　攻撃力２　範囲無限　の攻撃を範囲内の指定したキャラ全員に対して行う　自分のターンのみで使える<br>
+			　奥義破りは、攻撃を受けた人がそれぞれ行い、失敗した人にのみダメージを与える<br>
+			<br>
+			・不死身<br>
+			　自分のＨＰを１ｄ６－１回復できる　ＨＰが０になってからも使用できる<br>
+			　奥義破りは誰でも可能だが、挑戦できる回数は１回<br>
+			<br>
+			・絶対防御<br>
+			　１回の攻撃に対し４ダメージ軽減できる　自分以外の人に対しても使える<br>
+			　奥義破りは、攻撃を行った人が行う<br>
+			<br>
+			・完全成功<br>
+			　判定前に使用するとその判定が成功になる　自分以外の人に対しても使える<br>
+			　奥義破りは誰でも可能だが、挑戦できる回数は１回<br>
+			<br>
+			・判定妨害<br>
+			　判定が終った相手に使用でき、相手の振ったダイスの好きな方の出目を１にできる<br>
+			　奥義破りは、妨害を受けた人が行う<br>
+			<br>
+			・追加攻撃<br>
+			　もう一度同じ攻撃ができる　自分のターンのみで使える<br>
+			　追加で行われた攻撃の技能ダイスとそれに対する回避ダイスは行わず攻撃できる　要するに攻撃力が２倍になる<br>
+			　奥義破りは、攻撃を受けた人が行う
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			派閥どうすればいいのかなァ…
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			協力型か対立型か教えて欲しいんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			遊びながら探るの確定
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			シャンカーのIQからして協力型でも殺しあいそうですね
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			普段使える技能がお前に教えるしかないの悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p11">
+			<b>白菜</b>
+			派閥<br>
+			海軍(私立御斎学園)<br>
+			ホイ小僧 2/0/4<br>
+			そのオーラはガンダム 4/2/0<br>
+			ドタバタジャンゴ 8/0/-2
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			そのオーラはガンダムってなんだよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			回避への補正をー６以下にしてるとファンブルした奴以外には当たらないことを教える
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			奥義　ワシの部屋に来なさい<br>
+			効果はワシの部屋に瞬時に連れ込んで完全性交もとい完全成功にする
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			choice[百獣,白ひげ,超新星,赤髪,海軍,魚人] (choice[百獣,白ひげ,超新星,赤髪,海軍,魚人]) ＞ 赤髪
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			それを狙ってんすがね…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ファンブルした相手に当たるなら充分と考えました
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p4">
+			<b>ター</b>
+			判定妨害
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p1">
+			<b>GM</b>
+			奥義の効果を教えろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			派閥 魚人<br>
+			技能<br>
+			狙撃 2 4 0<br>
+			見聞色の覇気 0 2 4<br>
+			ヤソップスロット 11 0 -5
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ｽﾏﾝ編集してた
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ステータス作ったけどこれで大丈夫か教えろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			99点ダメージを当てれば絶対防御も関係ねェよな？
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			それはそう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ゾッ！？！？！？！？！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			こわいからヱリカを真っ先に殺す、来い
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあ落ち着いてください皆さん<br>
+			要するにファンブルしなければ済む話ですよ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうじゃの
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			まあ判定妨害とって1に引きこもればいいと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			判定妨害で
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			ターは派閥を教えてくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			塩試合メーカー失せろ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			奥義は追加攻撃
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			まだ奥義を決めてない人は秘匿で教えてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			奥義　ガムテープ（判定妨害）
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>白菜</b>
+			そのオーラはガンダム
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアは白ひげ海賊団の補正を使って技能どれか１つの攻撃力を＋１してくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ありがたいのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイGM<br>
+			プロット値とは何か教えろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			戦闘の時に絡む数値だな
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			1~6の中から好きな数字を選んで大きい順に行動できることを教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			一度編集したステータスがいじれないからまた入力するぞい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			高いほど先に動けるが判定が難しくなるのとその数値以下を出せばファンブルになることを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			難しいな…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			白ひげ海賊団<br>
+			アバダケダブラ6攻0射0回<br>
+			エクスペリアームス1攻2射3回<br>
+			エクスペクト・パトローナム3攻4射0回
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			ヱリカいるから1に引きこもる、来い
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			判定ダイスは全て1d10なのか？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			すべて２ｄ６であることを教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			へ〜！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			かなり判定は厳し目だな…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			sg でも大丈夫なことを教える (SG@12#2) ＞ 6[1,5] ＞ 6
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg (SG@12#2) ＞ 9[4,5] ＞ 9
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg (SG@12#2) ＞ 9[4,5] ＞ 9
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			sg (SG@12#2) ＞ 7[1,6] ＞ 7
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg (SG@12#2) ＞ 7[2,5] ＞ 7
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg (SG@12#2) ＞ 12[6,6] ＞ 12 ＞ スペシャル(【生命力】1点か変調一つを回復)
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ココフォリアってやっぱり便利ですねえ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 5[2,3] ＞ 5 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			sg-1 (SG-1@12#2) ＞ 8[2,6]-1 ＞ 7
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			便利なサイトを…ありがとう！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			全員のステータスが決まったからPC１～６を決める<br>
+			希望がある人いる？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			1がいい
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			な<br>
+			に<br>
+			も
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			特にはないぞい
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			なにも
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私は特には
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			1d6 (1D6) ＞ 5
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			5
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった　白菜とヤソップは決定で
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			じゃあ3になるんすがね…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[赤髪,ダンブルドア,古戸]　PC2 (choice[赤髪,ダンブルドア,古戸]) ＞ ダンブルドア
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[赤髪,古戸]　PC４ (choice[赤髪,古戸]) ＞ 赤髪
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			PC6って一番脇役という認識でいいんですよね？<br>
+			ちょっと原作っぽいな、ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			秘密しだいだよなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			PC1 白菜　PC2 ダンブルドア　PC3 ター　PC4 赤髪　PC5 ヤソップ　PC6 古戸
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ちょっとうんこしに行く　来い
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ターを殺すぞ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			反逆者で確定
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			&gt;ター<br>
+			失せろ失せろ失せろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			頭が完全にシャンパラにやられておるのう・・・
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			シャンパラで確定
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			うんこ終わったのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			はやい
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			はやいのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			クローン説濃厚に
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			早くありません？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			拭いてないの確定
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			小だった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			全員でターを殺すぞ、来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ターキモい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			うゆ…ちっち出ちゃうシャン…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			レディの前でその発言するター失せろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			㌧㌧
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			どのみち中身はおっシャンだろう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			俺の中身はJKかもしれんだろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			きも
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			おい！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			JKがシャンクスレなんか見るかァ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			始める前に今回は一応全キャラ探偵と言うことになってるのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あと今回は最長で４サイクルなことを教える<br>
+			場合によっては縮めることを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあ導入を始める<br>
+			来い
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			出港だァあああ〜〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			出港だァ～！！！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			もうすぐお前の導入につく
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			出港だァ～！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			グビッ！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ出港じゃ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			白菜はとある街に事務所を構える探偵。
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			数々の難事件を解決し、世間から名探偵ともてはやされるあなたの元へ、1通の封筒が届く。
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧<br>
+			この封筒はなんだ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			封筒には1枚のカードが入っており、「貴殿の叡智を称え、我が晩餐に招待致します。怪盗キッド」と書かれている
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			何と、世間を騒がすあの大泥棒「怪盗キッド」からの晩餐会の招待状だ。
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧<br>
+			これは俺への挑戦状だ<br>
+			あの時の俺と同じだ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			白菜は是が非でもこの招待を受けねばならないと思うだろう。
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			お前のウッシッシな態度が<br>
+			糠つくほどだで
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			白菜は晩餐会の会場である山奥の洋館「黄昏の館」へ到着する。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			館には同じようにキッドからの招待状を受け取った探偵が他に6人
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			…(意味深に無言)
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			PL6人＋NPCの大上祝善
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			何れも世間から名探偵と呼び声が高い者達ばかりだった。
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うぐっNPC怪しすぎだァ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			というわけで自己紹介でもしてくれ(^^)
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			オイあんた…ロックスターって名探偵を知ってるだろ？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧<br>
+			相手が自己紹介を始めたぞ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			古戸ヱリカと申します。どうかお見知り置きを
+		</p>
+		<p class="player p12">
+			<b>大上祝善</b>
+			おでは美食探偵として世間で名を知られている名探偵だ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			赤髪と呼んでくれ(^^)
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			白菜と呼べ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			すまんのう・・・最近の事はそこまで知らんのじゃよ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			PC達は彼の事を知っているのか教えろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシはダンブルドアじゃ、まだまだ若いもんには負けないつもりじゃ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			1d100 大上祝善の知名度 (1D100) ＞ 12
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ルウの奴名探偵だったんだな…今頃依頼主の骨しゃぶってる
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ぜ<br>
+			ん<br>
+			ぜ<br>
+			ん
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイお前ら<br>
+			このデブは誰だ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			いいや…知らねえな…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			いいや…知らねェな…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p12">
+			<b>大上祝善</b>
+			ウッ…！ウッ…！ウァッ…！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いいや…知らねェな…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			そんな感じで7人の探偵が晩餐会の会場である食堂へと向かう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			言葉一つも発さない奴がいて不気味だろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			そこでは、テーブルに並ぶ豪勢な食事と奥の席に座る不気味なマネキンが出迎えた。
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイお前ら<br>
+			結構な豪邸だ<br>
+			あの時の俺と親父だ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			マネキン人生を<br>
+			考えさせるん
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			マネキンから機械を通したような声が流れてきた
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			崇高なる7人の探偵の皆さん。この『黄昏の館』によくぞいらっしゃいました
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			失せろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			よくできたカラクリじゃのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイマネキン<br>
+			1人知名度が死ぬほど低いぞ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ごめんるるぶ読んでた
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>マネキン</b>
+			さて、今回あなた方をここにお招きしたのは、この私とゲームをして頂くためです
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			豪邸に集められた7人の探偵と謎のマネキン、よくできたシチュエーションですね
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>ター</b>
+			真面目だな…せいぜい強くなれ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>マネキン</b>
+			この館には40年前に謎の死を遂げた大富豪・烏丸蓮耶が残したお宝が隠されていると言われています
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			黒の組織の黒幕で確定
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			あのお方で確定
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			私はそれを発見したのです
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			しかし、これを単純に自分のものにしてしまうのはつまらない
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			聖者か？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			失せろ
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			そこでこのお宝を、私とあなたたち探偵のどっちがより優れた頭脳を持っているのかを競うゲームの賞品にすることにしました
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			面白そうじゃの
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイマネキン<br>
+			貴様にメリットが無いぞ
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			私がこの館に隠した「お宝」を一番最初に見つけ出し、手にしたものが勝者となります
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺と…ゲーム？
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			勝者にお宝の全てをお譲りしましょう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			グッド。面白そうですね
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			ただし、私もお宝の全てを賭けるのです<br>
+			あなた方も相応の物、命を賭けてください
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧<br>
+			相手がゲームを挑み始めてきたぞ<br>
+			あの時の俺と親父だ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			え～！いいよ
+		</p>
+		<p class="player p12">
+			<b>大上祝善</b>
+			ウッ…！ウッ…！ウァッ…！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			大上が悲鳴を上げて倒れ、そのまま動かなくなった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイデブ<br>
+			大丈夫か
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			どうやら食事に毒が盛られていたらしい
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			うぐっ！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			大上はもう必要ねェ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			警戒心のないアホンダラで確定
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			よくやった！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			探偵たちが脈を確認すると彼はもう死んでいた
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			ちなみに、唯一外界と通じる道も爆弾により吹き飛ばしたので、館からの脱出はできません
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			それでは、さっそくゲームを始めてください
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			若いもんはやることが派手じゃのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ここで全員の使命と秘密を伝えることを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			使命は全員共通
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あなた達は『黄昏の館』に集められた探偵。あなた達の【使命】は、『黄昏の館』に隠された財宝を見つける事だ。
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>GM</b>
+			使命　全員共通<br>
+			あなた達は『黄昏の館』に集められた探偵。あなた達の【使命】は、『黄昏の館』に隠された財宝を見つける事だ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p1">
+			<b>GM</b>
+			白菜の秘密<br>
+			実はあなたは、「大上祝善」を殺害した犯人が探偵達の中にいる事に気付いている。正義感の強いあなたは、財宝の事よりも目の前で殺人を犯した犯人を許す事が出来ず、これ以上犯人の思惑通りに事を運ばせてはならないと考えている。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あなたの【本当の使命】は、「大上祝善」を殺害した犯人の【使命】達成を阻止する事である。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアの秘密<br>
+			実はあなたは、「怪盗キッド」である。だが、あなたはこの晩餐会の主催者では無い。何者かがあなたの名を騙り、この晩餐会を開催したようだ。その事を知ったあなたは、密かにこの晩餐会に潜り込んだ。主催者の正体に興味は無いが、この館に隠された財宝は是が非でも手中に収めたいと考えている。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			何も面白くねえな<br>
+			黒幕暴いてド頭かち割んぞ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッまさかこんな年寄りが怪盗キッドだとは想わんじゃろ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ターの秘密<br>
+			実はあなたは、かつてこの「黄昏の館」の主だった「烏丸連耶」の末裔である。あなたは赤髪が自分と同じ「烏丸連耶」の末裔である事に気付いている。この数10年ですっかり没落した烏丸家を再興する為にも、同じ烏丸の血を引く人間を大切にしたいと考えている。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あなたの【本当の使命】は、赤髪の【使命】達成を手助けする事である。
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪<br>
+			実はあなたは、「大上祝善」を殺害した犯人である。あなたはかつて「黄昏の館」の主だった「烏丸連耶」の末裔であり、古い文献からこの館に隠されている財宝の事を知った。友人の「大上祝善」と共に館内を探したが、見つける事は出来なかった。そこで、「怪盗キッド」の名を騙る事で探偵達を集め、彼らに財宝を見つけさせる事を考えた。しかし、大上が財宝の独り占めを狙っている事に気付き、見せしめの為に彼を殺害。あなたはどんな犠牲を払ってでも、財宝を入手したいと考えている。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			だがあなたは内心、財宝探しに疲れ果てており、財宝が見つからなかった場合は死ぬつもりでいる。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップの秘密<br>
+			実はあなたは、ダンブルドアの部下である。あなたは今回の晩餐会でダンブルドアのサポートやバックアップを行うべく、探偵の1人に成り済まし、密かにこの晩餐会に潜り込んだ。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あなたの【本当の使命】は、ダンブルドアの【使命】達成を手助けする事である。
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p1">
+			<b>GM</b>
+			古戸の秘密<br>
+			実はあなたは、天下の大泥棒「ルパン三世」である。世界を股にかけ、狙った獲物は全て手に入れて来たあなただったが、近頃愛しの不二子ちゃんが「怪盗キッド」なる若いコソドロに夢中になっている。あなたはそれがどうにも我慢ならない！！あなたは何としても「怪盗キッド」に一泡吹かせてやりたいと考えている。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あなたの【本当の使命】は、「怪盗キッド」の【使命】達成を阻止する事である。
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ちょっとトイレ行ってくるぞい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			全員に秘密を送り終わったことを教える
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(GM,匿名さん)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			というか愛しの不二子ちゃんってことはレズかよ、、、
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			1つヒントを上げましょう
+		</p>
+		<p class="player p13">
+			<b>マネキン</b>
+			この館にある「食堂の時計」「楽器室のピアノ」「4階のパソコン」<br>
+			この３つが鍵です
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ただいま
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			簡単そうだな
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			おかえり
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			おかえり
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			おかえり
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			今回のシナリオではPC6人に加えて「食堂の時計」「楽器室のピアノ」「4階のパソコン」の秘密を探ることができるのを教える
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>ター</b>
+			おかえり
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			なるほど
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うぐっ秘密多すぎだァ～！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			感情共有がカギになりそうだな…ルフィ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			あと自分の秘密以外の秘密は交渉によって他PCと交換することが可能なのを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			協力もする必要ありそうじゃの・・・
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			交渉はターンを消費します？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			交渉はターンを消費しないことを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧<br>
+			俺はなんとしても黒幕を見つけ出して頭をかち割るぞ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			交渉はメインでやるのか教えろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			その代わり交渉は公開で行ってくれ(^^)
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			それじゃあ１サイクル目を始める<br>
+			誰から行動するか教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ええまず俺が！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			行動したいのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			行動したいことを教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシも動きたいのお
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ダイスで決めるぞ、来い
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧<br>
+			俺は様子を見る
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			俺も様子見だ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[赤髪,古戸,ター,ダンブルドア] (choice[赤髪,古戸,ター,ダンブルドア]) ＞ ダンブルドア
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアから
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあ白菜くんと感情結ぼうかの
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(11) ＞ かび臭い図書室。歴代の館の主たちの記録や、古今東西の名著が、ぎっしりと棚に並べられている。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			所でこれってダイスは何で判定かの？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			RPにあった技能で
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			目標値は一律で５<br>
+			赤髪海賊団は４
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			なるほどのう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			無いんだろう…RPできそうな技能が
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			攻撃したっていいんだ…乗り越えろ！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			エクスペリアームズで白菜君を丸裸にするぞい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			無理やりアバダケダブラ打てばいいの濃厚
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			アバダケダブラをちらつかせて脅迫すればいいじゃないですか
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			何言ってんだお前らァ！！！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 11[5,6] ＞ 11 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			白菜君は今すぐワシの部屋に来なさい
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			感情共有じゃの
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ爺<br>
+			お前頭は大丈夫か
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			そういうわけで二人は感情を結んだ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			感情以外の関係も結んだの濃厚に
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ET ぞれぞれ感情表振ってくれ(^^) 感情表(6) ＞ 狂信（プラス）／殺意（マイナス）
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ダンブルドアはホモだと思ってんすがね…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			殺意濃厚に
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			狂信じゃ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			やはり若い男はいいのう・・・
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			助けてくれ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こいつら気持ち悪いだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			すまん　感情表は自分で振ってくれ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			老いてなお盛んですねこのおじいちゃん
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ET 感情表(3) ＞ 愛情（プラス）／妬み（マイナス）
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			妬み
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ET  感情表(2) ＞ 友情（プラス）／怒り（マイナス）
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			友情じゃ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			裸の付き合いでもう友達じゃ！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			こわいじいさんだぜ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			寄るんじゃねえ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			何が友情だよアホンダラ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ホモ立ちで確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次はだれが行動するか教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			やりたいんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			行きたいことを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			先程と同じく行きたいのを教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[赤髪,ター,古戸] (choice[赤髪,ター,古戸]) ＞ 古戸
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			名探偵は格が違う
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			古戸の行動を教えろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			やはり感情を結びに行きたい所ですね
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(7) ＞ エントランスホール。古い柱時計の時報が響く中、館の主の肖像画が、あなたを見下ろしている。
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシのところ来る？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			あなたもしかして両方行ける口ですか？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ではお言葉に甘えて
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイお前ら<br>
+			この爺殺すぞ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			エントランスホールに全員を集めて名推理で白菜さんがダンブルドアおじいちゃんにされた所業をハッキリと発表します
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			楽しくいこうぜ何事も！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ホモジジイ失せろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=4 名推理 (SG@12#2&gt;=4) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			お前はまさしく<br>
+			テニスの王子様
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			古戸ヱリカは館の軋み音だけでこの程度の推理が可能です
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ET ダンブルドアへの感情 感情表(6) ＞ 狂信（プラス）／殺意（マイナス）
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			感情表振ってくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			頼もしいのう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ET 感情表(3) ＞ 愛情（プラス）／妬み（マイナス）
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			愛情じゃ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			エロジジイ失せろ　殺意
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			一人を中心にぎすぎすしてるの嫌すぎだァ～！！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			孫みたいなもんじゃよ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			緊急事態にいきなり男襲ってる爺が全面的に悪いと思うんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			行きてェなァ…
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			いかない
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いきたい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[赤髪,ター,白菜] (choice[赤髪,ター,白菜]) ＞ ター
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			おわァアアア～～～っ!!!
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ターの行動を教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			新入りらしくお頭と感情結びに行きたいんすがね…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(2) ＞ どことも知れぬ暗闇の中。忍びの者たちが潜むには、おあつらえ向きの場所である。
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			来たか、ター
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			お頭に自己紹介するために俺が！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			sg&gt;=4 (SG@12#2&gt;=4) ＞ 7[3,4] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ET 感情表(3) ＞ 愛情（プラス）／妬み（マイナス）
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			et 感情表(1) ＞ 共感（プラス）／不信（マイナス）
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			共感だな…ルフィ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			愛情とるんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			きも
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			キテますね
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホモしかいねえのか
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ほう・・・
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ラ<br>
+			ブ<br>
+			ラ<br>
+			ブ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			妬むほどの人物じゃないもんな　ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			頼む…やめてくれェ…！！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			一方的な愛情は悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			そういうもんだと思ってんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			行ぎたい！！！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			俺が
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			いかない
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[赤髪,白菜] (choice[赤髪,白菜]) ＞ 白菜
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			お頭いつまで待たされるんだァ～！？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			なんだ!?(^^)なんだ!?(^^)
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			白菜の行動を教えろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			古戸に礼を言うのとついでに自己紹介をする
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(10) ＞ 戯れに遊戯室へ入ってみた。そこには撞球台やダーツの的、何組かのトランプが散らばっているポーカーテーブルがあった。
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			これで感情が三角になって情報入りやすくなったのう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			恥ずかしい事を暴露された報復までは予想していましたがお礼とは
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧、じゃなく小娘<br>
+			礼を言うぞ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			お気になさらず
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや…あの爺の被害が俺1人で済むならそれでいい…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			聖者か？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			とりあえず判定を振る事を…勧める…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			数値の出し方がわからないことを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			何以上出せばいいのか教えろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=5じゃ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			５以上なのを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			うわ！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 7[2,5] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			では感情ですね
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ET 感情表(1) ＞ 共感（プラス）／不信（マイナス）
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ET →白菜 感情表(2) ＞ 友情（プラス）／怒り（マイナス）
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			共感だ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			友情にしておきましょう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			よろしく頼むぞ、古戸
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			同じ名探偵として仲良くしていきたいですね？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			いや…もういい…最後にしてくれ…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシも仲良くしたいのう・・・
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次はヤソップで確定
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			エロジジイは失せろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ダンブルドアに興味が湧いたから会いに行く
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(6) ＞ あなたに割り当てられた寝室。ベッドは柔らかく、調度品も高級なものばかりだが……。
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			そういうことだと思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシの部屋へようこそヤソップ君・・・
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			また館が軋みそうですね
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイお前ら<br>
+			半分がそういう感じだぞ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			さっきの話は本当か？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うぐっキモいシーン多すぎだァ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			本当じゃのう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>GM</b>
+			NLのほうが少ないの<br>
+			怖いだろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ホモだらけで誰とも感情結びたくねェなァ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そういえば私匿名のままですね<br>
+			ちょっとアカウント変えてきます
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			女が1人しかいない方にも問題はあると思ってんすがね…<br>
+			大体ジジイのせいだけど
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			あの爺止めないとまずいと思うんすがね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			なんの技能にすればいいかわかんねえなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			一緒にヤソスロ回してからしっぽりすればいいの濃厚
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			アカウントを変えたことをお前に教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			古戸の秘密<br>
+			実はあなたは、天下の大泥棒「ルパン三世」である。世界を股にかけ、狙った獲物は全て手に入れて来たあなただったが、近頃愛しの不二子ちゃんが「怪盗キッド」なる若いコソドロに夢中になっている。あなたはそれがどうにも我慢ならない！！あなたは何としても「怪盗キッド」に一泡吹かせてやりたいと考えている。<br>
+			<br>
+			あなたの【本当の使命】は、「怪盗キッド」の【使命】達成を阻止する事である。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうじゃの
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=5 じいさんスロットは好きかい？ (SG@12#2&gt;=5) ＞ 9[3,6] ＞ 9 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			連れスロからのホモセとか退廃的すぎだろ…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			頼む…目に毒だからやめてくれェ…！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ET  感情表(1) ＞ 共感（プラス）／不信（マイナス）
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ET 感情表(2) ＞ 友情（プラス）／怒り（マイナス）
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			この遊戯は面白いのう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			シノビガミの感情表が軽率に愛情とか結ばせるしなァ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			友情
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			おなかいたい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			スロットの楽しさがわかるのか！共感
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			まずい変なのが手を組んだ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			滅茶苦茶だ…噂以上
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			そろそろ動けそうだな…ルフィ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			最後赤髪の行動を教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>白菜</b>
+			純然たる被害者が増えなさそうなのは良かったと思う
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			ホモジジイの秘密を抜く、来い
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(5) ＞ あなたは階段でふと足を止めた。何者かの足音が近づいているようだ。
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			抜くなんて赤髪くんは大胆じゃのう・・・
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			このまま背後から一突きしてェなァ…でもなァ…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ついてもいいんじゃよ？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			目に毒だから失せろして脅す、来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>白菜</b>
+			あの爺無敵か？
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			多分
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&lt;=5 失せろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			原作のイメージを著しく損なう二次創作濃厚に
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			秘密とかそういうの全部無視してあのジジイに赤き真実ぶち込みたくなってきました
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=5 失せろ (SG@12#2&gt;=5) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>GM</b>
+			背後から一突きってそういうことだもんな…ルフィ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			…………←(意味深に無言)
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			中々やるのう・・・
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			秘密を秘匿で送る<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			お前の存在が不愉快だ失せろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			感情を結んでるターにも送る
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			悲しいのう・・・
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアの秘密<br>
+			実はあなたは、「怪盗キッド」である。だが、あなたはこの晩餐会の主催者では無い。何者かがあなたの名を騙り、この晩餐会を開催したようだ。その事を知ったあなたは、密かにこの晩餐会に潜り込んだ。主催者の正体に興味は無いが、この館に隠された財宝は是が非でも手中に収めたいと考えている。<br>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアの秘密<br>
+			実はあなたは、「怪盗キッド」である。だが、あなたはこの晩餐会の主催者では無い。何者かがあなたの名を騙り、この晩餐会を開催したようだ。その事を知ったあなたは、密かにこの晩餐会に潜り込んだ。主催者の正体に興味は無いが、この館に隠された財宝は是が非でも手中に収めたいと考えている。<br>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			送ったことを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>GM</b>
+			今回のシナリオではPC6人に加えて「食堂の時計」「楽器室のピアノ」「4階のパソコン」の秘密を探ることができるのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			2サイクル目に行く<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			動きたいんすがね…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			最初に行動したいやつ教えろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			いかない
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			俺が行く
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			今度こそ動く、来い
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあワシも動こうかのぅ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			今回はまだ動かないのを教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[ター,白菜,赤髪,ダンブルドア] (choice[ター,白菜,赤髪,ダンブルドア]) ＞ 白菜
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ターの秘密を暴くぞ、来い
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(4) ＞ 美しい庭園。丹精こめて育てられたであろう色とりどりの花。そして、綺麗に刈り込まれた生垣が広がっている。
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ガンダムのオーラ出して脅す
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こわいんすがね…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイター<br>
+			お前、何を隠している…
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			なにも
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 10[4,6] ＞ 10 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そういえば名推理が1/2/4で合計7だったので1/2/3に減らしておきますね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			白菜と感情を結んでるダンブルドアと古戸に秘密を送る
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			あとちょっとトイレ行ってきます
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			やっぱあの爺殺さなきゃダメだな…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			真面目だな…精々強くなれ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ターの秘密<br>
+			実はあなたは、かつてこの「黄昏の館」の主だった「烏丸連耶」の末裔である。あなたは赤髪が自分と同じ「烏丸連耶」の末裔である事に気付いている。この数10年ですっかり没落した烏丸家を再興する為にも、同じ烏丸の血を引く人間を大切にしたいと考えている。<br>
+			あなたの【本当の使命】は、赤髪の【使命】達成を手助けする事である。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			モテるのも困りものじゃのう・・・
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ターの秘密<br>
+			実はあなたは、かつてこの「黄昏の館」の主だった「烏丸連耶」の末裔である。あなたは赤髪が自分と同じ「烏丸連耶」の末裔である事に気付いている。この数10年ですっかり没落した烏丸家を再興する為にも、同じ烏丸の血を引く人間を大切にしたいと考えている。<br>
+			あなたの【本当の使命】は、赤髪の【使命】達成を手助けする事である。
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ターの秘密<br>
+			実はあなたは、かつてこの「黄昏の館」の主だった「烏丸連耶」の末裔である。あなたは赤髪が自分と同じ「烏丸連耶」の末裔である事に気付いている。この数10年ですっかり没落した烏丸家を再興する為にも、同じ烏丸の血を引く人間を大切にしたいと考えている。<br>
+			あなたの【本当の使命】は、赤髪の【使命】達成を手助けする事である。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			つまり赤髪…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			送ったことを教える
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			赤髪の青年がきになるのう・・・
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			戻りました
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			おかえり
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			一旦待とうかのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[ター,赤髪,ヤソップ] (choice[ター,赤髪,ヤソップ]) ＞ 赤髪
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪の行動を教えろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ピアノの秘密を抜く、来い
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(11) ＞ かび臭い図書室。歴代の館の主たちの記録や、古今東西の名著が、ぎっしりと棚に並べられている。
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			図書室にピアノ置くなアホンダラ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			図書館では静かにしろアホンダラ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			それはそう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			物置かなんかか！？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			じゃあ図書室でみんなで宴して調べてもらって記憶は酒で消す、来い
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=5 宴だァ～～～!!! (SG@12#2&gt;=5) ＞ 2[1,1] ＞ 2 ＞ ファンブル
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈🌈🌈🌈🌈🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			図書館で宴するな
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			おわァアアア～～～っ!!!
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈🌈🌈🌈🌈🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 赤髪 ] HP : 6 → 5
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			こらこらだめじゃよ赤髪くん
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			本が頭に落ちてきて痛いだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ピアノの秘密は調べられなかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ赤髪<br>
+			宴は別の場所でやれ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ルルブ曰くファンブルだと技能が一つ使えなくなるのを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			これって任意選択なのかランダム決定なのか教えろ
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 赤髪 ] HP : 5 → 6
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			なら技能消すか…ルフィ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあランダムにする<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			1d3 (1D3) ＞ 1
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			宴が消えたの濃厚
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			酒は…没収されたんだろ！？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			宴だァ～～～!!!が使えなくなった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ちょうど宴が消えましたね<br>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			&nbsp;
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ちゃんとストーリーぴったりな物奪われてるの凄いのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			動かないのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[ター,ヤソップ] (choice[ター,ヤソップ]) ＞ ター
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ターの行動を教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			お頭の代わりにピアノを調べるんですがね…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(7) ＞ エントランスホール。古い柱時計の時報が響く中、館の主の肖像画が、あなたを見下ろしている。
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ピアノ、動いていた！？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			騒ぎすぎて逃げられたの濃厚に
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ちょうどピアノに関する手紙が窓から届いてくるのを教える
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			sg&gt;=4 (SG@12#2&gt;=4) ＞ 6[1,5] ＞ 6 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			よくやった！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ターと赤髪にピアノの秘密を送る
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ピアノの秘密<br>
+			このピアノの鍵盤の裏側には、血で書かれた思しき赤黒い文字が書かれている。この【秘密】を知った者は、以降『スイッチ』の起動を試みる事が出来るようになる。<br>
+			・『スイッチ』の起動方法<br>
+			1． 『スイッチ』のある場所へ行く。<br>
+			2． 何らかの技能の判定に成功する。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ピアノの秘密<br>
+			このピアノの鍵盤の裏側には、血で書かれた思しき赤黒い文字が書かれている。この【秘密】を知った者は、以降『スイッチ』の起動を試みる事が出来るようになる。<br>
+			・『スイッチ』の起動方法<br>
+			1． 『スイッチ』のある場所へ行く。<br>
+			2． 何らかの技能の判定に成功する。
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p4">
+			<b>ター</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			送ったことを教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			譲ろうかのう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			なにか秘密くれたらこのピアノの情報交渉で渡してもいいのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ピアノの秘密教えてほしい奴は俺のところに来い！俺は&quot;赤髪&quot;だァ！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[古戸,ヤソップ] (choice[古戸,ヤソップ]) ＞ ヤソップ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップの行動を教えろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			時計の秘密を教えろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(7) ＞ エントランスホール。古い柱時計の時報が響く中、館の主の肖像画が、あなたを見下ろしている。
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ちょうど古時計があるな…ルフィ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			時計塔だろそれ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			届かないから時計を狙撃で撃ち落として調べる
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 7[2,5] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			当然のように器物破損するんじゃねえアホンダラ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップとダンブルドアに時計の秘密を教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			助かるのう
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			時計の秘密<br>
+			実はこの時計は、館に隠されたお宝を顕現させる為の『スイッチ』となっている。何らかの方法で起動出来るようだが、具体的な方法は分からない。<br>
+			<br>
+			この【秘密】を知った者は、好きなタイミングで「もう1度時計を調べる」と宣言すると、時計の前に行き、『スイッチ』の起動を試みる事が出来る。<br>
+			<br>
+			『スイッチ』の起動に成功した場合、その時点でセッションはクライマックスフェイズに突入する。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			次に動きたいのを教える
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p1">
+			<b>GM</b>
+			時計の秘密<br>
+			実はこの時計は、館に隠されたお宝を顕現させる為の『スイッチ』となっている。何らかの方法で起動出来るようだが、具体的な方法は分からない。<br>
+			<br>
+			この【秘密】を知った者は、好きなタイミングで「もう1度時計を調べる」と宣言すると、時計の前に行き、『スイッチ』の起動を試みる事が出来る。<br>
+			<br>
+			『スイッチ』の起動に成功した場合、その時点でセッションはクライマックスフェイズに突入する。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシも次動きたいのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[古戸,ダンブルドア] (choice[古戸,ダンブルドア]) ＞ 古戸
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			古戸の行動を教えろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ええ、ではその前に。<br>
+			ターさん、赤髪さん、エロジジイ、ヤソップさん
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			4階のパソコンの秘密、欲しくありませんか？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			欲しいのう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			欲しいなァ…ルフィ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			欲しいんすがね…
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			欲しい
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私は赤髪海賊団です。他よりも情報戦においては有利
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ジジイの秘密欲しいならやるぞ(^^)
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			あなた方の持つ他の施設の秘密と引き換えに4階のパソコンの秘密をお渡しするのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			秘密くれたらあげるのを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			どうです？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			なるほどのう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			やだ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			でもワシ感情共有してるんじゃないかのう？
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			教えないことを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあこの調子だと誰も取引に乗ってくれそうもないですね
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ジジイにつながってる奴に情報渡すわけねェだろアホンダラ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			悲しいのう・・・
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			交渉で入った秘密は感情共有されるのか教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			お前の感情はジジイにやられちまった…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ちなみに交渉での入手には感情共有は発生しないことを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			へ〜！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			でもなァ…渡したらなァ…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ジジイがピアノ以外知ってることになるからなァ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			渡さないとお前の秘密を調べてジジイにばら撒く事を教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ぶっちゃけいいよ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや…なんなら俺が今ここでバラしてもいい
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いいんだ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ふむ・・・？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			どのみち対立だろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ふむふむ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			では遠慮なく調べに行かせてもらいますね
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=4 名推理で赤髪の秘密を調べる (SG@12#2&gt;=4) ＞ 8[3,5] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ターと俺の秘密抜かれてるの悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			古戸とダンブルドアと白菜に赤髪の秘密を教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			誰かジジイの秘密ほしいならターの秘密を渡してほしいだろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それとこの交渉はいつでもやっていいのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪の秘密<br>
+			実はあなたは、「大上祝善」を殺害した犯人である。あなたはかつて「黄昏の館」の主だった「烏丸連耶」の末裔であり、古い文献からこの館に隠されている財宝の事を知った。友人の「大上祝善」と共に館内を探したが、見つける事は出来なかった。そこで、「怪盗キッド」の名を騙る事で探偵達を集め、彼らに財宝を見つけさせる事を考えた。しかし、大上が財宝の独り占めを狙っている事に気付き、見せしめの為に彼を殺害。あなたはどんな犠牲を払ってでも、財宝を入手したいと考えている。<br>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。<br>
+			だがあなたは内心、財宝探しに疲れ果てており、財宝が見つからなかった場合は死ぬつもりでいる。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			いつやってもいいよ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪の秘密<br>
+			実はあなたは、「大上祝善」を殺害した犯人である。あなたはかつて「黄昏の館」の主だった「烏丸連耶」の末裔であり、古い文献からこの館に隠されている財宝の事を知った。友人の「大上祝善」と共に館内を探したが、見つける事は出来なかった。そこで、「怪盗キッド」の名を騙る事で探偵達を集め、彼らに財宝を見つけさせる事を考えた。しかし、大上が財宝の独り占めを狙っている事に気付き、見せしめの為に彼を殺害。あなたはどんな犠牲を払ってでも、財宝を入手したいと考えている。<br>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。<br>
+			だがあなたは内心、財宝探しに疲れ果てており、財宝が見つからなかった場合は死ぬつもりでいる。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪の秘密<br>
+			実はあなたは、「大上祝善」を殺害した犯人である。あなたはかつて「黄昏の館」の主だった「烏丸連耶」の末裔であり、古い文献からこの館に隠されている財宝の事を知った。友人の「大上祝善」と共に館内を探したが、見つける事は出来なかった。そこで、「怪盗キッド」の名を騙る事で探偵達を集め、彼らに財宝を見つけさせる事を考えた。しかし、大上が財宝の独り占めを狙っている事に気付き、見せしめの為に彼を殺害。あなたはどんな犠牲を払ってでも、財宝を入手したいと考えている。<br>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。<br>
+			だがあなたは内心、財宝探しに疲れ果てており、財宝が見つからなかった場合は死ぬつもりでいる。
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			「怪盗キッド」の名を騙っているということは赤髪＝怪盗キッドではない？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			だろうな
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			うん
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ではターさんに私の秘密をお渡ししましょう。代わりに施設の秘密を貰えますか？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			なるほどのう・・・
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			本物がいる、という事ですか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			自分の秘密は送れないとか言ってたのを教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうじゃのう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			持ってる俺の秘密のことじゃねェかなァ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そうでした
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ヤソップに交渉だ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			グビッ！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			じゃあそっちの赤髪の方を差し上げますよ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			正直たいして興味ねえなァ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイヤソップ<br>
+			結論から言うが赤髪の秘密をやるから時計の秘密を寄越せ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			まさかの放置プレイ！？ひどくねぇか！？(^^)
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			いや…いらねえな…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いいんです？動き方に結構影響しそうですけど
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			理由を聞いてもいいか？
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			別にどうでもいいのを教える<br>
+			お頭だから
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			可哀想じゃのう・・・
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>GM</b>
+			交渉って本家でも基本OKだった気がするからルルブに追記したほうがいい説濃厚に
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			…（意味深に無言）
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあ正直私にはどうでもいい秘密でしたしね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>ター</b>
+			確かシーンに登場してる時とかだったと思うのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			お前のウッシッシな態度が<br>
+			ムカつくほどだで
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			皆真面目にやってるし次と次はジジイ殺しに行こうかなァ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			どうぞ、頑張ってください
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			というかそろそろ動きたいのう・・・
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			Thanks.（すまん）
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ルルブにはシーンに登場してる時にするか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			次に行動したいやつ教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			行動するのう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ダンブルドアだけなの確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			そうだった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアの行動を教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			シノビクスだと他のPCの手番にシーン登場できないしなァ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ピアノの秘密を探りにいくかのう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それなら出来るようにしたほうがいいんじゃねえかお頭
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>ター</b>
+			呼んでくれ(^^)って頼めばいいの濃厚
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(7) ＞ エントランスホール。古い柱時計の時報が響く中、館の主の肖像画が、あなたを見下ろしている。
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			エクスペクト・パトローナム、守護霊よ美しい音色を奏でなさい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			どんどんピアノ移動してるのホラーすぎだァ～！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 4[1,3] ＞ 4 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			守護霊はピアノが下手だった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ダメじゃったか・・・
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ダンブルドアさんの持ってる秘密ってなんでしたっけ？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			時計の秘密だな
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺と時計塔の秘密だな
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それ以外、PCのものも
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			赤髪くんとターくんと時計じゃのう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ふむふむ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ジジイに同盟の秘密抜かれてるの嫌すぎだァ～！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあ、後々考えますか
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			2サイクル目終了<br>
+			3サイクル目を始める
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			最初に行動したいやつ教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			やりたいんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			まだいい
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			まだいいかのう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			やっぱまだいい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[ヤソップ,ター] (choice[ヤソップ,ター]) ＞ ヤソップ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップの行動を教えろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			パソコンでスロット 攻略を調べる<br>
+			こい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			mst 館シーン表(8) ＞ 食堂。染み一つないテーブルクロスに覆われた長い食卓。その上は年代物の燭台や花で飾られている。
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=5 ヤソップスロット 攻略 (SG@12#2&gt;=5) ＞ 12[6,6] ＞ 12 ＞ スペシャル(【生命力】1点か変調一つを回復)
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			無駄スぺで確定
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップにパソコンの秘密を教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			秘密が抜かれたから<br>
+			パソコンの【秘密】は感情共有が発生しないことも教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			へ〜！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			交渉で渡せるのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			パソコンの秘密<br>
+			実はこの館には、至る所に時限爆弾が仕掛けられている。起爆の時間はこのゲームの開始から4サイクル後に設定されているようだ。<br>
+			<br>
+			4サイクル目終了時までに、PCの誰かが財宝を獲得していない場合、全ての爆弾が起爆し、PC全員は死亡（キャラロスト）。その時点でセッションは終了となる。<br>
+			<br>
+			ただし、PCの誰かがお宝の獲得に成功した場合、全ての爆弾の時限装置が停止し、起爆する事は無くなる。
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			それは可能なのを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			パソコンの秘密重要そうですね
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			気になるのう・・・
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			では次に動きたいのを教える
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや…俺が行く
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			おれも教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ピアノとなら交渉してもいいことを教える
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			じゃあヤソップに教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあワシが動こうかのう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			早い者勝ちだな…ルフィ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[古戸,ター,白菜,赤髪,ダンブルドア] (choice[古戸,ター,白菜,赤髪,ダンブルドア]) ＞ 白菜
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			パソコンでガンダム見る
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			白菜choice強いと思ってんすがね…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 7[1,6] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			交渉した情報の受け渡しはこの後行う
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			古戸と交渉する
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			白菜にパソコンの秘密を教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			グッド。
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			何をお望みですか？
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p1">
+			<b>GM</b>
+			パソコンの秘密<br>
+			実はこの館には、至る所に時限爆弾が仕掛けられている。起爆の時間はこのゲームの開始から4サイクル後に設定されているようだ。<br>
+			<br>
+			4サイクル目終了時までに、PCの誰かがお宝を獲得していない場合、全ての爆弾が起爆し、PC全員は死亡（キャラロスト）。その時点でセッションは終了となる。<br>
+			<br>
+			ただし、PCの誰かがお宝の獲得に成功した場合、全ての爆弾の時限装置が停止し、起爆する事は無くなる。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			ピアノの秘密を渡す<br>
+			お前の秘密を寄越せ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ふむふむ。いいですよ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			自分の秘密は渡せないと思ってんすがね…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			そんなに俺の秘密ほしいのか(^^)
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ダンブルドアに交渉
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			どうしたかの白菜君？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うぐっ自分の秘密渡せないの不便すぎだァ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			お前の時計の秘密と俺のパソコンの秘密<br>
+			交換だ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			多分秘密集める系だと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			いいじゃろう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			助かる
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			これって無条件で渡すことも可能か教えろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			困りましたね、私だけ情報弱者です<br>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			可能なことを教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあ交渉成立じゃな
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ピアノ…欲しいなァ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ああ、爺
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			あげてもいいと思ってんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			欲しいならくれてやる　探せ！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップがターにパソコンの秘密を教える<br>
+			ターがヤソップにピアノの秘密を教える<br>
+			白菜がダンブルドアにパソコンの秘密を教える<br>
+			ダンブルドアが白菜にピアノの秘密を教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			今のところはこれでいい？
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			俺は良いのを教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺も好感したいシャン…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わしもいいよ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			赤髪の秘密欲しい人います？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ターと早いもの勝ちにしてくれ(^^)
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			あいつはいらねェ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			古戸、交渉だ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			後でできたら赤髪にも渡すのを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			俺のパソコンの秘密と時計の秘密を渡す
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			動くのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			誰よりも早く財宝を奪え
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			マジですか
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ジジイ交渉だ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			なんじゃのう？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ピアノやるからターよこせ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			混乱してきたから成立したら各自で送ってもらっていい？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			よかろう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			了解しました。精々頑張ってみましょう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			これって白菜のみたいな交渉だと裏切ってもいい？
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(ター,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			教える<br>
+			<br>
+			パソコンの秘密<br>
+			実はこの館には、至る所に時限爆弾が仕掛けられている。起爆の時間はこのゲームの開始から4サイクル後に設定されているようだ。<br>
+			<br>
+			4サイクル目終了時までに、PCの誰かが財宝を獲得していない場合、全ての爆弾が起爆し、PC全員は死亡（キャラロスト）。その時点でセッションは終了となる。<br>
+			<br>
+			ただし、PCの誰かがお宝の獲得に成功した場合、全ての爆弾の時限装置が停止し、起爆する事は無くなる。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t12">
+		<div class="tabtitle">秘匿(ダンブル..,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			ピアノの秘密<br>
+			このピアノの鍵盤の裏側には、血で書かれた思しき赤黒い文字が書かれている。この【秘密】を知った者は、以降『スイッチ』の起動を試みる事が出来るようになる。<br>
+			・『スイッチ』の起動方法<br>
+			1． 『スイッチ』のある場所へ行く。<br>
+			2． 何らかの技能の判定に成功する。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			あと爺！ケツ貸すからピアノの秘密寄越せ！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(ター,ヤソップ)</div>
+		<p class="player p4">
+			<b>ター</b>
+			ピアノの秘密<br>
+			このピアノの鍵盤の裏側には、血で書かれた思しき赤黒い文字が書かれている。この【秘密】を知った者は、以降『スイッチ』の起動を試みる事が出来るようになる。<br>
+			・『スイッチ』の起動方法<br>
+			1． 『スイッチ』のある場所へ行く。<br>
+			2． 何らかの技能の判定に成功する。
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(ター,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			へ〜！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t12">
+		<div class="tabtitle">秘匿(ダンブル..,赤髪)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ターの秘密<br>
+			実はあなたは、かつてこの「黄昏の館」の主だった「烏丸連耶」の末裔である。あなたは赤髪が自分と同じ「烏丸連耶」の末裔である事に気付いている。この数10年ですっかり没落した烏丸家を再興する為にも、同じ烏丸の血を引く人間を大切にしたいと考えている。<br>
+			あなたの【本当の使命】は、赤髪の【使命】達成を手助けする事である。
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(ダンブル..,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			パソコンの秘密を送るぞ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			パソコンの秘密<br>
+			実はこの館には、至る所に時限爆弾が仕掛けられている。起爆の時間はこのゲームの開始から4サイクル後に設定されているようだ。<br>
+			<br>
+			4サイクル目終了時までに、PCの誰かがお宝を獲得していない場合、全ての爆弾が起爆し、PC全員は死亡（キャラロスト）。その時点でセッションは終了となる。<br>
+			<br>
+			ただし、PCの誰かがお宝の獲得に成功した場合、全ての爆弾の時限装置が停止し、起爆する事は無くなる。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ちょっと待ってほしいのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			誰かジジイの秘密を教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			いいよ～！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			&gt; あと爺！ケツ貸すからピアノの秘密寄越せ！<br>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			なら教えてやるから時計よこせ
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(ダンブル..,白菜)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			時計の秘密<br>
+			実はこの時計は、館に隠されたお宝を顕現させる為の『スイッチ』となっている。何らかの方法で起動出来るようだが、具体的な方法は分からない。<br>
+			<br>
+			この【秘密】を知った者は、好きなタイミングで「もう1度時計を調べる」と宣言すると、時計の前に行き、『スイッチ』の起動を試みる事が出来る。<br>
+			<br>
+			『スイッチ』の起動に成功した場合、その時点でセッションはクライマックスフェイズに突入する。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			確かに情報と尻は貰ったのう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			エロジジイ失せろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ホモ失せろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			じゃあお頭に教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			爺、貰ったピアノもあとで寄越せよ…
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(ダンブル..,白菜)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ピアノの秘密<br>
+			このピアノの鍵盤の裏側には、血で書かれた思しき赤黒い文字が書かれている。この【秘密】を知った者は、以降『スイッチ』の起動を試みる事が出来るようになる。<br>
+			・『スイッチ』の起動方法<br>
+			1． 『スイッチ』のある場所へ行く。<br>
+			2． 何らかの技能の判定に成功する。
+		</p>
+	</div>
+
+	<div class="tab t14">
+		<div class="tabtitle">秘匿(ヤソップ,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			ダンブルドアの秘密<br>
+			実はあなたは、「怪盗キッド」である。だが、あなたはこの晩餐会の主催者では無い。何者かがあなたの名を騙り、この晩餐会を開催したようだ。その事を知ったあなたは、密かにこの晩餐会に潜り込んだ。主催者の正体に興味は無いが、この館に隠された財宝は是が非でも手中に収めたいと考えている。<br>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			これじゃな
+		</p>
+	</div>
+
+	<div class="tab t14">
+		<div class="tabtitle">秘匿(ヤソップ,赤髪)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			時計の秘密<br>
+			実はこの時計は、館に隠されたお宝を顕現させる為の『スイッチ』となっている。何らかの方法で起動出来るようだが、具体的な方法は分からない。<br>
+			<br>
+			この【秘密】を知った者は、好きなタイミングで「もう1度時計を調べる」と宣言すると、時計の前に行き、『スイッチ』の起動を試みる事が出来る。<br>
+			<br>
+			『スイッチ』の起動に成功した場合、その時点でセッションはクライマックスフェイズに突入する。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			確かに受け取った…
+		</p>
+	</div>
+
+	<div class="tab t14">
+		<div class="tabtitle">秘匿(ヤソップ,赤髪)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			ター情報全部やる、来い
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			また何かあったらワシの部屋に来なさい
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			秘密を全て渡すぞ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			パソコンの秘密<br>
+			実はこの館には、至る所に時限爆弾が仕掛けられている。起爆の時間はこのゲームの開始から4サイクル後に設定されているようだ。<br>
+			<br>
+			4サイクル目終了時までに、PCの誰かがお宝を獲得していない場合、全ての爆弾が起爆し、PC全員は死亡（キャラロスト）。その時点でセッションは終了となる。<br>
+			<br>
+			ただし、PCの誰かがお宝の獲得に成功した場合、全ての爆弾の時限装置が停止し、起爆する事は無くなる。
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			俺もお頭にＰＣの情報渡すんすがね…
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			時計の秘密<br>
+			実はこの時計は、館に隠されたお宝を顕現させる為の『スイッチ』となっている。何らかの方法で起動出来るようだが、具体的な方法は分からない。<br>
+			<br>
+			この【秘密】を知った者は、好きなタイミングで「もう1度時計を調べる」と宣言すると、時計の前に行き、『スイッチ』の起動を試みる事が出来る。<br>
+			<br>
+			『スイッチ』の起動に成功した場合、その時点でセッションはクライマックスフェイズに突入する。
+		</p>
+	</div>
+
+	<div class="tab t14">
+		<div class="tabtitle">秘匿(ヤソップ,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			ピアノの秘密<br>
+			このピアノの鍵盤の裏側には、血で書かれた思しき赤黒い文字が書かれている。この【秘密】を知った者は、以降『スイッチ』の起動を試みる事が出来るようになる。<br>
+			・『スイッチ』の起動方法<br>
+			1． 『スイッチ』のある場所へ行く。<br>
+			2． 何らかの技能の判定に成功する。
+		</p>
+	</div>
+
+	<div class="tab t16">
+		<div class="tabtitle">秘匿(ター,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			時計の秘密<br>
+			実はこの時計は、館に隠されたお宝を顕現させる為の『スイッチ』となっている。何らかの方法で起動出来るようだが、具体的な方法は分からない。<br>
+			<br>
+			この【秘密】を知った者は、好きなタイミングで「もう1度時計を調べる」と宣言すると、時計の前に行き、『スイッチ』の起動を試みる事が出来る。<br>
+			<br>
+			『スイッチ』の起動に成功した場合、その時点でセッションはクライマックスフェイズに突入する。
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			GOOD。
+		</p>
+	</div>
+
+	<div class="tab t16">
+		<div class="tabtitle">秘匿(ター,赤髪)</div>
+		<p class="player p4">
+			<b>ター</b>
+			パソコンの秘密<br>
+			実はこの館には、至る所に時限爆弾が仕掛けられている。起爆の時間はこのゲームの開始から4サイクル後に設定されているようだ。<br>
+			<br>
+			4サイクル目終了時までに、PCの誰かが財宝を獲得していない場合、全ての爆弾が起爆し、PC全員は死亡（キャラロスト）。その時点でセッションは終了となる。<br>
+			<br>
+			ただし、PCの誰かがお宝の獲得に成功した場合、全ての爆弾の時限装置が停止し、起爆する事は無くなる。
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			渡したぞ、勝て小娘
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ああ、最後にちょっとした世間話を
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			糞爺が…二度と行くか…
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私は『怪盗キッド』を探しています。心当たりはあったりしますか？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			古戸！後はやれ！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>GM</b>
+			何か凄いことになってるなァ…<br>
+			おれが一番盤面を把握できてない説濃厚に
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			情報動きすぎだろアホンダラ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			赤髪の正体がそれだ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p4">
+			<b>ター</b>
+			もう一度時計を調べるは自分のターンでやるのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺は館の情報全部とジジイとターの秘密を知ってることを教える
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ふむ。了解しました
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			交換会結構錯綜しとるからのう・・・
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p1">
+			<b>GM</b>
+			好きなタイミングでやっていいことを教える<br>
+			公開で宣言してくれ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			いや、違う…本物が潜んでるのか…？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私は館全部と赤髪とターの秘密を知っていますね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			もう1度時計を調べるんすがね…
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私もそれを睨んでいます
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			その前に動きたいぞォ！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			2d6&lt;=4 そういうことだと思ってんすがね… (2D6&lt;=4) ＞ 5[2,3] ＞ 5 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			次があればヤソップの秘密を暴く
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いいや…私も動きたいな…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			なにもわからなかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			舘全部とダンブルドアを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			&gt;=と間違えたから成功でいいか教えろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>白菜</b>
+			俺は全部と赤髪とターだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			本当だ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			成功で確定
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			おわァアアア～～～っ!!!
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			全部とダンブルドアで確定
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ちょっと待てこれ手番消費しないのかよ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			すると思ってたのを教える<br>
+			白菜許してくれ(^^)
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			好きなタイミングって書いてたのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			強制的にクライマックスだァ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや、俺も手番必要かと思ってた
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシはター君とピアノと時計を渡したのう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			GMに聞いて確認したんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			うぐっ確認不足だぁ〜！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ターが『スイッチ』を起動した瞬間、館の外からガラガラと何かが崩れる音が聞こえた。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			PC達が急いで館の外へ向かうと、館を覆っていた外壁はすっかりと崩れ、中からは全てが金で出来た豪華絢爛な館の姿が露わになる
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ガ<br>
+			ラ<br>
+			ガ<br>
+			ラ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ただ…PCの秘密全く分かってないんだよな　ルフィ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			間違えた知ってることだったのう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			京都で確定
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			情報集めまくった上でGMに確認するのは<br>
+			最<br>
+			強<br>
+			だ<br>
+			ろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			なんだこの建物！？金閣寺かなんかか…？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			金閣寺で確定
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			そう、財宝とはこの『黄昏の館』そのものだったのだ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こんな建物だったっけなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			『スイッチ』を起動したターがこの館の所有権を得たことを教える
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			俺は正当なコナン視聴者<br>
+			なぜか知ってた
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			なるほどのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			そういうことか…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			お宝『黄昏の館』<br>
+			『スイッチ』を起動した事で露になった「黄昏の館」の財宝。黄昏とは空が黄金色に輝く夕暮れ時の事。全てが純金によって造られた、正に「黄金の館」。この館そのものが、隠された財宝の正体だったのだ。
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			なるほど…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			全部とター君と赤髪君じゃ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ヤロウドモ！戦闘だァ〜！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ならターを殺せば何も問題ありませんよね？
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			それはそう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうなるのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			というわけでクライマックスフェイズに突入だァ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			探偵が殺人なんかできるかァあああ〜〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			さて秘密握ってないからなァ…ジジイ殺すか
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そういえばジジイ忘れてましたね<br>
+			ついでに殺しておきますか
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			どのみち全員殺すだろう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあ正直私はお宝とかどうでもいいんですけどね
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			戦闘だァ～！<br>
+			1ラウンド目のプロット値を秘匿で送ってくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			財宝ほしくない奴はさっさと言うことを…勧める
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ほら、EP5でも私は黄金欲しがりませんでしたし？
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			いや…いらねえな…
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			3
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			プロットは3だ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			1ラウンド目　2
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			俺もいらん
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			じゃあジジイ殺して宴するか
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			1で様子見じゃ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p4">
+			<b>ター</b>
+			1
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			宴は今できないんじゃないかのう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			プロット値を教えろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			スペシャル出すか…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			3をお前に教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドア、ター１　赤髪２　古戸、白菜、ヤソップ３　
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そういえば私は怪盗キッドが誰か知りませんけど知らずに向こうが使命失敗した場合はどうなるんです？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			全員ファンブル恐れすぎだと思ってんすがね…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いくじなしで確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			所で奥義って何度でも使えるのかのう？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			先に
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップ古戸白菜の誰から行動するか教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			教える
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			使えるのを教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			1ラウンドにつき1回なのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			まァ奥義破りってのがあるんだけどな…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			他に譲るのを教える
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			使命達成になることを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			うるせえ！いこう！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			まずは様子を見る
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあヤソップからで確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			どの技能で攻撃するか教えろ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			じゃあ赤髪とター以外殺せばいいかなァ…でも白菜殺したくねえなァ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			古戸にヤソップスロット
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			確定回避で確定
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ファンブル相手を狙えアホンダラ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			マイナス5は痛いのう・・・
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			戦闘ルールが分かってないことを教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			２ｄ６で振ってるから出目の下限は2なことを教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			だから誰もファンブルしやすい位置に行きたがらないと思ってんすがね…
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			真面目だな…せいぜい強くなれ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			-99すれば楽で分かりやすいよな、ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ダイス運が弱ェ奴はプロットも選べねェ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップはどの技能を使うか教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ちょっとまたトイレに行ってくるのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			頻尿で確定
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			おじいちゃんですか…？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			じゃあ狙撃 これは当たる？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			うん
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			いいじゃねェか皆頻尿くらい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			sgで振って5以上出したら攻撃成功なことを教える<br>
+			誰に攻撃するか教えろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg 古戸だ (SG@12#2) ＞ 6[1,5] ＞ 6
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ただいま
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			おかえり
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			回避は6以上で確定
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			誰か感情修正くれ(^^)
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			感情修正するぞ、来い
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			おかえり
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			おかえり
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあ5以上で確定
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 7[1,6] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			無駄修正悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			避けた<br>
+			次古戸白菜のどっちが動くか教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			判定妨害　6を1に
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			!
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			やばい私が集中攻撃され始めた
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			即死攻撃持ちを殺すぞ、来い
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			奥義切るぞォ！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ファンブルで確定<br>
+			古戸はこのラウンド中動けないことを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ファンブル中は奥義も使えないのか教えろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			なにも
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			なにも
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			おわァアアア～～～ッ！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			いや…使えたはずだな…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや…ルルブには無理って書いてあるな…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			本家だと使えると思ってんすがね…
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			PC6なんてロクな奴じゃ無いと思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			そうだっけ<br>
+			じゃあ使えることにする<br>
+			来い
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			でもこれはシャンクスTRPGだからな、ルフィ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">情報</div>
+		<p class="player p11">
+			<b>白菜</b>
+			２がファンブルで、そのラウンド内の残りの行動(攻撃、回避、奥義、奥義破り、感情修正)が一切できなくなるのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			聖者か？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			まァ使えないと判定妨害で即死するもんなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			判定妨害強すぎないかとは思ってたけどそういうことだったんだな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			相手にいじられたときは使えたような気がするのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ルルブ書き換え濃厚に
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			判定妨害即死技が安定過ぎたもんな　ルフィ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			次のルルブで修正しないとな、ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			原作ではファンブルはダイスを振る行動ができないが正しいので確定<br>
+			コンマイ語失せろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			なるほど
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあ次白菜か古戸どっちが動くか教えろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			俺が行く
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			古戸に2ダメージは通ってるのを教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そういえば私まだ動けるんでしたね
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			古戸2ダメで確定
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			クリ即死見えそうで怖いだろ
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 古戸ヱリカ ] HP : 6 → 4
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 古戸ヱリカ ] HP : 6 → 4
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			悲しいだろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			俺は赤髪を潰す
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ヱリカお前の秘密次第では守ってやることを教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			秘密って表に出していいんですか？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			来い、俺が相手になってやる
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			赤髪にそのオーラはガンダムで攻撃
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回想シーン補正はないけど出していいよ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあ…一応赤で保証しておきましょう<br>
+			ココフォリアだと文字の色変えられませんけど
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			【私は財宝に興味はありません】【なので赤髪さん、あとついてにターの秘密を邪魔しません】
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			回避してェなァ…出来るといいなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は6以上で確定
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=6 回避だ (SG@12#2&gt;=6) ＞ 5[2,3] ＞ 5 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			古戸ヱリカはこの状況でこれだけの命乞いが可能です
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			感情修正飛ばすんすがね…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			奥義使う、来い
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			感情修正ありでいいか教えろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			なら奥義は使わねェ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			&nbsp;
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			戦闘時には意味ないことを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ぶっちゃけ赤髪海賊団しょっぱいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎ古戸の行動を教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			相手には関係ないのを見落としていたのを教える
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			真面目だな…精々強くなれ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ヤソップに青き真実を使用します
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=5 青き真実 (SG@12#2&gt;=5) ＞ 3[1,2] ＞ 3 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			まあもうファンブルですから関係ないですね
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			待て
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			もともとファンブルだから動けてないぞ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			同じプロット値の間は動けるのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ごめん間違えた
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			プロットは同速だから動けるのを教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			へ〜！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			うろ覚え悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			処理的には同時ですので
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎ赤髪の行動を教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ジジイに失せろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=5 失せろ (SG@12#2&gt;=5) ＞ 2[1,1] ＞ 2 ＞ ファンブル
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈🌈🌈🌈🌈🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			おわァアアア～～～っ!!!
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪も動けなくなった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎターダンブルドアのどっちから動くか教えろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			今日だけで二回ファンブル!?おじさん泣いちゃうよ!
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			出来の悪い味方を持つと…兄貴は心配なんだ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシから動きたいのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			相手がファンブルを出し始めたぞ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			いいよ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあダンブルドア
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ファンブルさらに濃厚に
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあター君にアバダケダブラじゃ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 6[3,3] ＞ 6 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			やばい死の魔法が動き始めた
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は6以上で確定
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			感情修正を教える
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあ5以上
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 7[1,6] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			まて
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			感情修正できねえな…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			来たか、ヤソップ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			判定妨害 6ヲ1に
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			来たか　ヤソップ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			奥義を使う　ターに絶対防御だ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			シャンクスはファンブル出したんじゃないのか教えろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ター2ダメで確定
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ ター ] HP : 6 → 4
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			奥義は使える裁定になったのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			さっき奥義は使えるように修正されたことを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			うわ！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ダンブルドアに自己紹介するんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			安いもんだHP2くらい　奥義バレた上でお前が無事でよかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			やばい即死ダメージが飛び交い始めた
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			sg&gt;=5 自己紹介 (SG@12#2&gt;=5) ＞ 8[3,5] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			回避６じゃな
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			うん
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 8[4,4] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			－の感情修正ほしいよなァ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			エロジジイに感情修正載せます　死ね
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			さっきから無駄修正悲しいだろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ダンブルドアに勘定修正
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ありがたいのう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ダンブルドアとヤソップはつまりそういうことだと思ってんすがね…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			マイナス二人だからどっちにしろ成功だな…ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			赤髪海賊団は削られただけなの悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			いやヤソップ君はプラスじゃのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			オレは&quot;プラスだ&quot;！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			シャン卓は海賊よりむしろ美少女の方が殺意高い傾向あるな…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			すまん　マイナス感情持ってる総数が２
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			そういう目で見られてる証拠だろ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			あなたの目的はなんですか？<br>
+			一応お手伝いしますよ　情報もらった恩もありますし
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			１ラウンド目終了<br>
+			2ラウンド目のプロット値を秘匿で送ってくれ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,ター)</div>
+		<p class="player p4">
+			<b>ター</b>
+			1
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			同じく3だ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			2ラウンド目　4
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			プロット2をお前に教える
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			6
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			また１じゃのう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			ター、ダンブルドア１　古戸２　白菜３　赤髪４　ヤソップ６
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			秘密知らなさ過ぎて3対3になってる理由わからねェんだよなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップから
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ヤソスロはどのプロットに行けば当たるか教えろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			古戸に狙撃
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			ファンブルを除くとプロット値6にいる相手にしか可能性はないのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			とことん私狙いますねあなた
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			殺意高くてこわい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			いきなりだいばくはつするやつもいたもんな　ルフィ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			回避は６
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			俺の目的は赤髪の狙いを阻止することだけだ<br>
+			財宝なんざいらん
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			オレはアイツを女とは認めねェ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			分かりました
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			まあ2ダメだし温存するのを教える<br>
+			がんばってくれ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			では赤髪の奴は後で殺しておきます
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			頼むぞ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=6 回避 (SG@12#2&gt;=6) ＞ 7[1,6] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			よくやった！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			まて
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			判定妨害で6を1に
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			さて…誰が破るべきだろうなァ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			奥義破りするに決まってますよね
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りは目標値６で
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りはルルブ上古戸で
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			感情修正くれ(^^)
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			振ってから渡す
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=6 回避 (SG@12#2&gt;=6) ＞ 2[1,1] ＞ 2 ＞ ファンブル
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			おわァアアア～～～ッ！！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 古戸ヱリカ ] HP : 4 → 2
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こっち側の運悪すぎて泣きそうだろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイ小僧<br>
+			相手がファンブルを出し始めたぞ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			やばいこのままだと私が削り殺される…！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			感情修正なしならファンブルで以降奥義しかできないことを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			修正する
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			古戸の奥義次第だな…ルフィ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			お前が動けなくなるのは痛い…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			白菜がエリカ守ってるのにこっち殴ってくる理由を教えろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わりィ判定妨害の結果ファンブルだったから今の感情修正なしで
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			まず共通の敵のヤソップとジジイを片したほうがいいの濃厚だと思ってんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			まァ死にそうになったら守ってやる(^^)
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎ赤髪
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			正直そいつらは俺の目的になんの関係もないからなぁ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ヤソップに失せろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			宝なんぞくれてやるしよ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ふむ・・・？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			正直私は生き残れればそれでいいので…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=5 失せろ (SG@12#2&gt;=5) ＞ 10[5,5] ＞ 10 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は目標値７
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			まァ犯人捕まえるとかそんなんだろうなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃない６だった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップはどうするのか教えろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			回避するぞォ〜！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 8[3,5] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			よくやった！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			避けたことを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			この運の差が理不尽すぎて泣きそうだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎ白菜
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ターにそのオーラはガンダム
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			目標値は4でいいのか教えろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			4でいいことを教える
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=4 (SG@12#2&gt;=4) ＞ 6[1,5] ＞ 6 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			判定妨害　5を1に
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			5じゃないのか教えろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			海軍だから攻撃の目標値４なことを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			奥義使うぞ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りは白菜で6以上
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			戦闘時以外って書かれてることを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			じゃなきゃ強すぎだァ～！！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いや…それは赤髪だな…
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			いや…戦闘時だけだな…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			それは赤髪海賊団だな…ルフィ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			戦闘時って書かれてることを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			間違えた(^^)
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			なんで海軍＝赤髪になってるんだろうな…ルフィ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			イヌイヌの実モデル政府の犬更に濃厚に
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			じゃあターに奥義でもう一回ガンダムだ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			どたまかち割んぞ！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			追加攻撃かのう？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			その前に奥義破りですね
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			まず奥義破りで確定
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 7[1,6] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			よくやった！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			頼む…もうやめてくれェ…！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			聞かないね、白菜だから
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			よくやった！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			赤髪は軽減してもいいんだぞ？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			まずはターの回避判定　6以上
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			2d6&gt;=6 回避 (2D6&gt;=6) ＞ 3[1,2] ＞ 3 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			奥義使う、来い
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			追加攻撃をまず表に出してェなァ…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			白菜は奥義破りしてくれ(^^)
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 9[4,5] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			おわァアアア～～～っ!!!
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			そ゛う゛た゛よ゛わ゛く゛わ゛く゛さ゛ん゛
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ター</b>
+			死ぬぞォ～！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ターに4ダメ
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ ター ] HP : 4 → 0
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ターは気絶した
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			別に不利じゃないはずなのに悲しいだろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			悲しい別れだが仕方がなかったッ！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			お前ら、赤髪を行動不能にしたやつに財宝渡してやるよ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎ古戸はファンブルだからダンブルドア
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺はターを気絶させた奴を許さない！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			3対1対1なら余裕だな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			白菜君は古戸君を守りたいのかの？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや、そういうわけじゃねえな
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ふむ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私は生存できればそれでいいんですよね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ヤソップの動きがよくわからないんだよなァ…
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			じいさんの邪魔をしなければ考えてやる
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ただまあできたら守ってやりてえだろ<br>
+			本人もこう言ってるし
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあシャンクス君じゃな
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			来たか、ダンブルドア
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			エクスペクト・パトローナムじゃ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 9[3,6] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は６
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 8[3,5] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			余裕だな…ルフィ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			奥義を吐くなら早く吐いてほしいですねエロジジイ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			2ラウンド目終了<br>
+			次のプロット値を秘匿で送ってくれ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			同じく3
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			6じゃ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GM,赤髪)</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			3ラウンド目　1
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			1
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			プロット2をお前に教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪、ヤソップ１　古戸２　白菜３　ダンブルドア６
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアから
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			しまった逃げられたのう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			やることないから終わりじゃ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎ白菜
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			判定することもせんのか…！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			赤髪にガンダム
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=4 (SG@12#2&gt;=4) ＞ 9[3,6] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			回避する、来い
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は6
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 5[2,3] ＞ 5 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			奥義させてくれ(^^)
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りは白菜で６
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			今日の運の悪さ何なんだろうなァ…
+		</p>
+	</div>
+
+	<div class="tab t17">
+		<div class="tabtitle">秘匿(ダンブル..,ヤソップ)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ヤソップ君考えがあるからヤソップスロットを使ってくれんか？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>system</b>
+			[ 赤髪 ] HP : 6 → 2
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			悲しいだろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			終わりだよ、赤髪
+		</p>
+	</div>
+
+	<div class="tab t17">
+		<div class="tabtitle">秘匿(ダンブル..,ヤソップ)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			つまりそういうことじゃ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			つぎ古戸
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			奥義使う
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			おとなしく死ぬか…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t17">
+		<div class="tabtitle">秘匿(ダンブル..,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			赤髪でいいか？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			連続攻撃で確定
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			赤髪にもう一度ガンダム
+		</p>
+	</div>
+
+	<div class="tab t17">
+		<div class="tabtitle">秘匿(ダンブル..,ヤソップ)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうじゃの
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			奥義破りすることもせんのか…！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			判定なしでもう一撃可能だからさらに4ダメ
+		</p>
+	</div>
+
+	<div class="tab t17">
+		<div class="tabtitle">秘匿(ダンブル..,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			どうする？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			だって見せられてねェもんなァ…
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 赤髪 ] HP : 2 → -2
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 赤髪 ] HP : 2 → 0
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			発動した時点で見れてると思っていましたが
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪は気絶した
+		</p>
+	</div>
+
+	<div class="tab t17">
+		<div class="tabtitle">秘匿(ダンブル..,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			古戸と白菜はどうする？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			かっちゃったの
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			自分に使われないと駄目なのか教えろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ホイお前ら、俺はもう目的を達成した<br>
+			財宝はどうする
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			発動はしてなかった気がするのを教える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ター破り俺破りで発動してなかったんすがね…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			貰いたいのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			いらねえな…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ふむ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			あなたに交戦続行の意志はありますか？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			まさかの完封負け!?おじさん泣いちゃうよ!?
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			特には無えな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			戦闘続行の意思があるやつは教えろ
+		</p>
+	</div>
+
+	<div class="tab t15">
+		<div class="tabtitle">秘匿(ヱリカ,白菜)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			わかりました
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			続行の意志があるのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			貰えるなら特に戦う理由ないのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			じゃあ怪盗の爺に渡せばいいのか？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			知っておったか
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そうなんです？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			猿でも分かるだろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうじゃの
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシが怪盗キッドじゃ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			爺さんに財宝が渡るならなにもしないぜ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私はヤソップの秘密を知りませんので
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			もう歳だがの
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺はボロ負けで…恥ずかしい！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			まだ戦闘続行の意思があるやつがいるので戦闘を続ける
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			次は古戸
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ついでに言うと白菜の秘密も知らないんですよね<br>
+			🌈情報弱者ｗ🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ヤソップに青き真実を使用します
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			うぐっ伏兵だァ～！！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=5 青き真実 (SG@12#2&gt;=5) ＞ 5[2,3] ＞ 5 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ぎ<br>
+			り<br>
+			ぎ<br>
+			り
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			奥義 3を1
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			当然奥義破りですよ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りは6
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			感情修正は…貰えますか？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			やらねえよタコ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			う～むだめじゃの
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			残念です
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=6　奥義破り (SG@12#2&gt;=6) ＞ 9[4,5] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			グビッ！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は７以上を教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			グッド！ようやく少しツキが回ってきましたか
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=7 (SG@12#2&gt;=7) ＞ 8[3,5] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避した<br>
+			次はヤソップ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			古戸に狙撃するぞォ！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 7[1,6] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は６
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			では回避を
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 4[1,3] ＞ 4 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			仕方ありませんね、奥義を切ります
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ここで使いたくはありませんでしたが
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私の奥義はガムテープ！効果は判定妨害！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ヤソップの銃の銃身にガムテープを詰め込ませてもらいましたッ！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップの狙撃の出目が２になるからファンブルで確定
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			そしてここに宣言させていただきますッ！<br>
+			私の正体はルパン三世ッ！【目的は怪盗キッドの排除ッ！】
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			面倒だな…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			…ダンブルドアのエロジジイさえ消えれば、これ以上の交戦の意志はありませんよ？
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			なら交渉は決裂だ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ヤソップは…大方助手か何かか？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			闘うしかないようじゃの
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			グッド。では白菜さん、私はあなたと敵対しません
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			色々と教えてもらった恩もありますからね
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			勝手にしろ…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			2VS1というのは中々に厳しいですが、まあやってみましょうか
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップはファンブルだからラウンド終了<br>
+			次のプロット値を秘匿で送ってくれ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			因みに古戸君の奥義はワシも見た扱いかのう？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ヱリカ)</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			プロット1を教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			使われた奥義は全員見た扱いなのを教える
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			3
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			6
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			4に置くかの
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			古戸１　白菜３　ダンブルドア４　ヤソップ６
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップから
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			な<br>
+			に<br>
+			も
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎダンブルドア
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ゾッ！？！！！！？！！！！１
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			この位置なら狙えるのう・・・
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			エクスペクト・パトローナム
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			ファンブル次第でチャンスあるんだよなァ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ガムテープを宣言します！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りはダンブルドアで６
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			奥義破りに感情修正も追加ァ！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			奥義破りと・・・奥義を使わせてもらうかのう？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあ７
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ああ、完全成功でしたか
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシの部屋に来なさい、効果は完全性行じゃ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>ター</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			このエロジジイ……
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破り成功
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			やはりダンブルドア様は頭のいいお方…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			最後がこれとかR-18すぎてキモイだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			だからあそこで切りたくなかったんですよ…！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>ター</b>
+			こんなエロジジイ目的に関係なく排除するべきだと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			古戸は回避６
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			sg&gt;=6 回避 (SG@12#2&gt;=6) ＞ 3[1,2] ＞ 3 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			チッ…！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			悲しいだろ
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 古戸ヱリカ ] HP : 2 → 0
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			もうすぐ死ぬのでぶっちゃけさせてもらいますけど…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			秘密に”愛しの不二子ちゃん”って書いてあった時点で同性愛が濃厚になってたんですよね
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			この卓は最初からそういう卓でした
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ノンケが二人しかいなかったのを教える
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			という訳で🌈私死んだ～ｗ🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			古戸は気絶した
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			滅茶苦茶な卓だ…噂以上
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			ノンケがお頭とヤソップだけなのこわいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			赤き真実…使いたかったなァ……
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			爺殴りてえな…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			こっちばっかりファンブルしてるもんな…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			白菜も自分から尻出してたからノンケは赤髪だけだな…ルフィ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			戦闘続行の意思があるやつは教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ああ、白菜に恩があるので赤髪も殺すつもりでしたよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			宝を渡してくれるならないのう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>ター</b>
+			赤髪も尻貸してたと思ってんすがね…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			一発殴らせてくれたら宝渡すぜ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			全てはダンブルドア様の意のままに…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>GM</b>
+			全員アレで確定
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			まあそれならいいかのう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			しっぽりした中だしのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ガンダムで殴る
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺は情報渡しただけで尻は貸してねェ！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=4 (SG@12#2&gt;=4) ＞ 9[3,6] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避する？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあしないでもいいかのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアは4ダメ喰らった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			奥義発動
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ ダンブルドア ] HP : 6 → 2
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			死ね糞爺
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			GOOD！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			さらにもう一発で確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りは６
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			流石白菜さん、やってくれると信じていました！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			完全性行つかえるかの？
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			今から判定妨害していいか教えろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			どっちもいいよ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			判定妨害は無意味だな…ルフィ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			忘れてくれ（^^）
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			たかが掘られただけだ怒るほどのことじゃないだろう？(^^)
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			判定妨害しても成功している事をお前に教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうじゃのう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			これはもうそういう卓だと思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			まあもういいじゃろう白菜君
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアが完全成功使うからまずは白菜が奥義破り
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 6[3,3] ＞ 6 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎダンブルドアの奥義破り
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			頼む…失敗してくれェ！！！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			これ白菜君の奥義破りに判定妨害できないのかのう？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			悪人全員やられてハッピーエンドで宴してェなァ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			使えることを教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			出来るならするが
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			全員悪人のホモだと思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあヤソップ君たのんだぞい
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いいや…私はレズだな…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺は悪人のノンケであることを教える
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			判定妨害 3を1に
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			TRPGの会話じゃねえな…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			奥義破りは6以上
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ホモはレズとゲイを含む同性愛を意味する単語だから5人ホモで確定
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			今奥義破り出来なかったから完全性行じゃないかのう？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ヤソップの妨害に対する奥義破りですね
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			白菜の奥義破りだな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そっちか
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			夜中になんてモノ見せるんだお前らァ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 3[1,2] ＞ 3 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			危ないのう・・・
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			さあ・・・白菜君・・・もうこんなことはやめて大人しくわたしてほしいんじゃ・・・
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			判定妨害が成功してダンブルドアの完全成功が成功したため連続攻撃への奥義破り成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			というわけでラウンドを終わる
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			白菜とヱリカがダンブルドアに喰われてターがお頭に愛情抱いてるだけだ怒るほどのことじゃないだろう?(^^)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			うるせえ爺<br>
+			くたばれ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			戦闘続行の意思があるやつは教えろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			うぐっ判定がチェーンしすぎだァ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			やるぞ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			この世の地獄で確定
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			うぐっ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			闘うのか・・・やるしかないんじゃな・・・
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			プロット値を秘匿で送ってくれ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			3
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			４じゃのう
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			4
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			これまず全員でジジイ殴ればよかったんじゃねェかなァ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			酷いこと言うのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ただいざ終わりが近づいたら爺が勝つのが気に食わなかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップ３　ダンブルドア、白菜４
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			先に動きたいのう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや…俺からだな
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			choice[ダンブルドア,白菜] (choice[ダンブルドア,白菜]) ＞ ダンブルドア
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			もうちょい露骨にジジイ殴りに動くべきでしたね
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあアバダケダブラで
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			いきなりお前の尻穴をほじくったホモジジイが総取りするだけだ<br>
+			別に怒るほどのことじゃないだろう？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			許せるか馬鹿！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は６
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 9[4,5] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			判定妨害しても確定回避だな　ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ヤソップ以外全員やられて勝利者などいなくなりそうだと思ってんすがね…
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避した<br>
+			次白菜
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			爺にドタバタジャンゴ！！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			あんた気は確かか！？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=4 (SG@12#2&gt;=4) ＞ 5[1,4] ＞ 5 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			殺意に溢れててこわい
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			回避じゃのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			判定妨害 4を1だ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 3[1,2] ＞ 3 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ありがとうヤソップ君
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			白菜はファンブルで動けない
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎヤソップ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			奥義って使える？
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			白菜に狙撃
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			この場合の追加攻撃の裁定はどうなるんだろうなァ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			奥義使ってもダイス振れないんじゃないかの？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			いや…奥義破りができないから結局無意味だな…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			追加攻撃は自分のターンだからダイスは振れるけどなァ…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			なるほど
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			追加攻撃は不能とする<br>
+			なぜならルルブを書いたときは一度成功したものをもう一度使えるというつもりで書いたから
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			使えるなら使いてえなあ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ルルブの修正が必要だな、ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			クリティカルヒットの出番がなくなるもんな、ルフィ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			うぐっゲームの効果説明難しすぎだァ～！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			それはそう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			というわけで次ヤソップ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			白菜に狙撃で確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ただヤソップは火力無いからまだ粘りそうだな…ルフィ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			塩試合で確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ファンブルだから回避できず2ダメで確定
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 白菜 ] HP : 6 → 4
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 白菜 ] HP : 4 → 2
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 白菜 ] HP : 2 → 4
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 白菜 ] HP : 2 → 4
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			いや…まずは成功判定だな
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			そうだった
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			いや…ヤソップが判定失敗する可能性があるな…
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 白菜 ] HP : 4 → 6
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			じゃあ完全性行じゃのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 10[5,5] ＞ 10 ＞ 成功
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 白菜 ] HP : 6 → 4
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			2ダメで確定
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			無くても大丈夫だった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ラウンド終了<br>
+			プロット値を秘匿で送ってくれ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,ヤソップ)</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			4
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			いつまで続くんだァ～！！？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GM,ダンブル..)</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			４じゃ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			地獄の果てまで
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			!!!
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GM,白菜)</div>
+		<p class="player p11">
+			<b>白菜</b>
+			1
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			!!?
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			白菜１　ダンブルドア、ヤソップ４
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアかヤソップから
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			どちらがいいかのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			オレからいこうか
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			白菜に狙撃
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>赤髪</b>
+			うぐっホモジジイ一人勝ちになりそうだァ～！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			回避
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 7[3,4] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は６
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 11[5,6] ＞ 11 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			判定妨害でも回避で確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			つぎダンブルドア
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			エクスペクト・パトローナムじゃ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			完全性行も入れての
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			まず奥義破りは６
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 3[1,2] ＞ 3 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			3出過ぎだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			攻撃成功だから回避は６
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			いいじゃねェか白菜次避ければ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=5 (SG@12#2&gt;=5) ＞ 9[4,5] ＞ 9 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			判定妨害でも回避で確定
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			しぶといのう・・・
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			お前もな爺
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			いや…回避は６以上だから判定妨害可能だな
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			いや…海軍だから5だな…
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			海軍補正で確定
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			回避は能力値であって技能ではないことを教える
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！！！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			へ～！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			なら使うか 5を1に
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった奥義破りは６
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			sg&gt;=6 (SG@12#2&gt;=6) ＞ 3[1,2] ＞ 3 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ダイス腐ってんな
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			まだ生きてるから儲けものだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			3ダメで確定
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ダメだ勝てる気しねえわ<br>
+			爺に渡す、それでいいだろ
+		</p>
+		<p class="player p14">
+			<b>system</b>
+			[ 白菜 ] HP : 4 → 1
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ホモジジイに服従した調教奴隷で確定
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			いいよ、ワシも万が一死にたくないしのう
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			掘られてわからされてるのメスガキみたいでやんした…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			吠え面かかせてやりたかったが…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			やっぱり先にホモジジイ殺すべきでしたねこれ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			戦闘終了で確定
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			&nbsp;
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			爺に宝の所有権を譲渡
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			これで解決じゃのう
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			勝者となったダンブルドアが「黄昏の館」を獲得した事で、この命がけのゲームは終わりの時を迎える
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			この世界はクソほど汚ェな！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			それはそう
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			こんな世界滅んでもかまいません！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			それはそう
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうかのう？
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			PCの何れかが依頼していただろう救助ヘリも到着し、ダンブルドア、ヤソップ、白菜は館からの脱出に成功する
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			爺と一緒のヘリとか嫌だぞ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			頼む…置いてかないでくれェ！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ヘリの中で2回戦だな、ルフィ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			じゃあもう一機ヘリを呼んだ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			うわ！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			聖者か？
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			聖者
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			気絶してる3人はどうする？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			とりあえず赤髪は警察に連れて行く
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ここにいたら死ぬのかのう？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私はルパンですし次元と五右衛門辺りが助けにくるんじゃないですか？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			インペルダウンでジジイへの復讐を誓う、来い
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			俺は正当な一般市民　赤髪とは無関係だから帰る
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			爺に飼ってもらえ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪は警察に連行され、古戸は仲間に救助された
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ターはダンブルドアに連れてかれたことにするか
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			あの嬢ちゃんの変装も中々疲れたな次元と五右衛門
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ルウがお宝を独り占めしようとしたから殺しただけだ別に逮捕されるほどのことじゃないだろう？
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			あのエロジジイはそのうち殺す
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			こいつは上玉ですね
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			俺はこんな凌辱を受けたのは初めてだ…！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			その時は俺も呼べ、殺す手伝いをする
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			およそ1000億は下らない莫大な富がどのような行く末を辿るのか、それはダンブルドアに委ねられる
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ジジイ殺すときは俺も牢屋から出してくれ(^^)
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			ジジイを殺すメンバーが着々と集まりつつあるだろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ダンブルドア様に調教されたから返り討ちにする　来い
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			モテる男は困るのう
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ダンブルドアチームがおぞましすぎる
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			あんな変態にお宝とターが持ってかれたとか嘘みたいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ジジイ終始無敵で笑うだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>GM</b>
+			ダンブルドアとヤソップと調教されたターは手に入れた財宝をどうするか話し合い、
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			赤髪と白菜とルパンはダンブルドアへの復讐を誓うのだった
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			終わり
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			宴だァ～！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			宴じゃ～！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			宴だァ～～～!!!
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			宴だァ〜！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			宴だァ～！
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			宴だァ～～！！！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			宴だァあああ〜〜〜！！！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ダイス腐って宴すら封印されたの虚しいだろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			可哀想
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			正当なシノビガミで楽しかっただろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			使命を教えろ
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			俺も楽しかったのを教える<br>
+			使命達成できなくて悲しいだろ
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ターの秘密<br>
+			実はあなたは、かつてこの「黄昏の館」の主だった「烏丸連耶」の末裔である。あなたは赤髪が自分と同じ「烏丸連耶」の末裔である事に気付いている。この数10年ですっかり没落した烏丸家を再興する為にも、同じ烏丸の血を引く人間を大切にしたいと考えている。
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ダンブルドアの秘密<br>
+			実はあなたは、「怪盗キッド」である。だが、あなたはこの晩餐会の主催者では無い。何者かがあなたの名を騙り、この晩餐会を開催したようだ。その事を知ったあなたは、密かにこの晩餐会に潜り込んだ。主催者の正体に興味は無いが、この館に隠された財宝は是が非でも手中に収めたいと考えている。
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			楽しかったけどあんな変態の一人勝ちが悔しいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			おれは正当な観戦シャン<br>
+			奥義はどれが強そうなのかわからない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ヤソップの秘密<br>
+			実はあなたは、ダンブルドアの部下である。あなたは今回の晩餐会でダンブルドアのサポートやバックアップを行うべく、探偵の1人に成り済まし、密かにこの晩餐会に潜り込んだ。<br>
+			あなたの【本当の使命】は、ダンブルドアの【使命】達成を手助けする事である。
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			使命報告パート忘れてた
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			使命達成できたのはダンブルドア、ヤソップ、白菜なのを教える
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			古戸の秘密<br>
+			実はあなたは、天下の大泥棒「ルパン三世」である。世界を股にかけ、狙った獲物は全て手に入れて来たあなただったが、近頃愛しの不二子ちゃんが「怪盗キッド」なる若いコソドロに夢中になっている。あなたはそれがどうにも我慢ならない！！あなたは何としても「怪盗キッド」に一泡吹かせてやりたいと考えている。<br>
+			<br>
+			あなたの【本当の使命】は、「怪盗キッド」の【使命】達成を阻止する事である。
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			赤髪<br>
+			実はあなたは、「大上祝善」を殺害した犯人である。あなたはかつて「黄昏の館」の主だった「烏丸連耶」の末裔であり、古い文献からこの館に隠されている財宝の事を知った。友人の「大上祝善」と共に館内を探したが、見つける事は出来なかった。そこで、「怪盗キッド」の名を騙る事で探偵達を集め、彼らに財宝を見つけさせる事を考えた。しかし、大上が財宝の独り占めを狙っている事に気付き、見せしめの為に彼を殺害。あなたはどんな犠牲を払ってでも、財宝を入手したいと考えている。<br>
+			あなたの【本当の使命】は、クライマックスフェイズ終了時に財宝を獲得している事だ。<br>
+			だがあなたは内心、財宝探しに疲れ果てており、財宝が見つからなかった場合は死ぬつもりでいる。
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			しかもこのキャラダンブルドアでもありながらキッドでもあるから各方面から怒られそうじゃの
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			白菜の秘密<br>
+			実はあなたは、「大上祝善」を殺害した犯人が探偵達の中にいる事に気付いている。正義感の強いあなたは、財宝の事よりも目の前で殺人を犯した犯人を許す事が出来ず、これ以上犯人の思惑通りに事を運ばせてはならないと考えている。
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			あなたの【本当の使命】は、「大上祝善」を殺害した犯人の【使命】達成を阻止する事である。
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			まあ白菜が使命達成できたからよしとするか
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			聖者か？
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ダンブルドアもキッドも所構わず掘るわけあるかァ～！！！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ダンブルドアはやりそうだろ
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			情報くれた恩は返さないとな、ルフィ
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			直接的には何もできなくて…俺は恥ずかしい！！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			今思ったけどターが調教されてもこっちへの愛情忘れてないのおぞましいだろ
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ヤソップ⇄ダンブルドア⇄ター<br>
+			　　　　　　　↓　　　　　↓<br>
+			　　　　　　白菜　　　　赤髪<br>
+			<br>
+			古戸⇄フジ子ちゃん
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			お頭もこの仲間に入れてやると思ってんすがね…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			おぞましい
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			ノンケいなかったな…ルフィ
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			その繋がりやめろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			俺とルパンはノンケなことを教える
+		</p>
+		<p class="player p15">
+			<b>ルパン三世</b>
+			絵面に華がないから古戸に戻っていい？
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			いいよ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			今度は女キャラでやる
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			どっちでもいけるもんな ジジイ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			そうじゃな
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそれでルウ辺りにレイプされそうですね
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ルウも女にする　来い
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			じゃあホキ子になるぞ、来い
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			赤髪海賊団使うと瞬く間にホモだらけになるの嫌なんすがね…
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			赤髪海賊団に女クルーがいないのはそういうことだと思ってんすがね…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ダンブルドアはホキ子がホキに戻っても喜びそうだと思ってんすがね…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			無敵だろ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			2倍楽しめるからの
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			この爺無敵か？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			やっぱ全員で殺すべきだったな、ルフィ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			それはそう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			次会ったら居所つかんで殺すぞ、来い
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			赤き真実ぶち込みたかったなァ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			ドタバタジャンゴ成功しそうだったけどなァ…
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			今回ジジイ陣営肝心なところでファンブルしてない勝負強さがあったからなァ…ホモになると強いのかなァ…
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			なっちまえよ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			なりだぐない！！！
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			1d100<br>
+			ホモ化度 (1D100) ＞ 100
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ダイス操作失せろ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			！！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			赤髪とターの髪の色はそういうことだと思ってんすがね…
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			ホモになったとたんダイス操作できたからそういうことだと思ってんすがね…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			お揃いの色に染めてるホモカップルで確定
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ホモ強いのう
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			じゃあ次からホモになってエロジジイを殺す、来い
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			うぐっ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ヤンデレか何か？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			首太赤髪ゴリラのヤンデレとか誰得だよ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			あーあー関係性がめちゃくちゃだ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ｽﾞﾁｭｸﾞﾁｭｯ、ｽﾞﾌﾞﾝｯ!（下から突き上げる）
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			やはり私のような非ワンピ系女キャラがフラットに楽しめるのでは？
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			俺もルパン一味が良かったんすがね…
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			ワシも非ワンピじゃよ？
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			エロジジイ失せろ
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			最終的にエロジジイに喰われてたけどいいのか…
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			私だけ他のPCに明確な味方居ないの悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			ですから白菜が協力してくれたのは素直に嬉しかったんですよね
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			糞爺は見習え
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			フォッフォッフォッ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			殺そうとしてなかったら協力したんじゃがなァ・・・
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			殺すに決まってるでしょうこんなエロジジイ
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			酷いのう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			むしろヘイトが向かなかったのが不思議ですよ私は
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ほぼ全員から恨みを買って勝つジジイは格が違う
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			実は自分でもびっくりしてたのう
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			エロジジイの事だから殴られるだろうなーと思って最初は動きを控えめにしてたんですけどね
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			じゃあ俺は寝る
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			正直タコ殴りにされる可能性あったから最初1選んでたんじゃ
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			お疲れシャン
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			お疲れシャン
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			お疲れシャンだァ～！！
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			お疲れシャンだァ～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			今度あったらみんなで爺殺そうな
+		</p>
+		<p class="player p4">
+			<b>ター</b>
+			またね～！
+		</p>
+		<p class="player p11">
+			<b>白菜</b>
+			またね〜〜〜〜〜〜！！！！
+		</p>
+		<p class="player p10">
+			<b>古戸ヱリカ</b>
+			またね～～～～～！！！！
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			またのう～～～！！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			ぶっちゃけヤソップに赤の真実で殺してほしくて狙ってたのにファンブルしないの反則だろ
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			またね〜〜〜〜！
+		</p>
+		<p class="player p3">
+			<b>赤髪</b>
+			またね～～～～！！！！
+		</p>
+		<p class="player p9">
+			<b>ヤソップ</b>
+			ダイス次第だもんな…お頭
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			今新鮮なスレ立ったから来なさい
+		</p>
+		<p class="player p2">
+			<b>ダンブルドア</b>
+			https://img.2chan.net/b/res/780447795.htm
+		</p>
+		<p class="player p1">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+</body>
+</html>

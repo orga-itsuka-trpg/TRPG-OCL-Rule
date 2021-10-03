@@ -1,0 +1,5980 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [情報] タブ */
+		.t0 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t1 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [メイン] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステータス] タブ */
+		.t3 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(TR,匿名さん)] タブ */
+		.t4 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ドナルド,匿名さん)] タブ */
+		.t5 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(UV,匿名さん)] タブ */
+		.t6 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(お頭,匿名さん)] タブ */
+		.t7 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,お頭)] タブ */
+		.t8 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,UV)] タブ */
+		.t9 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,ドナルド)] タブ */
+		.t10 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,TR)] タブ */
+		.t11 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,KP)] タブ */
+		.t12 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GM,アルミン)] タブ */
+		.t13 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG) */
+		.p0 { color: #673ab7; }
+		.p0 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：noname */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：シャンクスTRPG */
+		.p2 { color: #e91e63; }
+		.p2 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：ドナルド */
+		.p3 { color: #888888; }
+		.p3 .diceroll { background-color: #888888; }
+
+		/* 発言者：system */
+		.p4 { color: #888888; }
+		.p4 .diceroll { background-color: #888888; }
+
+		/* 発言者：ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(GM) */
+		.p5 { color: #673ab7; }
+		.p5 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：アルミン */
+		.p6 { color: #ffeb3b; }
+		.p6 .diceroll { background-color: #ffeb3b; }
+
+		/* 発言者：GM */
+		.p7 { color: #673ab7; }
+		.p7 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：怖いお頭 */
+		.p8 { color: #f44336; }
+		.p8 .diceroll { background-color: #f44336; }
+
+		/* 発言者：ラッキールウ */
+		.p9 { color: #888888; }
+		.p9 .diceroll { background-color: #888888; }
+
+		/* 発言者：うゆシャン */
+		.p10 { color: #888888; }
+		.p10 .diceroll { background-color: #888888; }
+
+		/* 発言者：ゲスミン */
+		.p11 { color: #ffeb3b; }
+		.p11 .diceroll { background-color: #ffeb3b; }
+
+		/* 発言者：トレーボル */
+		.p12 { color: #888888; }
+		.p12 .diceroll { background-color: #888888; }
+
+		/* 発言者：無垢の巨人 */
+		.p13 { color: #888888; }
+		.p13 .diceroll { background-color: #888888; }
+
+		/* 発言者：アザトース */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：ドフラミンゴ */
+		.p15 { color: #888888; }
+		.p15 .diceroll { background-color: #888888; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			【概要】<br>
+			GMが「スタート地点」と「ゴール地点」を決めて　その間にある「イベント」をPLが1人1個ずつ決めてぶっつけ本番でやる卓を教える<br>
+			技能とイベントは各々秘匿会話でGMに送る　シャンパラと一緒<br>
+			HPが0になっても退場にはならずその場復活　あるいは別地点で復活を教える　どっちにするかはGMが決めろ<br>
+			その代わり「死亡回数」が増える　最終的に死亡回数が最も少ないPLの優勝を教える<br>
+			【能力値】<br>
+			強さ…STRとCONに該当<br>
+			賢さ…INTに該当　他に「アイデア」という項目を追加して賢さの値の5倍に設定する<br>
+			美しさ…POWに該当　他に「幸運」という項目を追加して美しさの値の5倍に設定する<br>
+			速さ…DEXに該当　　他に「回避」という項目を追加して速さの5倍に設定する<br>
+			<br>
+			上記4つをそれぞれ2d6+6で決めることを教える<br>
+			<br>
+			HP…強さと一緒<br>
+			SAN…美しさ×5　幸運と一緒<br>
+			死亡回数…初期値は0 死んだら+1<br>
+			【技能】<br>
+			賢さ×30で「振り分けポイント」を求める　そのポイントを使って様々な技能を自由に作ることができる<br>
+			1つの技能につきポイントを1~80まで振り分ける<br>
+			その値は成功率として扱われ　高ければ高いほど成功しやすいのを教える<br>
+			全技能の成功率の合計は保有ポイント以上になってはならない<br>
+			<br>
+			技能はメインと秘匿会話　どちらで使っても良いが必ずGMに使用宣言を行い許可を貰わないといけないことを教える<br>
+			許可を貰ったら 100面ダイスを振る　ココフォリアでは「1d100&lt;=[使用技能の成功率]　技能名」と書き送信を教える<br>
+			1d100が成功率よりも低い数字の場合　技能ダイスは成功し　その場で使えることを教える<br>
+			失敗した場合　その技能は「死ぬまで」使えなくなることを教える<br>
+			所有技能が全て使用不能になった場合　その場で爆死する<br>
+			<br>
+			またTRPGには「クリティカル」と「ファンブル」の概念があることを教える<br>
+			1d100をやった際にダイスの目が1～5であった場合はクリティカルとなり良い出来事が起こる<br>
+			ダイスの目が96～100の場合はファンブルとなり悪い出来事が起こる<br>
+			このゲームではファンブルが出たらその場で爆死を教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			シナリオ名とかあるか教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			【ダメージダイス　SAN値チェック】<br>
+			何かしらの攻撃を受けた場合はダメージを受けた側がダメージダイスを振ることを教える<br>
+			基本的には以下の感じにするぞォ～～～！！<br>
+			小ダメージ…1d3<br>
+			中ダメージ…2d3<br>
+			大ダメージ…3d3<br>
+			<br>
+			SAN値チェックは1d100&lt;=[SANの値]でダイスを振り　その結果でSAN値がどれほど減るのか決まるのを教える<br>
+			基本的には以下の感じにするぞォ～～～！！<br>
+			小…(0/1d3)←(成功/失敗)<br>
+			中…(1d3/1d6)<br>
+			大…(1d6/2d6)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			特に考えてない<br>
+			ただの障害物のあるマラソン
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			【最後に】<br>
+			何でもありとは言え　TRPGの基本はGMPLの相互協力なことを教える<br>
+			わかったかミズゴロウ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 5[1,4]+6 ＞ 11<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 7[5,2]+6 ＞ 13<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 6[5,1]+6 ＞ 12<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 9[3,6]+6 ＞ 15
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			今回は特別ルールとして「SAN」のかわりに「スタミナ」を使う<br>
+			これは一つの障害物のゾーンを抜けた時や技能を使用するときに消費する
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			へ～！<br>
+			へ～！<br>
+			マラソンなのに殺しあったりしそうで怖いだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			SAN=スタミナなことを教える<br>
+			減少量はGMの判断<br>
+			一定期間(GMの判断)に15以上の減少で即死<br>
+			スタミナが足りない時も即死<br>
+			復活時に2d10回復する
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>noname</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			キッショ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 6[3,3]+6 ＞ 12<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 7[4,3]+6 ＞ 13<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 4[3,1]+6 ＞ 10<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 8[5,3]+6 ＞ 14
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			x○が定着してるの見ると文明の進歩を感じるんすがね…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			強さ…12　HP12<br>
+			賢さ…13　アイデア65<br>
+			美しさ…10　幸運・SAN50<br>
+			速さ…14　技能値360
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			つまり相手のスタミナを減らして殺してもいいし<br>
+			普通に殺してもいい
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			強さ11<br>
+			賢さ13 アイデア65<br>
+			美しさ12 幸運60<br>
+			速さ15 回避75<br>
+			技能値390
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(SG)</b>
+			今回は順位は考えてないのを教える<br>
+			みんな仲良しだからみんなで1位になろうね！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			&gt;このゲームではファンブルが出たらその場で爆死を教える<br>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] HP : 0 → 3
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			特殊ルールについて読んだことを教える
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(TR,匿名さん)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			技能値390<br>
+			シャンクトゥルフ80 シャンクトゥルフっぽいことをする<br>
+			シャンパラ80 シャンパラっぽいことをする<br>
+			KJP80 ケツアクメ卓っぽいことをする<br>
+			その他80 他のTRPGっぽいことをする<br>
+			自爆70 余った<br>
+			<br>
+			イベントは参加者揃ってから考える　来い
+		</p>
+		<p class="player p5">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(GM)</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p5">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(GM)</b>
+			技能は公開しなくてもいい<br>
+			あとイベントじゃなくてもレース中の障害物を考えてもいいのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p5">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(GM)</b>
+			参加者があと二人くらい来るまで待つ<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			何時間かかる？
+		</p>
+		<p class="player p5">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(GM)</b>
+			2時間で終わらせる
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			じゃあ風呂上がっても募集してたら参加する<br>
+			来い
+		</p>
+		<p class="player p5">
+			<b>ｵﾌﾟﾃｨﾏｽﾌﾟﾗｲﾑ(GM)</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			来た
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			きたか　アルミン
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			集まらないね？GM
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			困ったなぁ…とりあえずステータス決めようか
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			x4 2d6+6  #1<br>
+			(2D6+6) ＞ 12[6,6]+6 ＞ 18<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 4[3,1]+6 ＞ 10<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 5[2,3]+6 ＞ 11<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 4[3,1]+6 ＞ 10
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			わかった<br>
+			参加する
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(ドナルド,匿名さん)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ドナルドマジック！80　強力なレーザー攻撃、<br>
+			らんらんるー☆80　洗脳術<br>
+			GO!アクティブ！50　運動能力を向上させる<br>
+			ハッピーセット☆80　マック食べて元気がもーりもり！になる回復技<br>
+			目星　70<br>
+			<br>
+			地雷原フルマラソン
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>GM</b>
+			スレ落ちてる？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 8[6,2]+6 ＞ 14<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 5[4,1]+6 ＞ 11<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 3[2,1]+6 ＞ 9<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 5[1,4]+6 ＞ 11
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			落ちてるみたいだ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(ドナルド,匿名さん)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おれに…挨拶？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(ドナルド,匿名さん)</div>
+		<p class="player p7">
+			<b>GM</b>
+			地雷原は最初から最後までやることにする
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ドナルドは君の事も知ってるよ<br>
+			驚いた？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			筋力18 HP18<br>
+			賢さ10 50<br>
+			美しさ11 幸運55<br>
+			速さ10 回避50<br>
+			技能値300
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			失せろ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			アラー！？
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			筋力18あるとかこいつ本当にアルミンかよ…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(ドナルド,匿名さん)</div>
+		<p class="player p7">
+			<b>GM</b>
+			あと技能は80以下にしてくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった、調節する
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			筋力と賢さ入れ替えたいなァ…<br>
+			でも…それ許可するとなんでもありになりそうだもんなァ…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(ドナルド,匿名さん)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こんな感じで
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			イベントと技能は送ってもいいの？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(ドナルド,匿名さん)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ゴリミンでもいいんだ・・・乗り越えろ！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			レースの途中無垢の巨人(知性のない巨人)が現れて参加シャンを食う
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			強さ14 HP14<br>
+			賢さ11 アイデア55<br>
+			美しさ9　幸運45<br>
+			速さ11　回避55
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			顔怖いだけで最弱だろ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(TR,匿名さん)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			イベントは思いつかないのでラッキールウ、うゆシャン、トレーボルの3人がアルミン犯す
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			技能は公表しといたほうがいいか教えろ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			秘匿でいいはず
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ゴメンネ　弱クッテ<br>
+			怖いお頭、アドリブ卓内では弱かった！？
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			でもなァ・・・技能強いかもしれないからなァ・・・
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			元気があれば何でも出来る<br>
+			元気があればウルージになれる<br>
+			そんなあなたは&quot;捏造技能&quot;!!!
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(お頭,匿名さん)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			イベント<br>
+			障害物の中に紛れ込んだ猫がいる<br>
+			無事に見つけ出して保護してあげよう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			公開しちゃった🌈
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			まあこれくらいならキャラから分かるだろうし
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			それはそう
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			それはそう
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			あと10分くらい失せる<br>
+			すまん
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			わかった<br>
+			21:50くらいに始めるのを教える
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ただ今回は技能ファンブルで問答無用で爆死するからこわい<br>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			技能<br>
+			こわいかお80<br>
+			見聞色の覇気80<br>
+			失せろ80<br>
+			新世界の一撃80<br>
+			かわいくなる 5<br>
+			首が太くなる5
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ドデカミン　80<br>
+			超大型巨人になる　近くの人は蒸気が当たる<br>
+			立体機動装置　80<br>
+			障害物を超えやすくなる<br>
+			ブレードで切り掛る　80<br>
+			立体機動装置に付いてるブレードで斬る<br>
+			言いくるめ 60<br>
+			それっぽいことでいいくるめる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			戻ったよ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			！！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！！！！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			全員の技能とイベントを確認したのを教える
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			シナリオを始める<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			出港だァ～～～！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			噂通りいいKPだ！出港だァ～！！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			どんな所なんだろう…楽しみだなあ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			出航だァ〜〜〜〜〜！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			皆さんは仲良しの4人です。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			へ〜！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			グビッ！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			皆だぁい好きなんだ☆
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			互いに切磋琢磨しながら成長する4人ですが<br>
+			あるときにこの中の誰かが発した「みんなでマラソンに出よう」といった言葉で、マラソン大会に出ることになりました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			世の中のどこかには&quot;炎の砂漠&quot;&quot;氷の大地&quot;&quot;砂の雪原&quot;があるんだって！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			へ〜〜！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			へ～！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			いつかおれの船で行くか
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			じゃあ身内で殺し合いなんか起きないね！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			そうだね
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			いやっほォ！！！<br>
+			野郎共ォ！！！<br>
+			マラソンだァ〜〜〜〜！！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			仲間で殺しあうやつなんていやしねェだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			みんなとても楽しみにしていますね
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			1d100 楽しさ (1D100) ＞ 50
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			は<br>
+			ん<br>
+			は<br>
+			ん
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ほ<br>
+			ど<br>
+			ほ<br>
+			ど
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			そ<br>
+			こ<br>
+			そ<br>
+			こ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			ま<br>
+			あ<br>
+			ま<br>
+			あ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ということで練習とか色々した後、マラソン大会当日になりました。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			きたか　マラソン大会
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			いよいよ本番か…ドキドキするね
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			楽しみだなァ～
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			みなさんはとても気合いが入ってるようですね
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			1d100 気合 (1D100) ＞ 67
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ぼ<br>
+			ち<br>
+			ぼ<br>
+			ち
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			みんなに負けないよ！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			そ<br>
+			こ<br>
+			そ<br>
+			こ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			そ<br>
+			こ<br>
+			そ<br>
+			こ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			俺は別にお前ら以外に勝てればいいからなァ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			まもなく出走の時間です。<br>
+			1d1000 参加者の数 (1D1000) ＞ 442<br>
+			442人くらいの参加者がいるようですね。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			結構いるだろ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			うぐっ多すぎだ〜〜〜！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			人気大会で確定
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			結構規模大きいね
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ということで、皆さんはランニング用のウェアに着替え、スタートラインに立ちました。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			仲間以外の参加者に失せろしていいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			ちなみにフルマラソンです
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ちょっと待てダイスが着るウェアってなんだよ…
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			知らねェ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			体力持つかなぁ…頑張ろう
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			持ち運び用にケースに入れよう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			40,4890メートル走れ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ケースとかでいいんじゃないかな
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			そして今、スターターピストルが鳴らされました！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			出走だァ～！！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			出走だァ～！！！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			出走だァ〜〜！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			皆さん走り出しましたね。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			出走だァ〜！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			回避で振ってください。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			この時点でほかの参加者に失せろしてもいいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			でもぉ…←マラソンだから序盤走れない理由が！？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ドデカミンでとりあえず他の参加者を減らす
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			S1d422 (1D422) ＞ 120
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=75 回避 (1D100&lt;=75) ＞ 29 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=55 回避 (1D100&lt;=55) ＞ 96 ＞ 致命的失敗
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 79 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　失せろ (1D100&lt;=80) ＞ 70 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 80 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			回避は速さの倍だっけ？
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			お頭は爆発して死にました。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ギ<br>
+			リ<br>
+			ギ<br>
+			リ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			速さの5倍
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おわァアアア～～～っ!!!
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=70 (1D100&lt;=70) ＞ 96 ＞ 致命的失敗<br>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			S1d120 (1D120) ＞ 85
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			🌈<br>
+			死体が量産されていく
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			S1d85 (1D85) ＞ 31
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ちょっと待て初っ端からダイス悪すぎだろ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			今生き残ってるの31人くらいですかね
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			誰か中止にしろよ二人爆発したんだぞ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			あとアルミンは死にました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			これが…君の見た景色なんだね　ベルトルト<br>
+			！？
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			うぐっ死にすぎだ〜〜〜！！<br>
+			死屍累々だぞォ！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			地雷が埋まっていたみたいです。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			撤去しとけアホンダラ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			三人ともクローンが出てきました。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			TRPG以外初っ端から爆死こわいだろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ベトコントラップかなんかか…！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] 死亡回数 : 0 → 1<br>
+			[ ドナルド ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ということで皆さん走っていきます…
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			TRPG以外皆死んだかあ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			今回はスタミナ消費無し
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			怖いなあ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			金持ちによるデスゲームかなんかか！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			次回から技能を使うごとに5ずつスタミナが減ります。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			捏造技能振る暇もなかったもんな　ルフィ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			立体機動で他人をつたいながら前に進むよ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			なるほど
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			2d10&lt;=80 (2D10&lt;=80) ＞ 13[9,4] ＞ 13 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			スタミナは死んだらリセットでいい？
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここで大体5kmですね。<br>
+			とっくのとうに陸上競技場の外に出ています。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ペース速いだろ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			死んだら2d10回復なのを教える
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			2d10の回復
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			はぁはぁ…待ってよみんな〜
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここまでのスタミナ消費は…<br>
+			1d10です
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			1d10 (1D10) ＞ 5
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			1d10 (1D10) ＞ 5
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 45 → 40<br>
+			[ シャンクスTRPG ] スタミナ : 60 → 55
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			1d10 (1D10) ＞ 5
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			ちなみに皆どこら辺にいる？
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			うぐっ！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			1d10 (1D10) ＞ 8
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] スタミナ : 50 → 42
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			三人5とかこれダイス操作だろ…
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			今の所全員同じ場所だと思ってんすがね…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			いま仲良し4人組は5kmくらいですね。<br>
+			あまり差も開いていません。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 50 → 45
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			こわいかおして皆のすばやさ下げていいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			なるほど
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここでアルミンが立体軌道装置で前にでます
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			GO!アクティブ！でとりあえず引き離したい
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　こわいかお (1D100&lt;=80) ＞ 57 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ちょっと前に出るよ！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			俺もシャンパラの火事場の馬鹿力で身体強化する
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 18 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			怖いお頭が怖い顔をしました。<br>
+			こわいですね
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			すばやさ2段階下がりそう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			キッ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			先頭の人たちが怯みます。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			GMが盤面を弄ってくれると誰が先頭とかわかりやすいかもしれないなァ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			よくやった！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 40 → 35
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ダイス野郎がなんか力出して前に出ました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 33 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ノリで力出したけどマラソンって序盤体力取っといた方がいいと思ってんすがね…
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			というかまずダイスどうやって走ってるんだよ…
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			これ以上技能使ったら死ぬから振れないの悲しいだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			今は先頭集団にアルミンがいますね。<br>
+			続いてダイス野郎、ドナルドと怖いお頭がいます
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			多分転がってるのを教える
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここでドナルドが全力で走り出しました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アルミン達先頭集団に追い付きました。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おわっ！ペース考えろよ！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 45 → 40
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			やるね、ドナルド！でも負けないよ！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここで障害物がでてきます。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			来たか　障害物
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈そういえば技能使ったらスタミナ減るの忘れてたww🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			なにやら巨人が現れました。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 55 → 50
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			開催地パラディ島で確定
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おわァアアア～～～っ！！！？？
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			弱そうだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			皆さんの後ろから追ってきます。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			皆いそげ～！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			回避で振れば逃げることができるでしょう
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			ごめん見逃してた
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			身体強化したから少し補正かかったりしないか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			駆逐してやる…この世から一匹残らず…駆逐してやる！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=55 回避 (1D100&lt;=55) ＞ 1 ＞ 決定的成功/スペシャル<br>
+			！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ+5
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			立体機動で殺しながら前に出ようと思ったけど後ろならいいかなって
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=75+5 回避 (1D100&lt;=80) ＞ 58 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			とても軽やかに避けました。スタミナ+2d10です。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			2d10 (2D10) ＞ 12[8,4] ＞ 12
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 64 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			すんげェ〜〜〜〜〜！！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 35 → 45
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=70 (1D100&lt;=70) ＞ 37 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			アルミンが巨人に食われて…死んだ！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アルミンは横から来た巨人に捕まって死にました。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ドデカミンになって周辺の巨人殺すよ！<br>
+			PCにも蒸気は当たる？
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			S1d31 (1D31) ＞ 4
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 4 ＞ 決定的成功/スペシャル<br>
+			！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			よりによって原作キャラだけ死ぬの悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			他の人にも当たったことにします
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			アルミーン！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			というか食われたら誰か知性化するじゃん
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			ちなみにあなたたち以外で残り4人です。<br>
+			クローンアルミンが大きくなりました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			超大型復権派で確定
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			うぐっモブ雑に死にすぎだ〜〜〜！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			これが…君の見た景色なんだね　ベルトルト
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			やばい超大型巨人が追ってくるぞ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			蒸気が出てきました。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			他の人は問答無用で死亡です。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			すぐさまクローンが向かってきます。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			爆発だァ～！！！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] 死亡回数 : 0 → 1<br>
+			[ ドナルド ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			無垢の巨人どこかへ逃げました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			またね〜〜〜〜！！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ちょっと待てアルミンこれからどうなるんだよ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			x3 幸運で振ってください 繰り返し対象のコマンドが実行できませんでした (幸運で振ってください)<br>
+			こんなん出るんだ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=45 幸運 (1D100&lt;=45) ＞ 67 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			とりあえず死んだからスタミナ回復
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おわァアアア～～～っ!
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			2d10 (2D10) ＞ 13[8,5] ＞ 13
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			x3 CCB&lt;=60 幸運 #1<br>
+			(1D100&lt;=60) ＞ 19 ＞ 成功<br>
+			<br>
+			#2<br>
+			(1D100&lt;=60) ＞ 80 ＞ 失敗<br>
+			<br>
+			#3<br>
+			(1D100&lt;=60) ＞ 7 ＞ スペシャル
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			死んだ人は2d10回復
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 40 → 50
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=55　幸運 (1D100&lt;=55) ＞ 66 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2d10 (2D10) ＞ 18[9,9] ＞ 18
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			もう2回振るべきか教えろ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			上限は突破しない？
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			教える<br>
+			突破しない
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			x2 CCB&lt;=45 幸運 #1<br>
+			(1D100&lt;=45) ＞ 88 ＞ 失敗<br>
+			<br>
+			#2<br>
+			(1D100&lt;=45) ＞ 63 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 50 → 68
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=55 (1D100&lt;=55) ＞ 43 ＞ 成功<br>
+			CCB&lt;=55 (1D100&lt;=55) ＞ 55 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おれの運悪すぎだろ！！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			x3 CCB&lt;=50 #1<br>
+			(1D100&lt;=50) ＞ 62 ＞ 失敗<br>
+			<br>
+			#2<br>
+			(1D100&lt;=50) ＞ 76 ＞ 失敗<br>
+			<br>
+			#3<br>
+			(1D100&lt;=50) ＞ 17 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			多分シャンクスは2回地雷を踏んで死にました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			2成功1失敗
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おわァアアア～～～っ!
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アルミンは一回死にました。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 2 → 4
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] 死んだ回数 : 1 → 2
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			巨人も殺せる地雷<br>
+			つ<br>
+			よ<br>
+			つ<br>
+			よ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ヤバいどんどん引き離されていく
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここまでで大体15kmですね。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			むちゃくちゃだ…想像以上！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			時止め！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			全員に失せろして気絶させていいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！！！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			シャンパラの空飛ぶ技能で飛行状態になる<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 76 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			1位集団 アルミンドナルド<br>
+			中間 ダイス<br>
+			最後尾 お頭
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　失せろ (1D100&lt;=80) ＞ 77 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			お頭大丈夫かな…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			時止め解除
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			もうすぐ先頭に着く
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			すげェ覇気でみんな気絶しました。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 45 → 40
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			相変わらずスゲェ覇気だ・・・
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			あとダイスが空を飛んでいきます。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			一位はおれのもんだァ！！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			うわあ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 60 → 55
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			お頭が一位ですね
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			へ〜！
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			お頭洗脳して他の奴らに覇気使わせたい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			あと15km地点なのでスタミナ消費<br>
+			消費量は2d10
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			2d10 (2D10) ＞ 17[9,8] ＞ 17
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			立体機動装置！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			2d10 (2D10) ＞ 12[6,6] ＞ 12
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2d10 (2D10) ＞ 5[3,2] ＞ 5
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			悪ィおれ死んだ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			2d10 (2D10) ＞ 15[8,7] ＞ 15
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 64 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 40 → 23
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			お頭死にすぎだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			お頭とアルミンは死にました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			さっきのスタミナ回復やってなかった<br>
+			2d10 (2D10) ＞ 11[6,5] ＞ 11
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 50 → 38
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おわァアアア～～～っ!
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 4 → 5<br>
+			[ シャンクスTRPG ] スタミナ : 55 → 50
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			2d10 (2D10) ＞ 9[7,2] ＞ 9
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 67 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			お頭とアルミンは回復していいよ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 23 → 32
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			続いてブレードで道中の人も切るよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルドはシャンクスを洗脳しました。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			まずいお頭のスタミナがジリ貧になり始めた
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 80 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			なんだ！？(^^)なんだ！？(^^)
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			失せろで振って
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　失せろ (1D100&lt;=80) ＞ 44 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			調子乗って減らしすぎた🌈
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] スタミナ : 28 → 28<br>
+			[ ドナルド ] スタミナ : 38 → 33<br>
+			[ 怖いお頭 ] スタミナ : 32 → 27
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルドとシャンクス以外はすげェ覇気で気絶しました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ただここで５減るから死ぬ？
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			死ぬ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] 死亡回数 : 2 → 3
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			相変わらず…すげェ覇気だ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルドのクローンが送られてきます。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			相変わらず…すげェアホンダラだ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			2d10 (2D10) ＞ 6[1,5] ＞ 6
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			今首位はドナルドとシャンクスです。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 33 → 39
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			へ〜！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アルミンも立体軌道装置で追い付きました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			疲れたぁ〜
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ダイスは中間あたりですね
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			そろそろエリアが変わるかな？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			洗脳してきたドナルドに新世界の一撃して攻撃していいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			ちなみにアルミンは他の参加者切りました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			25km地点です。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			何やってんだお前ェ！？
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			僕はもう良い人じゃないよ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			何やってんだお前ェっ！！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			モブは残り3人です。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			しぶといな…
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			こいつ本当にアルミンか？
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここで障害物です。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			そういえばゴールは何kmか教えろ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　新世界の一撃 (1D100&lt;=80) ＞ 92 ＞ 失敗<br>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			42km
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			のどかな風景で好き
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			筋力18あるアルミンなんかアルミンじゃない
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 27 → 22
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			🌈<br>
+			5減らしてくれ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			目星か幸運振ってください
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ぜェ…ぜェ…
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=70目星 (1D100&lt;=70) ＞ 22 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　見聞目星 (1D100&lt;=80) ＞ 52 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ここは消費無し
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			シャンクトゥルフで目星振る
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=55 (1D100&lt;=55) ＞ 17 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 92 ＞ 失敗
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			ダイス野郎は何も見えませんでしたね
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			何も…見えない…！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			他の三人は猫がいるのを見つけました。マラソン中に踏まれそうな位置にいますね。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			見てないけど多分ニャンクスじゃない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ニャンクス濃厚に
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			猫を洗脳して道を開けたい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			保護するぞ、来い
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ニャンクス？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 7 ＞ スペシャル<br>
+			！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			少なくとも俺は飛んでるから踏まないってことでいいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルドは猫を洗脳しました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			猫なら助けるけどニャンクスなら助けない
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			何やってんだお前ェっ！！！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ついやっちゃうんだ☆
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			うわ！ありがとう！<br>
+			もう洗脳されたけど
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			猫は道の脇の方にいきましたね。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			かわいくなって猫に対抗していいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			S1d4 (1D4) ＞ 4
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 39 → 34
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			あと怖いお頭になつきました
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			良かったね
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			連れてってもいいよ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			王道の展開で確定
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			モフモフしてるしね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			クリティカルってスタミナ回復だっけ？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			抱っこしてゴールするぞ、来い
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			ヤンキーが猫を保護するのと一緒
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ただシャンクスは遅れることになるよ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			構わねェ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=5　かわいくなる (1D100&lt;=5) ＞ 69 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p7">
+			<b>GM</b>
+			スタミナ回復
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			仕方なかったっ<br>
+			理由は一つ！<br>
+			可愛い猫が怖いお頭に懐いているからだ！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			まぁ…そらそうか
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			5減らせ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 22 → 17
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p7">
+			<b>GM</b>
+			スペは無し
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			スタミナの消費が激しい
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			あ～なるほど
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			今先頭がアルミンドナルド<br>
+			中間ダイス<br>
+			ビリお頭
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ハァ…ハァ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			といった順位だね
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			段々怖いお頭が辛そうな人に見えてきた
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			頑張れお頭〜！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			あと他のモブは全員死んだよ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			モブいた意味を教えろ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			なんだ全滅したのか
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			幸運一回振って
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			な<br>
+			に<br>
+			も
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=55 (1D100&lt;=55) ＞ 54 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ゾッ！？！！？？！？！？？！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 70 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=60 幸運 (1D100&lt;=60) ＞ 64 ＞ 失敗
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			賑やかにするため
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=45 幸運 (1D100&lt;=45) ＞ 75 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルドとシャンクスとダイスは死にました。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 5 → 4
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			さっきから僕だけ仲間はずれなのが多いな…
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 4 → 6
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			地雷って怖いね
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			何でだァ～！！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			アラー！？
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			2d10 (2D10) ＞ 6[1,5] ＞ 6
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			ちょっと待て地雷があるレースってなんだよ…
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] 死亡回数 : 3 → 4
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ちょっと待て空飛んでるに機動する地雷って何だよ…
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 17 → 21<br>
+			[ 怖いお頭 ] スタミナ : 21 → 23<br>
+			[ シャンクスTRPG ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			2d10 (2D10) ＞ 11[6,5] ＞ 11
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2d10 (2D10) ＞ 7[2,5] ＞ 7
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 34 → 45
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アルミンが1位で離れて他の3人って感じ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 50 → 57
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			暫定1位だー！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			あと猫は死んでませんでした
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			マズイ結構差がつき始めた
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			目の前で懐いた相手が爆死する猫がかわいそうだろ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			その前に洗脳されてるしなァ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			残り10kmです！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			1d100 猫の悲しみ (1D100) ＞ 80
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			安いもんだ…おれの命くらい　無事でよかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			し<br>
+			く<br>
+			し<br>
+			く
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			悲しいだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			スタミナ消費は3d10
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			はあ…はあ…
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			3d10 (3D10) ＞ 17[3,4,10] ＞ 17
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			3d10 (3D10) ＞ 23[8,5,10] ＞ 23
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			シャンパラのワープでアルミン追い越す<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 23 → 0
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			3d10 (3D10) ＞ 21[9,10,2] ＞ 21<br>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ジャストキルだろ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			3d10 (3D10) ＞ 22[9,10,3] ＞ 22
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] スタミナ : 45 → 28
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			シャンクスは全快していいよ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] スタミナ : 28 → 6
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			全員死にましたね
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 0 → 45
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			！？
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			うわあり！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 6 → 7<br>
+			[ アルミン ] 死んだ回数 : 2 → 3
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			2d10 (2D10) ＞ 13[3,10] ＞ 13
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ごめんこれシャンクスって俺でいいのか教えろ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			2d10 (2D10) ＞ 9[1,8] ＞ 9
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			差は変わらないようです。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] スタミナ : 6 → 19<br>
+			[ ドナルド ] スタミナ : 28 → 37
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ごめんお頭のこと
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			シャンクス二人いた！？
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ちょっと待ておれ死にすぎだろ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			シャンクスTRPGはダイスって呼んでた
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 57 → 36<br>
+			[ シャンクスTRPG ] 死亡回数 : 2 → 3
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			猫以外の全員に失せろする、来い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2d10 (2D10) ＞ 12[2,10] ＞ 12
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			アルミンにドナルドマジック打ちたい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ダントツで死んでるお頭
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			ということでそろそろゴールが近いですね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 36 → 48
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　失せろ (1D100&lt;=80) ＞ 78 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t12">
+		<div class="tabtitle">秘匿(GM,KP)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 13 ＞ スペシャル
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 19 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			お頭のダイス運は最悪だからなァ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 45 → 40<br>
+			[ ドナルド ] スタミナ : 37 → 32
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ちょっと一つずつ処理します
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			まずダイスは短距離ワープしました<br>
+			アルミンに追い付きましたね
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 48 → 43
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			もうすぐお前の隣に着く
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			どんどんルール無用の戦いになってて怖いだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルドはアルミンにレーザー攻撃します。<br>
+			回避かなにか防御で
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ドナルドマジック！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ちょっと待てドナルドのレーザーって何だよ…
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 11 ＞ 成功<br>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			避けましたね。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			何するんだドナルド！<br>
+			危ないじゃないか！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			アルミンがゲスい顔してるだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			お頭は猫以外に失せろしました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			結局PvP起こってんじゃねえかアホンダラ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アルミンとダイスに追い付きました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			アドリブはPVPがなんぼでしょ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			それはそう
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			それはそう
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			それはそう
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			全員気絶しまくってるからタイム滅茶苦茶だと思ってんすがね…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ということでドナルドが最下位です
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			悲しいだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			そしてここで障害物です。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			キッショ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			なにやら3人出てきました。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			キッショ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			うわ出たよ…
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ドデカミンで超大型巨人化して踏み潰すよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>ラッキールウ</b>
+			お゛で゛達゛、゛ア゛ル゛ミ゛ン゛犯゛す゛！゛！゛！゛
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			ちょっと待てなんで目の敵にされてんだよ…
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			アルミン犯された後にシャンクトゥルフでアザトース召喚する<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 44 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			原作にもこんなおっさんいたなァ…
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 94 ＞ 失敗<br>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>うゆシャン</b>
+			うゆ…アルミンにしろいちっちでちゃうシャン…
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			残りはおっさんとダイスとピエロだしなァ…
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			アルミンはなすすべなく犯されました。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			君のせいで…俺は今大変なんだから
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			アルミンがかわいそう
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			最下位に落ちましたね。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] スタミナ : 19 → 24<br>
+			[ アルミン ] スタミナ : 24 → 19<br>
+			[ アルミン ] 死んだ回数 : 3 → 4
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			2d10 スタミナ (2D10) ＞ 6[4,2] ＞ 6
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] スタミナ : 19 → 20
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			アルミンが犯されて…自殺した！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			悲しいだろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			あとなにかダイスが呼び出しました。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			3人組は帰りました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！！！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 43 → 38
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			言いくるめてほか3人の足を遅らせる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			そう、アザトースです。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			うぐっ死なばもろともだァ～！！
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=60 (1D100&lt;=60) ＞ 48 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			怖すぎだァ～！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			そう、じゃないんすがね…
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ダイスに最後っ屁で新世界の一撃していいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			1d10/1d100とか死ぬだろ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			SANチェック…は無いから全員問答無用で死にました。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			アラー！？
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] 死亡回数 : 3 → 4
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			猫は無事か教えろ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 7 → 8
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2d10 (2D10) ＞ 6[5,1] ＞ 6
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			スタミナ回復は無しです。
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ アルミン ] 死んだ回数 : 4 → 5
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			猫は無事です。
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ドナルド ] 死亡回数 : 4 → 5
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			こいつ本当に普通の猫か…？
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			猫だから狂気を理解できないの濃厚に
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			次の場面になったらシャンパラの魅了で猫を操って逆走させる<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 69 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			猫すんげぇ～～～！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アザトースは何もせずに帰りましたね。<br>
+			ダイスはなんだかんだ見慣れていますのでトップになりました。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			見慣れてるのに死んでるの不思議だろ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			すまん見てなかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			猫がアザトースを見ても何もないのは“そういうこと”だと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			お前なら…いい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ゾッ！？！！？！！？？！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			アルミンは他の三人に何か呼び掛けました。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			じゃあ今度こそダイスに攻撃していいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			皆待ってよ！<br>
+			全員でゴールした方が達成感はあるんじゃないかな？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　新世界の一撃 (1D100&lt;=80) ＞ 29 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			グレッグはどう思う？
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			1回仕切り直そうよ！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ということで皆さん足並み揃えましたね。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！？
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ﾍﾞﾘﾊﾞｰアルミン出し抜くつもりﾍﾞﾘﾊﾞｰ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			友情とはとても素敵なものですね
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			展開が読めるなァ…
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			ラストスパートだ！<br>
+			みんな頑張ろう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			そして横並びになると、お頭はダイスを殴り飛ばしました。
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">秘匿(GM,UV)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			超大型巨人になってほか三人を踏み潰すよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			所で今最終地点？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ゴール前に全員に失せろ間に合うか教えろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			何やってんだお前ェっ！！！！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 40 → 35
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ゲスが混ざってると見てて面白いだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			可哀想
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			あんなもの呼び出すからだアホンダラ
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			それはそう
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			それはそう
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ダイスは3d6のダメージ
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			全員ケツアクメ卓に閉じ込める<br>
+			来い<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 14 ＞ スペシャル
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			3d6 (3D6) ＞ 12[2,6,4] ＞ 12
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			ゴール前にやる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わりい　おれ死んだ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			ギリギリ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ならギリギリする、来い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] 死亡回数 : 4 → 5
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			もうゴールは目の前です。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2d10 (2D10) ＞ 5[1,4] ＞ 5
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(GM,お頭)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　失せろ (1D100&lt;=80) ＞ 65 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] スタミナ : 38 → 43
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(GM,ドナルド)</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			GOアクティブで全力疾走したい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			一個ずつ処理します。<br>
+			まずアルミンは巨人になって他の三人を踏み潰しました。
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p6">
+			<b>アルミン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 78 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			おわァアアア～～～っ!
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] 死亡回数 : 8 → 9
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			この…ゲス野郎がァ！！！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ シャンクスTRPG ] 死亡回数 : 5 → 6<br>
+			[ ドナルド ] 死亡回数 : 5 → 6
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			全員しっかり死にました。
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			2d10 (2D10) ＞ 7[3,4] ＞ 7
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2d10 (2D10) ＞ 10[3,7] ＞ 10
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			これが…君の見た景色なんだね　ベルトルト
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			2d10 (2D10) ＞ 12[9,3] ＞ 12
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 35 → 42<br>
+			[ シャンクスTRPG ] スタミナ : 43 → 53<br>
+			[ ドナルド ] スタミナ : 32 → 44
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p7">
+			<b>GM</b>
+			ごめんダイス確認してなかった
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			まあ成功してたから結果オーライで
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			ゴールは目前です
+		</p>
+		<p class="player p6">
+			<b>アルミン</b>
+			みんな大丈夫ー？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			このアルミンいろいろ捨てすぎだと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			お前のせいだろアホンダラ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			今アルミンがトップですね
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			それはそう
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			どの口が言ってるんだお前ェ！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			あと最後だから頑張ろう！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			そしてお頭は最後に「失せろおおおお！」と叫びます。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈名前まで変わったww🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			失せろおおおおおお！！！！！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			すげェ覇気によってアルミンとかは尻餅をつきます。
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			うわ！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 怖いお頭 ] スタミナ : 42 → 37
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ちょっと待てダイスの尻って何だよ…
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			ダイスもケツアクメ卓に突っ込む？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ファンブルかなんかだと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			俺は行かない
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			一位にはおれが着く…良かったな
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			そのままゴールする
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			とドナルドは起き上がり、最後の力を振り絞って走りました！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			最後に立体機動してもいいかな？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=50 (1D100&lt;=50) ＞ 79 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			あわわ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 52 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			そしてアルミンも立体軌道装置によってお頭を捉えます…
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			うなじを切り取ってもいい？
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			さぁ、これがラストスパートです！<br>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			反撃許されるか教えろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ゲスすぎるだろ
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			CCB&lt;=80 ブレード (1D100&lt;=80) ＞ 34 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			これもう怖いお頭…よりもゲスミンの方が怖いだろ、、、、
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			色んなモノ捨てすぎだと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　新世界の反撃 (1D100&lt;=80) ＞ 71 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			と二人が戦っていると！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			マーレ編で吹っ切れたんでしょ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ダイス野郎が何かIDのようなものを発します<br>
+			「kjp…」
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			失せろおおおおおおお！！！！！！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			シャンクスレ立てたの確定
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			！？
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			ケツアクメキッショ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			マズイケツアクメが起動しだした
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			そいつはやめろ<br>
+			ccb&lt;=90 ケツアクメ (1D100&lt;=90) ＞ 44 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			3人はケツアクメ卓に閉じ込められました。
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			どういうことなの…
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			これからたっぷりとケツアクメしてもらうぜ？(妖艶)
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			そして猫はどっか行きました
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			頼む…出してくれェ！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			スペシャル出すまで出られないと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p7">
+			<b>GM</b>
+			ごめん猫逆走させられなかった
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			え〜〜〜
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			マズイ封印された
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			ドデカミンでケツアクメ破壊可能？<br>
+			それとも先にゴールされるかな
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			そしてダイスが一位でゴール！
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p7">
+			<b>GM</b>
+			先にゴールされました
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ゴールには俺が着く…よかったな
+		</p>
+	</div>
+
+	<div class="tab t13">
+		<div class="tabtitle">秘匿(GM,アルミン)</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			はい。
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			はい。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			最後のあがきにダイスも引きずり込んでいいか教えろ
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			なんでこんなダイスが1位なんだ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			一位は揺るがないけどいいよ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　新世界の道連れ (1D100&lt;=80) ＞ 48 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			何やってんだお前ェっ！！！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			まだまだ、お前もケツアクメしてもらうぜ？(妖笑)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			なんでこうなるんだ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ついでにダイスを洗脳して自分だけここから出る
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			さあマラソンは終わりだ！クリティカル出そう！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			全員ケツアクメ卓に入って、ケツアクメすることになりました。
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			2位以下の前でダイス転がしながらケツアクメキメるぞォ！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ケツアクメキメるぞォ！！
+		</p>
+	</div>
+
+	<div class="tab t11">
+		<div class="tabtitle">秘匿(GM,TR)</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ドナルドの洗脳に魅了で対抗する<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 47 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			クリティカル出せば卓から出れるかも
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルド振って
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 14 ＞ スペシャル
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			スペシャルかあ・・・
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			悲しいだろ
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			CCB&lt;=80 超大型巨人 (1D100&lt;=80) ＞ 40 ＞ 成功<br>
+			意味無いなあ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=80　新世界の一撃 (1D100&lt;=80) ＞ 33 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			はよケツアクメしろ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			一応俺もケツアクメで振る<br>
+			CCB&lt;=80 KJP (1D100&lt;=80) ＞ 64 ＞ 成功<br>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			フッフッフッ！！！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			フッフッフフッフ！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！<br>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ccb&lt;=90 ケツアクメ (1D100&lt;=90) ＞ 33 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ccb&lt;=90 ケツアクメ (1D100&lt;=90) ＞ 25 ＞ 成功<br>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			新たなKJP跡地で確定
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			卓の名前までかわってんじゃねえかアホンダラ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			そして仲良し4人組は一生ケツアクメ卓でケツアクメすることになった…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			地獄だろ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			相変わらず…スゲェ&quot;虚無&quot;だ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>GM</b>
+			おしまい
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			こわい
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			これ洗脳系エロ同人みたい
+		</p>
+		<p class="player p9">
+			<b>ラッキールウ</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p12">
+			<b>トレーボル</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			相変わらず…スゲェオチだ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>うゆシャン</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ケツアクメで宴はしたくねェだろ
+		</p>
+		<p class="player p13">
+			<b>無垢の巨人</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			ダイスシャンは責任を取れ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			すまん(Thanks.)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>アザトース</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ccb&lt;=5 ケツアクメ脱出 (1D100&lt;=5) ＞ 85 ＞ 失敗
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			お前でも…許さん
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			CCB&lt;=5 (1D100&lt;=5) ＞ 21 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=5  (1D100&lt;=5) ＞ 40 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>ドフラミンゴ</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=5 (1D100&lt;=5) ＞ 9 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			いい加減出してくれ(^^)<br>
+			ccb&lt;=5 (1D100&lt;=5) ＞ 28 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>ドフラミンゴ</b>
+			CCB&lt;=90　ケツアクメさせる (1D100&lt;=90) ＞ 39 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			ccb&lt;=5 (1D100&lt;=5) ＞ 74 ＞ 失敗
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			無理
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ケツアクメ対策キャラ考えとくか・・・
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			CCB&lt;=5 (1D100&lt;=5) ＞ 53 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			めちゃくちゃだ…！噂以上…！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			こういう時に限ってクリティカルが出ないのはそういうことだと思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			CCB&lt;=5 (1D100&lt;=5) ＞ 99 ＞ 致命的失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			んおおおお！！イクッ！イクッ！ドンキホーテ・ドフラミンゴ！！41歳！！！ゴミ共の前で乳首シコられながらケツアクメキメるぞォ！！見てろよォ！！テメェら！！フッフッフッフッフッ！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			🌈<br>
+			🌈<br>
+			CCB&lt;=5 (1D100&lt;=5) ＞ 38 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ということでこの卓は終わり
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			よけい出られなくなったじゃねェかアホンダラ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ダイス　ケツアクメ卓一生幽閉！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			終<br>
+			わ<br>
+			り<br>
+			だ
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			お疲れシャン！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			おわァアアア～～～っ！！！<br>
+			クリティカルが…出ない！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			早く別の卓のPLかGMやれ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			宴したくねェ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			出してくれ…出してくれよ！ 俺は帰らなくちゃいけないんだ俺の世界に！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			真面目な感想言うとスタミナシステムは割と面白かっただろ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			お疲れシャンだァ～！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			お疲れシャン
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			見てて面白かったことを教える
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			問答無用で死ぬの楽しいだろ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			またアドリブ立てろ
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			もっと煮詰めてもいいかもしれないねこのシステム
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			最初はどんなもんかなーと思ったけど中盤あたりから競い始めて面白かった<br>
+			お疲れシャン
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			イベント開示しろアホンダラ
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			スタミナを同一にするとか？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドナルド</b>
+			ドナルドマジック！80　強力なレーザー攻撃、<br>
+			らんらんるー☆80　洗脳術<br>
+			GO!アクティブ！50　運動能力を向上させる<br>
+			ハッピーセット☆80　マック食べて元気がもーりもり！になる回復技<br>
+			目星　70<br>
+			<br>
+			地雷原フルマラソン
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			ドデカミン　80<br>
+			超大型巨人になる　近くの人は蒸気が当たる<br>
+			立体機動装置　80<br>
+			障害物を超えやすくなる<br>
+			ブレードで切り掛る　80<br>
+			立体機動装置に付いてるブレードで斬る<br>
+			言いくるめ 60<br>
+			それっぽいことでいいくるめる
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			技能値390<br>
+			シャンクトゥルフ80 シャンクトゥルフっぽいことをする<br>
+			シャンパラ80 シャンパラっぽいことをする<br>
+			KJP80 ケツアクメ卓っぽいことをする<br>
+			その他80 他のTRPGっぽいことをする<br>
+			自爆70 余った<br>
+			<br>
+			イベントは例の3人がアルミン犯す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			イベント<br>
+			障害物の中に紛れ込んだ猫がいる<br>
+			無事に見つけ出して保護してあげよう<br>
+			技能<br>
+			こわいかお80<br>
+			見聞色の覇気80<br>
+			失せろ80<br>
+			新世界の一撃80<br>
+			かわいくなる 5<br>
+			首が太くなる5
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			レースの途中無垢の巨人(知性のない巨人)が現れて参加シャンを食う
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			アドリブなのに割と正当な技能揃いだろ<br>
+			ダイス失せろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			なんで俺狙い撃ちされてんだよ…
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			悲しいだろ
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			可愛いからだろ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			犯しそうなのがアルミンしかいなかった
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			それはそう
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			ドナルド犯せ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			ドナルドは犯す側だしなァ…
+		</p>
+		<p class="player p9">
+			<b>ラッキールウ</b>
+			わ゛か゛っ゛た゛！゛
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			見苦しいからやめてくれ(^^)
+		</p>
+		<p class="player p9">
+			<b>ラッキールウ</b>
+			お゛で゛ド゛ナ゛ル゛ド゛犯゛す゛！゛！゛！゛！゛
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			こわい
+		</p>
+		<p class="player p9">
+			<b>ラッキールウ</b>
+			CCB&lt;=580 犯゛す゛！゛ (1D100&lt;=580) ＞ 26 ＞ スペシャル
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ドナルドは犯されました。
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			アラー！？
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			ケツアクメ決めつつ犯されるの見苦しいだろ
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			Jun君んちの性癖で確定
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			以上<br>
+			これで第二のケツアクメ卓終わり
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			そういえば皆ケツアクメ決めてるんだった
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			感染していくの怖い
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			なんでこうなっちまったんだろうな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			俺もこんなつもりじゃなかったのを教える
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			スレにログ貼るぞォ～！
+		</p>
+		<p class="player p3">
+			<b>ドナルド</b>
+			お疲れシャン！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			ということで終わり<br>
+			またね～！
+		</p>
+		<p class="player p8">
+			<b>怖いお頭</b>
+			またね～！！
+		</p>
+		<p class="player p11">
+			<b>ゲスミン</b>
+			またね〜！
+		</p>
+		<p class="player p2">
+			<b>シャンクスTRPG</b>
+			またね〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p7">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+</body>
+</html>
