@@ -1,0 +1,6006 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [メイン] タブ */
+		.t0 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名さん,匿名さん)] タブ */
+		.t1 {
+			background-color: #fbdac8;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステータス] タブ */
+		.t2 {
+			background-color: #d3edfb;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t3 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [情報] タブ */
+		.t4 {
+			background-color: #ecf4d9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：歌舞ンクス */
+		.p0 { color: #2196f3; }
+		.p0 .diceroll { background-color: #2196f3; }
+
+		/* 発言者：ロボエース */
+		.p1 { color: #845a12; }
+		.p1 .diceroll { background-color: #845a12; }
+
+		/* 発言者：コナーファ */
+		.p2 { color: #ffc100; }
+		.p2 .diceroll { background-color: #ffc100; }
+
+		/* 発言者：ター */
+		.p3 { color: #e91e63; }
+		.p3 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：noname */
+		.p4 { color: #888888; }
+		.p4 .diceroll { background-color: #888888; }
+
+		/* 発言者：クレヨンしんちゃん */
+		.p5 { color: #888888; }
+		.p5 .diceroll { background-color: #888888; }
+
+		/* 発言者：KP */
+		.p6 { color: #7f2509; }
+		.p6 .diceroll { background-color: #7f2509; }
+
+		/* 発言者：system */
+		.p7 { color: #888888; }
+		.p7 .diceroll { background-color: #888888; }
+
+		/* 発言者：秋月なつき */
+		.p8 { color: #673ab7; }
+		.p8 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：船員 */
+		.p9 { color: #9e9e9e; }
+		.p9 .diceroll { background-color: #9e9e9e; }
+
+		/* 発言者：老夫婦 */
+		.p10 { color: #000000; }
+		.p10 .diceroll { background-color: #000000; }
+
+		/* 発言者：カップル(男) */
+		.p11 { color: #ffc107; }
+		.p11 .diceroll { background-color: #ffc107; }
+
+		/* 発言者：カップル(女) */
+		.p12 { color: #ff5722; }
+		.p12 .diceroll { background-color: #ff5722; }
+
+		/* 発言者：男 */
+		.p13 { color: #3f51b5; }
+		.p13 .diceroll { background-color: #3f51b5; }
+
+		/* 発言者：娘 */
+		.p14 { color: #795548; }
+		.p14 .diceroll { background-color: #795548; }
+
+		/* 発言者：怪物 */
+		.p15 { color: #4caf50; }
+		.p15 .diceroll { background-color: #4caf50; }
+
+		/* 発言者：？？？ */
+		.p16 { color: #888888; }
+		.p16 .diceroll { background-color: #888888; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			来たことをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			正当ナワンピキャラガ揃ッタナ……ルフィ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			これが正当なワンピキャラとかこのロボはあ、異常だなァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			来たことを教える
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オヤジ・・・・・？
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			今のうちにとりあえずステータスを決めるゥ～～～<br>
+			（ﾍﾞﾍﾞﾝ）来い
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			１５ｄ６ (15D6) ＞ 49[4,1,1,3,6,6,6,1,2,4,2,2,6,2,3] ＞ 49
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			(6D15) ＞ 61[2,14,11,8,15,11] ＞ 61
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			15d6 (15D6) ＞ 50[4,4,2,4,5,6,5,1,2,5,2,6,2,1,1] ＞ 50
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			15d6 (15D6) ＞ 46[6,1,5,2,4,6,2,1,6,1,5,1,1,4,1] ＞ 46
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			間違えたァ～～～！！！🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			来たことをおしえるんすがね…
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			15d6 (15D6) ＞ 48[4,1,1,3,1,5,2,1,5,4,3,6,1,6,5] ＞ 48
+		</p>
+		<p class="player p4">
+			<b>noname</b>
+			ステータス決まったらステ一覧に書いてといてくれ<br>
+			推奨は目星<br>
+			戦闘あり
+		</p>
+		<p class="player p4">
+			<b>noname</b>
+			ルウのすけいなくない？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>クレヨンしんちゃん</b>
+			やっぱ失せる
+		</p>
+		<p class="player p4">
+			<b>noname</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>noname</b>
+			ルウのすけは失せた
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ＩＮＴが低すぎだァ～～～！！！<br>
+			振りなおしていいか　あ、教えろォ～～～！！！
+		</p>
+		<p class="player p4">
+			<b>noname</b>
+			いいよ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			うわ！ありがとうゥ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			STR 6<br>
+			CON 15<br>
+			DEX 9<br>
+			POW 8 幸運SAN 40<br>
+			INT 11 アイディア 55 技能 330<br>
+			メラメラの実 99<br>
+			エースは……ロボなんだろ！？ 99<br>
+			挨拶 50<br>
+			お礼 82
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			3ｄ6 (3D6) ＞ 16[4,6,6] ＞ 16
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p3">
+			<b>ター</b>
+			STR6<br>
+			CON9<br>
+			DEX8<br>
+			POW13<br>
+			INT12<br>
+			見聞色70 拳銃75  武装色60<br>
+			あんた気は確かか！？75 応急手当75<br>
+			オレを知ってるだろ？ 5
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			IQ280
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			作リ終ワッタ　教エル
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			おれも終わったのを教える
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			INT低すぎるから振りなおしてもいいか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			INT何？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			6
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			6か<br>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			3d6 (3D6) ＞ 10[4,4,2] ＞ 10
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ＳＴＲ　10<br>
+			ＣＯＮ　15<br>
+			ＤＥＸ　8<br>
+			ＰＯＷ　13<br>
+			ＩＮＴ　16<br>
+			ＨＰ　15<br>
+			ＳＡＮ　65　幸運65<br>
+			アイデア　80<br>
+			技能　480<br>
+			<br>
+			宴　99<br>
+			目星　99<br>
+			飛び六方（回避）　99<br>
+			歌舞伎サンダー（攻撃）　99<br>
+			レインボー歌舞伎アート（説得）　84
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			ちょっと待てよ…レインボー歌舞伎アートってなんだよ…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			カラフルな浮世絵が、あ、自由～自在ィッ！！虹色お絵かき、ｲﾖｫーーレインボーアートデラックスゥ！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ちょっと待て回避99って何だよ…
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			お前頭が悪いんだな？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コワイ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			STR12<br>
+			CON12<br>
+			DEX9<br>
+			POW7<br>
+			INT10<br>
+			料理70<br>
+			目星99<br>
+			〇〇をオーブンで99<br>
+			これは〇〇といいまして62
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			戦闘があるなら回避を取った方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺モロギア系ダカラ攻撃通ラナイ説濃厚ニ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			申し訳ないが昼飯に呼ばれたので20分ほど失せることを、あ教えるゥ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			できたのを教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オヤツカ？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			歌舞伎を待つ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			来イヨ　高ミヘ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p7">
+			<b>system</b>
+			[ コナーファ ] SAN : 0 → 35
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			そういえば初心シャンはいない感じか？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			私は初心シャンといいまして…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ジャアオレモ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p7">
+			<b>system</b>
+			[ コナーファ ] HP : 0 → 12
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			ステータスの説明いる？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ルルブ読みながらやってるけど軽く説明してくれたらありがたいのを教える
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			わかった<br>
+			STRが筋力、HPの値もSTRの値と一緒になることを教える<br>
+			力仕事をする時にはこれ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			HPの値はCONと一緒だと教える
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			HPノ値ハCONデ確定
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			Powが精神力<br>
+			Pow×5がSAN値と言って正気を保てるかの値<br>
+			短期間にSAN値が5減るとアイデアを振り、成功したら発狂してしまう
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			Dexはすばやさ<br>
+			戦闘とかは基本Dexが高い方から戦闘をする
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			POWガ精神力デ確定
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			Powじゃん！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			HPはSTRなのかCONなのかどっちを参照するのか教えろ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			教エル
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			Kpが把握できないとか笑ってくれ(^^)<br>
+			Con=HP
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			STR　筋力<br>
+			CON　体力<br>
+			DEX　回避<br>
+			POW　精神<br>
+			INT　知能
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			STRは筋肉とかの強さでCONは体力とか健康面の丈夫さだと思ってほしいんすがね…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			INTが知性<br>
+			INT×5で知識、アイデアになる<br>
+			技能に振るポイントがINT×30
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			幸運→POW×5　SAN値モ一緒<br>
+			アイディア→INT×5<br>
+			技能→INT×30
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			INTの倍数を33倍にしてたことを教える<br>
+			修正してくるから笑ってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			料理70<br>
+			目星69<br>
+			〇〇をオーブンで99<br>
+			これは〇〇といいまして62
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			戻ってきたことをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			揃ったな、ルフィ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			できそうだし始める<br>
+			シナリオ｢船上の恋｣
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コワイ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			探索者達は大学生です
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ワ<br>
+			ク<br>
+			ワ<br>
+			ク
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかったァ～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺は医大な大学生だ！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			馬鹿にすんじゃねェ！！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			探索者は藁々大学に通っている学生だ。<br>
+			今日は土曜日で、現在の時間は 12 時。<br>
+			午後の講義はなく、とりあえず学校を出ようと教室を後にし、廊下を歩いている。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			1d100 大学の偏差値 (1D100) ＞ 52
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ソ<br>
+			コ<br>
+			ソ<br>
+			コ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			そ<br>
+			こ<br>
+			そ<br>
+			こ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			な<br>
+			か<br>
+			な<br>
+			か
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			すると、向こう側から知り合いである女の子が手を振りながら近づいてきた。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			よっすー！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			青春で確定
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			カワイイダロ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			明るく挨拶をしてきた彼女の名前は秋月なつき。<br>
+			容姿端麗で人気のある女の子だが、嫉妬深く東縛の強い危険な彼氏がいることで有名だ。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=5 おいアンタ…ロックスターって名を知ってるだろ？ (1D100&lt;=5) ＞ 4 ＞ 決定的成功
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝５０　挨拶 (1D100&lt;=50) ＞ 69 ＞ 失敗
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			急いでいる様子だが、それでも早口気味に話しかけてくるだろう。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			いや……挨拶しようと思ってだな
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			このパターン推理卓で見たことある……見たことあるなァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			こんなどころでクリ出すな
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			俺の挨拶が通ったってことはコイツ神話生物で確定
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			おー、ターじゃん！おっひさー！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			クソ推理やめろ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			久しぶりなんすがね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ターの挨拶力は格が違う
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ター、有名人だった！？
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ターが有名人なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			えーっとそこのロボっぽい人は…うんうん、もちろん知ってるけど…下の名前わすれちゃったなー！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			神話生物トノ人脈モアルモンナルフィ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			悲シイダロ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			🌈敗北者〜w🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ハァ……！ハァ……！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			敗北者……？
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			あー、でさ！突然だけど明日空いてる！？<br>
+			日曜日！空いてるよね！？遊びに行こうよ！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			行ク
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			行くことをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			彼氏は大丈夫なんすかね…？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これは休日といいまして学友と楽しむものでして…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			んー？うちの彼氏のけんけん？<br>
+			なんか明日予定があるらしくてさー…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ヘ～！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			嫉妬深いって言うから刺されないか心配なんすがね…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			大丈夫だよ！多分！<br>
+			ターも行こうよー！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			心配だなァ…心配だなァ～～～！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			でもォ～～（ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ）ｲﾖｫｰｰｰｰｰｰ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			まあ暇だし行くんすがね…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			行きたいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			あざっす！実は私、今から発表があるんだ！<br>
+			てわけで実は今めっちゃ忙しいから後で場所と時間は連絡するよ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			と、言い残しなつきは足早に去っていった。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			男４人に女の子一人…これは前振りといいまして何も起こらぬわけがなく…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			全員目星どうぞ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			1d100&lt;=99 目星 (1D100&lt;=99) ＞ 44 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=70 見聞色 (1D100&lt;=70) ＞ 23 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 66 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=69 (1D100&lt;=69) ＞ 53 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=69 (1D100&lt;=69) ＞ 28 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ダイスを振る時はCCB&lt;=(技能値の数字)で成功か失敗か判定してくれることを教える
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			全員どこからか視線を感じる。<br>
+			 誰かに見られているような気がする。<br>
+			しかし、 辺りを見回しても誰もいない。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			誰かに頭の中を盗聴されてる気がするんすがね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			生体反応ガ無イナ…ルフィ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ここから特になければ自由行動していいよ<br>
+			持ってくものを決めたり買い物とかもあり
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なにぃ～やってんだァ～ター～！あ、はや～く汚ねぇ～髪型なんか捨ててぇ～！ｲﾖｫｰｰｰｰｰｰ<br>
+			あ、アルミホイ～ルゥまけまけ巻けぇ～！ﾎﾟﾎﾟﾝ!!!
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オイル交換に行く
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エースはオイルを交換した
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			そういえば日本の大学なら拳銃は持ってない方がいいんすかね…
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			オーブンと麺と料理道具一式持ってく
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			アメリカかもしれない
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			拳銃はいいよ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			おれはスマホぐらいしか持ってかないことをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			うわ！ありがとう！<br>
+			拳銃の弾とかを買って置くんすがね…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			やっぱり
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			宴用の酒を持っていくことをあ、教えるゥ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			間違えて背景変えちゃった許してくれ(^^)
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			宴は中止
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			間違えてもいいんだァ～～～乗り越えろォ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			じゃあそんなこんなで午後を潰した探索者
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			夜になってもなつきからの連絡はなかなかこない。<br>
+			 連絡がくるまで待っている探索者は夜の0時にメールが届く。<br>
+			登録されていないメールアドレスだ。 <br>
+			件名には 「秋月です!」と書かれている。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			置いたよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">情報</div>
+		<p class="player p6">
+			<b>KP</b>
+			登録されていないメールアドレス<br>
+			20XX XX/XX 00:00<br>
+			Sub 秋月です！<br>
+			ケータイの電池が切れたので大学のPCから送ってます！<br>
+			明日なんだけど11時にY浜のY下公園のフェリー乗り場ね！<br>
+			よろしくねー(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			横浜の山下公園か
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			このまま寝る？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			この四人で徹夜で麻雀するぞぉ〜！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			スリープモードに入る
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			麻雀してェ…麻雀してェなァ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			麻雀やる
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			夜更かしはお肌の大敵でして…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			前の卓も麻雀してたぞどうなってんだ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ガン牌する
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なんで…？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 41 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			4d100 ター　ロボ　歌舞伎　コナーファ (4D100) ＞ 178[37,31,40,70] ＞ 178
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・・アリガトウ・・・・・！！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ボ<br>
+			ロ<br>
+			ボ<br>
+			ロ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			勝ちてェ…勝ちてェなァ～～！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈勝利者～！🌈
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			徹夜麻雀で睡眠不足になりながらも指定された時間に集合場所に向かうと、すでになつきは到着していた。<br>
+			探索者に気づくと嬉しそうに手を振ってくる。
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			おはよー！よくきてくれました！<br>
+			今日は君たちを素敵なところに案内するよ！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			カワイイダロ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			zzz…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			…てか皆眠そうだけどどしたん？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ね<br>
+			む<br>
+			ね<br>
+			む
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			エースは違うけど
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			エースは…ロボなんだろ！？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ロボ違ウ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なんでもねェ…なんでもねェなァ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			今日が楽しみで寝れなかったんすがね…
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			心は小学生なの確定
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ソウイウコトダ（＾＾）
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			ふーん…ま、いっか<br>
+			それよりコレ見てよこれ！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			そして、背にしていたフェリーを指さし続ける。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なんだ(^^)！？なんだ(^^)！？後で何を要求されるんだ(^^)！？
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			なんと今日は！クルージングしながら海上ランチだよ！チケットはすでにとってある！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			宴ダァ～～～～～～～～！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			元々彼氏と行く予定だったなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			最近みんなと遊べてなかったしねー！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			楽しみだろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			フェリーの前にはすでに参加者であろう人間が列を形成している。<br>
+			老夫婦、カップル、母親と娘と思われる親子、あと男が一人並んでいる。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ゾ<br>
+			ロ<br>
+			ゾ<br>
+			ロ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			楽しそうだなァ…楽しそうだなァ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			全員アイデアどうぞ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			男一人、寂しすぎだろ！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝５５ (1D100&lt;=55) ＞ 62 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=60 アイデア (1D100&lt;=60) ＞ 63 ＞ 失敗
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝80 (1D100&lt;=80) ＞ 44 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・・アリガトウ・・・・！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ｃｃｂ＜＝50 (1D100&lt;=50) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			よくやった！歌舞伎とコナーファはこの国の誇りだ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			コナーファと歌舞伎は男が一人でくるのは不自然だと思う。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ソレハソウ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			変なやつなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			11 時になると、クルージング参加者はタラップから続々とフェリーに乗り込んでいく。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			お一人様なの確定
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			出航ダァ～～～～～～～～～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			タラップを上がり、扉をくぐるとそこはエントランスだった。<br>
+			老夫婦とカップルが談笑しており、上と下に続く階段の前に一人ずつ乗務員が警備についていた。<br>
+			船の見取り図もあり、船の内部がわかるだろう。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			出港だァ～！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			出港だァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			そして、アナウンスが流れる。
+		</p>
+		<p class="player p9">
+			<b>船員</b>
+			皆様、ようこそお越しいただきありがとうございます。<br>
+			このロイヤルムーン号は、Y浜港を出て、T京湾のHふ頭まで行き、戻ってきます。<br>
+			Y浜港内を一望することができます。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>船員</b>
+			視界を遮るものがない船上では、景色を大パノラマでご堪能いただくことができます。<br>
+			それらの景色を楽しみながらのお食事は、皆様に至福のひとときを約束いたします。 <br>
+			お食事は 12 時頃になります。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			横浜ハイイトコロダナ・・・ルフィ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>船員</b>
+			それまでは、外の景色をご堪能ください。<br>
+			しかし、今は風が強いため甲板に出るのは少しお待ちください。<br>
+			クルーズは 14時終了予定です。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ﾍﾞﾍﾞﾝへ～！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			こっから行動どうぞ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オイ ター
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なんなんすかね…？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オ前 ナツキノコト好キダッタダロ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			チャンスダロ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			(^^)
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なつきのこと好きなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			邪魔者ハドッカ行ッテル　来イ
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			わー！すっごく豪華だねー！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			馬に蹴られぬように退散するのでありまして…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			NPCの世話任されるの悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			今って他のNPCとか見えるところにいるんすかね…？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			それなら恋する大学生のRPでもすればいいと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			柱カラ<br>
+			チ<br>
+			ラ<br>
+			チ<br>
+			ラ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			大学生だぜ？<br>
+			遠くからこっそり見てるの確定
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			多分全員エントランスにいると思ってんすがねェ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			さっきまでみんなエントランスにいた
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			隠れてるんじゃない？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			だからどうしろってんだよ……
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			とりあえず彼氏の話聞くんすがね…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			1d100 恋心 (1D100) ＞ 58
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			そ<br>
+			こ<br>
+			そ<br>
+			こ
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			んー？けんけんがどうかしたの？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			けんけんの名前ってなんでしたっけ？
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			月島剣だよー
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			月島さん月島さん月島さん月島さん月島さん…！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ブックオブジエンドを使われたなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			月島さんは俺の恩人だったりするか教えろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			月島サンガイタカラ俺ハ生キテルンダロ！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			Choice［恩人,恩人ではない］ (choice[恩人,恩人ではない]) ＞ 恩人ではない
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			というか面識あるんすかね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			一護ポジデ確定
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			Choice［面識ある,ない］ (choice[面識ある,ない]) ＞ 面識ある
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ﾍﾞﾍﾞﾝへ～！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			まあ普通に探索してもいいよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ロボ探索
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 19 ＞ スペシャル
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エントランスを？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ハイ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			色々なオブジェが飾られているエントランスだ。 <br>
+			その中には観賞用の模擬刀もあった。
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			探索って言われても何も起きてないのに船の中探し回るのも変なんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			振り回してェ…振り回してェなァ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			スキャン結果：和道一文字カナ！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			でもォ～～（ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ）ｲﾖｫｰｰｰｰｰｰ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			まあ…船の中を見回るくらい？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			勝手に振り回すのはあぁ約束が！！違うからなァ～！！ﾎﾟﾎﾟﾝ!!!
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			アイツラノイチャラブ見ルノ飽キタ<br>
+			チャンバラスルゾ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			俺は彼氏持ちの女よりもコブ付きの女を狙いたいんすがね…母親とかに話しかける
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			船の中なので見回ってもいいですし、昼まで待つと言うなら待っててもいいです<br>
+			そこら辺は各自のPLが行動してください
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			目星でキッチンを調べる
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エントランスには母親はいませんね
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=69 (1D100&lt;=69) ＞ 96 ＞ 致命的失敗
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ロボスキャンで誰がどこにいるか調べたい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			中にはコックが二人いる。 おいしそうな料理を作っているが、準備中ということですぐ追い出されてしまう。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			/おわァアアア～～～っ！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 39 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			当たり前だァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エントランスに老夫婦とカップル<br>
+			ホールに母娘<br>
+			甲板にマスクした男<br>
+			がいることが分かった
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ウワ！アリガトウ！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			老夫婦に話しかけるんすがね…
+		</p>
+		<p class="player p10">
+			<b>老夫婦</b>
+			ああ、はい<br>
+			なんでしょうか？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=5 おいアンタらロックスターって名を知ってるだろ？ (1D100&lt;=5) ＞ 40 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ただの人間で確定
+		</p>
+		<p class="player p10">
+			<b>老夫婦</b>
+			じいさんや…ロックスターって人は知ってるかい？<br>
+			いいや…知らないのう
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			当たり前だァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			特にやることなくなったらホールとかエントランスで休むでもいいよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			俺もちったあ名の売れた方だと思ってたんすがね…まだまだ頑張る必要がある説濃厚に
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			カップル(男)って実は女だったりしない？<br>
+			混ざりに行く
+		</p>
+		<p class="player p11">
+			<b>カップル(男)</b>
+			ん？なんだ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ロボスキャン
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 62 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			付いてる
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			…←意味深な無言
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			お前頭がおかしいんだな？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			イヤ　ソウイウ意味ジャネェンダ<br>
+			一度会ッテ挨拶ヲト……
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝５０　挨拶 (1D100&lt;=50) ＞ 98 ＞ 致命的失敗
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・・アリガトウ・・・・！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ロボはコケてHP-1
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ ロボエース ] HP : 15 → 14
+		</p>
+		<p class="player p12">
+			<b>カップル(女)</b>
+			えー？君大丈夫？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			モウダメ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			そういえば夫婦とかカップルが多いけどみんなデートで来てるんすかね…
+		</p>
+		<p class="player p11">
+			<b>カップル(男)</b>
+			ああ、そうだよ！<br>
+			俺たちの付き合ってから30日記念なんだ！
+		</p>
+		<p class="player p12">
+			<b>カップル(女)</b>
+			そうだよねー！たっくん！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			イ<br>
+			ラ<br>
+			イ<br>
+			ラ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			初々しいカップルなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜！<br>
+			おめでたいだろ
+		</p>
+		<p class="player p10">
+			<b>老夫婦</b>
+			わしらも30年じゃのう…奇遇じゃな
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			エース<br>
+			イ<br>
+			ラ<br>
+			イ<br>
+			ラ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			母娘モナニカアリソウダナルフィ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			まあ他に特にすることもないし俺は徹マンで疲れてるからロボエースに応急処置をした後その辺で休むのを教える
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なつきも月島さんと付き合ってから３０か月ぐらいなの濃厚なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			タースキャン結果：聖者か？
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ではそんな感じで話しているとアナウンスが流れます
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>船員</b>
+			風が弱まり、安全の確認がとれました。 <br>
+			甲板に出られても大丈夫です
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=75 応急手当 (1D100&lt;=75) ＞ 95 ＞ 失敗
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・アリガトウ・・・・！！！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			すまん
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ロボに人間の手当が通じるわけねェだろうが！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			IQ280
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			偏差値50台だもんなァ…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			甲板に行けるようになったんだってー<br>
+			みんなで行かない？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			料理でエース回復させていいか教えろ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			甲板に出て飛び六方で空を飛びてェ…飛びてェなァ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コナーファスキャン結果：聖者か？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			というかさっきまで風強かったのに男はよく甲板に出れたな…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			料理かぁ<br>
+			半分で
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			怪しいやつなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			三戦ヲ教エル
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=35 (1D100&lt;=35) ＞ 80 ＞ 失敗
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・・アリガトウ・・・・！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			美味しいけど体は再生しない
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			甲板行くぞぉ〜！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			悲しいだろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			後ろには5人乗りの救命ボートが2つある。<br>
+			前にはサングラスにマスクの男が船首に立っている。 <br>
+			探索者となつきに気づくと、 すぐに探索者たちが出てきた反対側の扉からエントランスの中に入ってしまう。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			沈む予定なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			怪しすぎるんすがね…なつきはあの男に見覚えはないか教えろ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			縁起デモ無イダロ(^^)
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			タイタニックで確定
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			えー？誰あの人
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			そんなことより景色見ようよー
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			海賊だし海の景色はテンション上がるんすがね…！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			今のうちに景色を楽しみてェ…楽しみてェなァ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			景観ロボスキャン
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			すっごい縞麗だねー！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			嬉しそうに言って、 携帯で景色を撮影している。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			スキャン結果：綺麗だろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			アイデアどうぞ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝５５ (1D100&lt;=55) ＞ 77 ＞ 失敗
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝80 (1D100&lt;=80) ＞ 53 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=60 (1D100&lt;=60) ＞ 55 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			ロボエースのスキャン役に立たないな
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=50 (1D100&lt;=50) ＞ 2 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			所詮敗北者じゃけえ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			よくやった！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			取リ消セヨ・・・・今ノ言葉
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よくやったァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			成功した人はなつきの携帯が前みたときと変わっていることに気づく。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			買い換えたなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			なつきスキャン結果：異常無し
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			ん？これ？<br>
+			機種変した！いいでしょー！<br>
+			前のやつは酔った勢いでお酒の中に入れたら壊れちゃった！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			お前の頭はアルコールにやられちまった…
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			悪酔いは健康に悪いのでありまして…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			…潮風が心地よく、 いい天気だ。 <br>
+			なつきとともに景色を堪能していると、なつきが口を開く。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			cc 景色の綺麗さ (1D100) ＞ 64
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			そ<br>
+			こ<br>
+			そ<br>
+			こ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			な<br>
+			か<br>
+			な<br>
+			か
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			あーごめん<br>
+			お手洗いに行ってくるからちょっと待ってて一
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			と言って、小走りでエントランスの中に入っていく。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			なつきの膀胱スキャン
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			キッショ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			悲シイダロ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			何やってんだお前ェ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			しばらく外の景色を眺めていると、急に雲行きが怪しくなってきた。<br>
+			ついさっきまであんなに晴れていたというのに、今にも雨が降り出しそうだ。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ロボくせに性欲<br>
+			ム<br>
+			ラ<br>
+			ム<br>
+			ラ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			そして、探索者にメールが届く。<br>
+			登録されていないメールアドレスで、昨日のとはまた違うアドレスだ。<br>
+			件名は無題。<br>
+			本文にはこう書かれていた。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">情報</div>
+		<p class="player p6">
+			<b>KP</b>
+			登録されていないメールアドレス<br>
+			20XX XX/XX 12:00<br>
+			Sub<br>
+			食事ができたようだよ。<br>
+			月島剣
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			アイデアどうぞ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=60 (1D100&lt;=60) ＞ 52 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝80 (1D100&lt;=80) ＞ 75 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝５５ (1D100&lt;=55) ＞ 62 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=50 (1D100&lt;=50) ＞ 69 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			スキャン結果：異常無し
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ロボエースの目が節穴なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			成功した2人はこの名前はなつきの彼氏の名前ではないか？と思います
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次の瞬間、船全体に衝撃が走り大きく揺れる。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・・アリガトウ・・・・・！！！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			グラグラの実で確定
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			船は急停止するが、揺れはおさまらない。<br>
+			あまりの揺れの大きさに立っていることすらできない。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			同時に、 船の中からたくさんの悲鳴が聞こえてくる。<br>
+			それは、もはや絶叫だった。<br>
+			船の中も、相当混乱していることが容易に想像できた。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			海賊の俺はこの程度の揺れは慣れてるんすがね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			格ガ違ウ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			おわァあああ〜〜！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			事故でも起きたなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ガシャン、ガシャンと、モノが壊れる<br>
+			音も聞こえてくる。<br>
+			しばらくすると、悲鳴も揺れもおさまってきた。<br>
+			これくらいの揺れなら動くこともできそうだ。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ロボスキャン
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			何を？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			周りの人
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			あーでは、人々は突っ伏しています
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ハイ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			中に行くぞぉ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			床に倒れています
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかったァ～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			では探索者達がエントランスに入った瞬間物音が聞こえます
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			聞き耳どうぞ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			外出テナイノハ母娘トサングラスカ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 73 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 96 ＞ 致命的失敗
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			おわァあああ〜！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			持ってねェ…持ってねェなァ～～～！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ターノ耳ガ・・・・１！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ターはすっ転びます<br>
+			HP-1
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			持ってない人は25
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			盗み聞きシステム作動
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			これじゃあ俺の立場ってもんが！
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ ター ] HP : 9 → 8
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝25 (1D100&lt;=25) ＞ 65 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ｃｃｂ＜＝25 (1D100&lt;=25) ＞ 63 ＞ 失敗
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エース強すぎるだろ…<br>
+			窓が割れる音がしたことに気づく。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			だが、そんな音は目の前の状況に比べると本当に些紙細なことであった。<br>
+			目の前に広がっている光景は、目を覆いたくなるほど凄惨なものだった。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エントランスには血の海が広がっていた。<br>
+			ついさっきまで人の形を成していたであろう何かが至るところに転がっていた。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			!
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・・アリガトウ・・・・・！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ウッ…ウッ…ウアッ…！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			部屋には手足や頭が散乱しており、原型を留めていないものもいれば、胸から大量の血を流し絶命している者もいる。<br>
+			そんな地獄のような光景を目の当たりにした探索者はSANチェック:1/1d4
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			(ﾍﾞﾍﾞﾝ!)こわい
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ccb&lt;=55 (1D100&lt;=55) ＞ 86 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			1d4 (1D4) ＞ 1
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝65 (1D100&lt;=65) ＞ 54 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ ロボエース ] SAN : 55 → 54
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ 歌舞ンクス ] SAN : 65 → 64
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=65 (1D100&lt;=65) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=35 (1D100&lt;=35) ＞ 28 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ ター ] SAN : 65 → 64
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ コナーファ ] SAN : 35 → 34
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			そんな中、なつきがもう動かなくなった母親を抱きかかえ、真っ青な顔で必死に叫んでいる。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			誰一人動揺してないの怖いだろ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コレ藤虎ダッタラ目ヲ閉ジテ見ナカッタコトニデキタノカナ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			!
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			そこの人！ねえ！大丈夫！？<br>
+			目を覚まして！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			紛争地帯に行ってた経験あるなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			胸から大量の血を流し絶命している母親の死体を揺さぶる。<br>
+			なつきにもその血液が付着してしまっていた。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			人ハ死ヌゾ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			探索者に気づいたなつきは声をかけてくるだろう。
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			！？よかった…！ みんな無事だったんだね…！<br>
+			なんで…なんでこんなことに…<br>
+			トイレに入ってたら突然船が揺れて…<br>
+			悲鳴も聞こえてきたの。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			おいアンタ！血液を媒介する病気を知ってるだろ！すぐに拭け！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			それで揺れがおさまってから急いでここにきたらこんなひどいことになってて…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			おれたちにもよくわからないなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			う、うん<br>
+			わかった！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			分カラナイコトダラケダロ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			体を震わせ、涙を浮かべながらなつきはそう言った。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エントランスには大量の死体が転がっている、その死体が誰なのかおおよその見当はつくだろう。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			老夫婦、カップル、 母親、 コック2人、 合計7人分の死体であることがわかる。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			娘はどこなんすかね…無事だと良いが
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			(ﾍﾞﾍﾞﾝ!)悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オレハ死因ノ調査ヲ希望
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			目星どうぞ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 12 ＞ スペシャル
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=70 見聞色 (1D100&lt;=70) ＞ 43 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝99 (1D100&lt;=99) ＞ 75 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=69 (1D100&lt;=69) ＞ 29 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エントランスに飾ってあった模擬刀が血に塗れた状態で床に落ちていることがわかる。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			!
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			手に取ると、それが模擬刀ではなく本物の日本刀だとわかる。<br>
+			同時に、死体の外傷も刀によるものだと気づく。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			コイツが凶器なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺達ガチャンバラデ遊ンデタラコンナコトニハナラナカッタノニ……！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			(ﾍﾞﾍﾞﾝ!)悲しいだろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			行動できるよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			事故っぽいのか他殺っぽいのか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			あっごめんその前に
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			!
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			突然、携帯が鳴り響き、再びメールが届く。<br>
+			そこには
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			!
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">情報</div>
+		<p class="player p6">
+			<b>KP</b>
+			登録されていないメールアドレス<br>
+			20XX XX/XX 12:05<br>
+			Sub<br>
+			操舵室で待ってる。<br>
+			月島剣
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			怪しいメールなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			こんな異常な事態にも関わらず携帯を見ている探索者に思うところがあったのか、なつきが声をかけてくる。
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			…？どうかしたの？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			おいなつき…アンタ俺達とこの船に乗ることを月島さんに教えただろ！？
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なつきの彼氏の名前を名乗る変な人からメールが来たなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			教エタクナカッタケド教エル
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			あなたの彼氏からメールが届きまして…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			うそ！けんけんが助けにきてくれた！操舵室にいこうよ！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			俺もメールが来た部分はボカしたかったかったのをOCL
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			あー教えない感じ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			教エタモンハ仕方ネェ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			でもなァ…もう言っちゃったもんな、ルフィ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			じゃあなつきは探索者の手を取り、2Fに上がろうとする。<br>
+			錯乱状態なのか、正常な判断を失っているように見えるだろう。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ナツキ　コレハ罠説濃厚
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なつきじゃなくて俺たちにメールを送ってくるのはおかしいと思うんすがね…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			あんた気は確かか？の出番なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なつきに精神分析振っていいか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			技能なんか使わないとなつきは2Fに連れていこうとします
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これは罠といいましてで落ち着かせていいか教えろ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			制御システムを作動
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=75 おいアンタ気は確かか！？ (1D100&lt;=75) ＞ 88 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 85 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			コナーファもいいよ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=62 (1D100&lt;=62) ＞ 26 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			うー…わかったよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			マーマー落チ着キナサイヨ
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			でもけんけんには船だって伝えてないよ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これは明らかに怪しいのであってまず落ち着くことが重要なのでありまして…
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			これが本物ならなつきにメールが届かないのもおかしいんすがね…偽物で確定
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			どう考えても怪しいメールなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！<br>
+			とりあえずこちらから連絡取った方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			IQ280
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			振り込め詐欺と一緒
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			こっから行動できる<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			メールの送り主に返信できるか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			返信できるけど連絡は来ない
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なつきには彼氏のメアドや電話番号に連絡してほしいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			怪シサ　サラニ濃厚ニ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ひとまずこの怪しいメールは後にして母を亡くした娘とあの男を探すぞ、来い
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			本物ノ月島サント連絡スル　イイ案確定
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			わかった！<br>
+			…繋がんない
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			怪シサ　サラニサラニ濃厚ニ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			甲板から操舵室の要素は見えないのか教えろ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			とりあえず警察と救急に通報した方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ジャア　ターノ言ウ通リ生存者ヲ探ス
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			要素じゃなくて様子だった
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			コナーファは1人で甲板に出る？
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			高い所にあるから出るだけじゃ見れないかも
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			おれのスマホから警察と救急に通報する<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			じゃあ止める
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			下の階から探すぞ、来い
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			｢はい、そんな事件が…直ぐに向かいます！｣<br>
+			と言って連絡できた
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			通報しながら行く<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ヨクヤッタ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			地下に来た
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			タダ犯人ハ文字通リ操縦室ニ行ッテソウダナ　ルフィ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			CCB&lt;=99　目星 (1D100&lt;=99) ＞ 41 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			何カ　シナイト　変ナ場所マデ船移動サセラレル説濃厚ニ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			物置と機関室どっちに目星した？
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			じゃあ物置なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			防弾チョッキが一つあった
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺ハ自然系ダシロボダシ　イラネェ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			体力が低いターが持っていた方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			そういえば今更だけど転んだ時の応急手当していいか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=75 応急手当 (1D100&lt;=75) ＞ 22 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ ター ] HP : 8 → 9
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			次ハ機関室調ベル
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 9 ＞ スペシャル
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			CCB&lt;=69 (1D100&lt;=69) ＞ 41 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			特に何も無かった
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			が。メールがまた来る
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">情報</div>
+		<p class="player p6">
+			<b>KP</b>
+			登録されていないメールアドレス<br>
+			20XX XX/XX 12:30<br>
+			Sub 今は12時30分<br>
+			14時に直接迎えにいくよ。<br>
+			月島 剣
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			来るな
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			カカッテコイ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			14時までに探索終わらせた方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			防弾チョッキはターが装備しているってことでいいのかあ、教えろォ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次行動あるならどうぞ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			娘ノ安否ヲ確認デキ次第操縦室行クゾ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			そういえば念のために甲板の緊急脱出ボートを確認したいけど…どうすっかなあ…
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			俺が装備していいなら装備したいんすがね…
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			いいよ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			他の人が異議なければターでいいんじゃないか
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺ガ甲板ニ行コウ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ターは防弾チョッキをみにつけた
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			身につけるとどうなるんすかね…？
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			装甲+1
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			多分時間無イ　二手ニ別レル　来イ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			うわ！ありがとう！俺はエースについて甲板に行く
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コナーファト歌舞伎ハキッチン　頼ミタイ濃厚
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			まずキッチンから
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			それでいいことをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			料理は出来上がった状態だが、 先ほどの揺れのせいか崩れている。<br>
+			また、 窓が割れていることに気づく。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			CCB&lt;=69 目星 (1D100&lt;=69) ＞ 74 ＞ 失敗
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ccb&lt;=99　目星 (1D100&lt;=99) ＞ 13 ＞ スペシャル
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			その窓ガラスの破片が甲板の方に散っていることがわかる。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			危ないなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！とエースたちに伝える
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			またそこから出ようと思えば甲板に出れるようだ。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			内側から割れたんすかね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			伝エテクレテ・・・アリガトウ・・・！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			室内に窓ガラスは散らばってるのか教えろ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			つまり犯人は甲板に出て行ったんすかね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			トッ捕マエルゾ　来イ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			少しだけしかない<br>
+			沢山散ってるのは外
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次ロボとター
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			娘ト謎ノ男ガマダ見ツカラナイナ　ルフィ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			前には変わった様子がないが…2つあるうちのボートの片方を出そうとしている男の後ろ姿を見つける。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			何ヤッテンダオ前ェ！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			止メル
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			俺もそうする
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			力づくで？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			じゃあまず声をかける
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			マズハピースメインデ行ク
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			声をかけても無視されました
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ジャアモーガニアデ行ク
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			じゃあ止まらないと撃つと伝えるんすがね…
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			！？<br>
+			お前銃かよ…チッ、わかったよ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			コイツは脅しの道具じゃないって言ってんだ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			と言ってボートを止めました
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			中デ何ガアッタノカ教エロ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			なんだ？俺はもう帰らせてもらいたいんだが
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			…？中だと？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			シラバックレルナ　オ前犯人カ？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			アンタは俺たちと入れ違いで中に入って行ったと認識してるんすがね…
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			…？いや、知らないが…
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			ああ、さっきお前たちは見たな
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			心理学システム作動
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 74 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			心理学はGMが降る<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			心理学はKPが振るんすがね…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			とりあえず眼鏡とマスクを外させた方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			あとロボ技能強すぎるから心理学は80でカウントする
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			S1d100&lt;=80  (1D100&lt;=80) ＞ 8 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			嘘はついてなさそう
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ヘ～！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			顔を見せてほしいんすがね…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			神格の可能性が濃厚なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>男</b>
+			…わかったよ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			いや…コイツはミスリードで濃厚かと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			外しましたが特に見覚えは無いです
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ここら辺から歌舞伎とコナーファが合流してきていいよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			誰ダ！？(^^)誰ダ！？(^^)
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			アンタはなんで脱出しようとしてんだ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			トニカク　一人ダケ逃ゲル真似許サナイ　同行シテモラオウカ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			さっき揺れて船も止まったからな…<br>
+			生憎俺は自分の身が可愛いんでさっさと逃げることにしたんだ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			クソッ…わかったよ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			そもそもこの船に乗った理由も教えてほしいんすがね…
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			はあ？1人で船に乗るくらい人の勝手だろう
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			教エテクレ(^^)
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ちなみにおれたちは友人の誘いできたなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			普通に船に乗りたかっただけだ<br>
+			悪いか？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			30という数字に覚えはないか教えろ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			無いな
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			風が強かったのにひとりで甲板にいた理由を教えてほしいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			レインボー歌舞伎アートの出番だと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>男</b>
+			風に当たりたかったんだよ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			歌舞伎アートを見せて楽しくさせ本音を聞きたいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ccb&lt;=84　歌舞伎アート (1D100&lt;=84) ＞ 3 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			！？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			もうた～のしくってェ（ﾎﾟﾝ）、面白くってェ（ﾎﾟﾎﾟﾝ）、本音をしゃべるのがァ(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ）ｲﾖｫーーあ、止まらなァ～いィ！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			四皇？ハ格ガ違ウ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			さすがだ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			…はあ<br>
+			俺は宝石強盗だ<br>
+			エントランスに飾ってあった宝石を盗んだんだよ<br>
+			だが、中がどうなってるかなんて知らないな
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			アーニガモデ確定
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			さっきおれが警察に通報したからバレないうちに元の場所に戻しておいた方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			コイツさてはどうでも良いキャラで確定
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			取り敢えずこいつを操舵室に突っ込ませればいいの確定
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			悪いが俺にも生活があるんでね<br>
+			お前らが取り上げないんなら俺は盗むぞ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺ハ海軍ジャネェ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			勝手ニシテクレ(^^)
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			甲板には他に何もないのか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ない
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかったけど後で一つ頼みを聞いて欲しいなァ～聞いて欲しいなァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			見逃す代わりに操舵室を見てきてほしいのでありまして…
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			なんだ？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			コイツを連れてひとまず二階の乗務員室行くので確定か？ホールって行ったっけ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			行ってない
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			アンタノ盗ミノ技術ガ活キルカモシレネェカラナ(^^)
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オ前仲間ニナレ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			ああ…わかったよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			海賊ニナレバ生キルノガモット自由ニナルゾ（＾＾）
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			あなたは大学生なの確定
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			また二手に分かれてホールと乗務員室に行くか？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ロボガ大学生ナワケアルカ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかったァ～～～！！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			じゃあさっきのメンバー分けで俺たちが乗務員室行くんすがね…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			&nbsp;
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			強盗はどっちにつれていくので？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コッチ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			強盗となつきもどっち？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			拳銃持ってるし強盗は俺が！なつきは下で確定
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			じゃあなつきはこっちなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ナツキソッチ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			サッチノ魂ハドコヘ行ク
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			なつきさんはこっちついてきてほしいのでありまして…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			地獄の果てまでなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			コナー歌舞伎なつき　ホール<br>
+			エースター強盗　操舵室
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			まずホール
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			死体などはなく、比較的締麗な状態。<br>
+			しかし、 宝石が入っていたショーケースは砕かれており、 宝石もその姿を消している。
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			強盗の仕業なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			これくらい
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			CCB&lt;=69 ホールに目星 (1D100&lt;=69) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なつきに昨晩のメールについて聞きたいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			ああ、あのメールは私が送ったの<br>
+			でもこんなことになるなんて…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			昨日までは携帯も壊れてなかったんすかね…？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なつきが悪いわけないなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			で目星は<br>
+			ホールには何もないが個室が3つ並んだトイレの一番奥だけ鍵がかかっている。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			携帯はいつ壊れたんですか？
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			携帯は壊れてないよー！<br>
+			でもけんけんには連絡がつかないの…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			娘トイレか？？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なつき、二人いた！？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			あっごめん
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			今の携帯かと思った
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			(^^)
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ちょっと怖かったなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			てっきりどこかで入れ替わったのかと思ったんすがね…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			携帯は一昨日の飲み会で壊れちゃったから新しいのに変えたの！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			一応メール画面も見せて本当に送ったやつなのか聞きたいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ないです
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			昨日のメールは大学のパソコンから送ったの！<br>
+			電池が切れてて…
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			取り敢えずトイレの一番奥の部屋を調べる 来い
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			こんな状況でビクビクしているなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！<br>
+			何度も聞いて申し訳ねェ…申し訳ねェ～～～！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			では鍵がかかっているがその中から｢誰…？｣とこえがする
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			おれの名は歌舞ンクスなのをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			私はコナーファといいまして…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			怯えながらも扉から女の子が出てきます
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			悲鳴や大きな音が聞こえたの… お母さんに危ないかもしれないから、 ここに隠れてなさいって言われてて…
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			…お母さんは大丈夫？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			…←意味深に無言
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ごまかしてェ…ごまかしてェなァ～～！！
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			…どうしたの？
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			でもォ～～（ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝ…ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ）ｲﾖｫｰｰｰｰｰｰ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			こんなときどうすればいいのか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			笑えばいいと思うよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			あぁ教えねえのは！！違うと思うからなァ～！！ﾎﾟﾎﾟﾝ!!!<br>
+			というわけでちゃんと教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			誤魔化すなら誤魔化すで、正直に伝えるなら正直に言う
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>娘</b>
+			うそっ…!おかあさん…おかあさん…！<br>
+			うわあああああああああああああああああああああん！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			女の子は大声で泣き叫ぶ。
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			悲シイ別レダッタガ　仕方ナカッタッ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			泣きてェなァ…泣きてェなァ…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ほっとく？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			料理で落ち着かせられるか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			CCB&lt;=70 (1D100&lt;=70) ＞ 34 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よくやったァ～～～！！！
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			ううっ…ぐすっ…
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これはコナーファといいまして麺をオーブンで…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			大声で泣くのは納まりましたがまだ余裕はないようです
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			歌舞伎アートで少しだけでもいいから慰めるゥ～～～<br>
+			ﾍﾞﾍﾞﾝ来い
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝84 (1D100&lt;=84) ＞ 74 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			よくやった！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			もうた～のしくってェ（ﾎﾟﾝ）、面白くってェ（ﾎﾟﾎﾟﾝ）、お絵かきがァ(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ）ｲﾖｫーーあ、止まらなァ～いィ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			泣きやみました
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			取り敢えずトイレに入る前に何か見なかったのか知りたいのでありまして…
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			ううん…<br>
+			ホールにいた時は何も見なかったよ…<br>
+			揺れた時にお母さんがトイレに入れてくれたけど…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			揺れる前に何か変なものとかは見かけてないか知りてェ…知りてェなァ～～～！！！
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			マスク付けた男の人は来たけど…それ以外は何も無かったよ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			トイレに入ってるときになにか聞こえなかったか知りたいのでありまして…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			下は何にもなさそうだな、ルフィ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>娘</b>
+			何も聞こえなかったよ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			この女の子からはもう特に情報得られない感じなのかあ、教えろォ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			まあ…ないんじゃないんでしょうか
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかったァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			30という数字に覚えはないか知りたいのでありまして…
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			うーん、ないよ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よし、とりあえずおれたちとあ、一緒に来いィ～～～！！！
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			上に向かう感じでいい？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			いいよ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			いいことをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			50分に上に着きます
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次はターロボ強盗
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			分かった
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			戦闘ダァ～～～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			操舵室前の通路は血まみれになっており、エントランスより損壊の激しい死体が散乱している。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			【正気度ロール:1/1d4】
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オワァアアアワワワワ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ccb&lt;=54 (1D100&lt;=54) ＞ 50 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ ロボエース ] SAN : 54 → 53
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=59 (1D100&lt;=59) ＞ 68 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			1d4 (1D4) ＞ 1
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ ター ] SAN : 64 → 63
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			戦場慣レデ確定
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			また、死体は階段前にいた2人の乗務員だとわかる。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ヘ～！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			操舵室と乗務員室どっちに行く？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			乗務員室を教える
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			乗務員室ノ調査希望
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			鍵は開いており、中に入ることができる。<br>
+			中に死体などはなく、 荒らされた様子もない。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=70 見聞色 (1D100&lt;=70) ＞ 20 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 20 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			机と椅子とロッカーある普通の控え室だ。机の上には乗客の名簿がある。<br>
+			名簿を調べると<br>
+			<br>
+			探索者と秋月なつきの他に、<br>
+			「前川ただお」「前川くみ」<br>
+			「真島レオ」「海老沢きぬ」<br>
+			「赤城ゆい」「赤城れい」 「崎嶋ハヤト」<br>
+			の名前を確認できる。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			目星は<br>
+			ロッカーの中から手記を見つける。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			名前聞イテナカッタナ　ルフィ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ホールに知らぬ間に、 大きな宝石が飾られていた。<br>
+			誰に聞いても、 誰が置いたのか、 いつからあるのかよくわからなかった。 不思議な宝石だ、 不気味な輝きをしているが、 縞麗ではあると思う。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			そういえば、最近、巷で噂になっている怪盗シグマ。<br>
+			彼が狙う価値のある宝石だったりしないだろうか。 <br>
+			彼は泥棒だが、誰も傷つけずに宝石だけを盗む手口はクールだと思う。<br>
+			盗みにこないかな、 最近退屈だし、刺激がほしい。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			と書いてあります
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オイ強盗　チラチラ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			お前がシグマか教えろ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			ああ。<br>
+			ま、巷では稀代の怪盗とかそう言われてるらしいけどな
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			それくらい
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ええ…じゃあもう操舵室行く？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			シグマ　ハ　コノ船ニ乗ル客ノ名前ト顔　覚エテルカ？
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			さっさと盗んで帰る予定だったからな、そんなん一々覚えてねぇな
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			宝石割りと怪しくなってきたの濃厚に
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オ前怪盗降リロ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			宝石をホールに置きてェ…置きてェなぁ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			アトオ前ノ持ッテル宝石　チョット濃厚ダゾ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			いや…なんか怪しい宝石なら手元に置いときてえな…
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			こんな宝石にマホウノチカラでもあるってのか？<br>
+			所詮は装飾品だぜ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			さっき女の子から宝石のことも聞いとくべきだったなァ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			デモォ・・・
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			寄越さないと殺すぞと言って拳銃を突きつけるのを教える
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			くそッ…わかったよ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			宝石はターに渡った
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オ利口サンデスカ・・・・！？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			物分かりがいい奴なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			この宝石とかを携帯で調べることはできるか教えろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			そりゃ拳銃突きつけられてるし
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コノ宝石ハ　海ニ捨テタ方ガ　イイモノカモシレナイ濃厚ニ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			特にこの宝石について何も情報は出ません
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			宝石をスキャンした方がいいかもなァ～ルフィ！！ﾎﾟﾎﾟﾝ!!!
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			宝石に目星したいのを教える
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			目星システム作動
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 43 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			さすがだ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			至って普通の宝石っぽい
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			うーん…ひとまず持って操舵室に向かうのがいいんすかね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			以上ガ　スキャン結果デース
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ　操縦室行クゾォ～～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			誰が開ける？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コワイ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			シグマ　行ケ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			もうホール組もついてるのか教えろ
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			なんで俺が…
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			この中に宝石があるのを教える
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			20分乗務員室で探索してたことにするなら来ていいよ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			え〜！いいよ〜！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			じゃあ4人とも来た
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			来たことをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			我々も来たのでありまして…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ヨク来タ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			それじゃあシグマが扉を開けます
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			分かった
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ﾜｶｯﾀ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			扉を開けると、そこもまた真っ赤な部屋だった。<br>
+			 床には、操舵室にいた3人分の肉塊が転がっていた。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｺﾜｲ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			見たくねェ…見たくねェなァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			そして、部屋に中央にはこの惨状を作り上げたであろう存在がそこにいた。<br>
+			それは、 灰色がかった白色のてらてらと光る体をしていた。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			歪な形の鼻面にはピンク色の振るえる触手が固まって生えており、目のない大きなヒキガエルのような形をしていた。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			引きちぎったであろう人間の腕を持っており、 まるで花占いのように指を1本ずつねじ切りながら、聞いたこともない不気味<br>
+			な笑い声をあげているのであった。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			SANチェック:0/1d8
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ccb&lt;=53 (1D100&lt;=53) ＞ 52 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ccb&lt;=64 (1D100&lt;=64) ＞ 37 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=63 (1D100&lt;=63) ＞ 11 ＞ スペシャル
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			人間ハオマエノオモチャジャネェ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			CCB&lt;=34 (1D100&lt;=34) ＞ 65 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			1d8 (1D8) ＞ 3
+		</p>
+		<p class="player p7">
+			<b>system</b>
+			[ コナーファ ] SAN : 34 → 31
+		</p>
+		<p class="player p15">
+			<b>怪物</b>
+			■■■■■ケラ■ケ■ラ！！！！ハ■■■ハハ！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ワカッタ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			どうする？
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			逃げた方がいいなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			今シグマがとびら開けて呆然としてる
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			お母さんですか？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			殺せるのかスキャンしたい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 15 ＞ スペシャル
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			｢殺スコトハデキルガ被害ガ出ル確率…80%！｣
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			部屋に目星振りたい
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			無傷デ勝利ハ難シイヨウダナ・・・ルフィ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			その前に先ず扉を全開に開けるか閉めるかですね
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			開けるしかねえんすがね…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			閉めて逃げるもできるけど
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			海賊ニ逃ゲルノ文字ナイ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			閉めて逃げてもどうせ同じ船にいると思ってんすがね…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			戦うしかなさそうだなァ～ルフィ！！ﾎﾟﾎﾟﾝ!!!
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			オ前ゴトキ　バケモノ　ガ　海上戦　デ　俺タチ海賊　ニ　勝テルワケガネェダロ！！！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			普通のシナリオなら逃げるしかないのになまじっかクトゥシャンだからバトルの選択肢あるの酷いだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			取り敢えずターは化け物に宝石投げてみろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			というか情報が集まってなさすぎて何が正解かわかんないんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			じゃあ扉を全開にして化け物が襲いかかってきます<br>
+			戦闘開始です
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			非戦闘員PL募集だったら逃げたの確定
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺ヨリモ速クテコワイ
+		</p>
+		<p class="player p15">
+			<b>怪物</b>
+			1d100&lt;=75 槍(屋内なので補正値↑) (1D100&lt;=75) ＞ 97 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			このターン怪物は回避できません
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次ロボ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			回避まですんのか厄介そうだなァ～ルフィ！！ﾎﾟﾎﾟﾝ!!!
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			屋内補正ヲ確認
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			火拳デ操縦室ブッ壊シマス
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			あんた気は確かか！？おれたちも沈むぞ！？
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			やりたければどうぞ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これはロボエースといいまして破壊兵器でありまして…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			2階ノ屋根ト壁ダケ壊ス　安心シテクレ(^^)
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　メラメラの実 (1D100&lt;=99) ＞ 8 ＞ スペシャル
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よくやったァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			お前は誇りだ！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			戦闘システム作動：ヒケーーーーーーーーーーーーーーーーン
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			屋根と怪物にダメージ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			マジ？怪物ニモダメージ通ルノ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ジャアオ願イ(^^)
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			火拳ダメージは2d10くらいにしておくか
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			2d10 (2D10) ＞ 9[1,8] ＞ 9
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ゼ<br>
+			ン<br>
+			ゼ<br>
+			ン
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			しかし火拳を当ててもあまり効いている様子ではありません
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			悲シイダロ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			やっぱり宝石なんすかね…？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			宝石をどうすればいいのかわからねェ…わからねェなァ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			次コナーファ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			アトハ頼ンダ（＾＾）
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			怪物をオーブンで叩き潰す
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=99 (1D100&lt;=99) ＞ 80 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｺﾜｲ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ﾍﾞﾍﾞﾝこわい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			1d8くらい
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			1d8 (1D8) ＞ 4
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			火拳をくらった時と同じ反応を示します
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次ター
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			宝石がどうにかしてくれないと勝てないの濃厚に
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			宝石で殴りつける
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			宝石は壊れましたが…特に化け物は無反応です
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			1d100 混乱度 (1D100) ＞ 27
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			次歌舞伎
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			歌舞伎サンダーで攻撃するゥ～～～！！！<br>
+			来い
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			どうぞ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝99 (1D100&lt;=99) ＞ 98 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			何か見落としたのかな、ルフィ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			もうなにも分からねえから怪物を殺すしかないな ルフィ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			ダメージは2d6くらいでどうぞ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			2d6 (2D6) ＞ 9[5,4] ＞ 9
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			な<br>
+			か<br>
+			な<br>
+			か
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			同じく火拳と同じくらいの反応
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			2週目
+		</p>
+		<p class="player p15">
+			<b>怪物</b>
+			1d100&lt;=75 (1D100&lt;=75) ＞ 53 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			コワイ
+		</p>
+		<p class="player p15">
+			<b>怪物</b>
+			S1d6 (1D6) ＞ 3
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			屋内補正まだ切れてないなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p15">
+			<b>怪物</b>
+			ターに矛先を向けた
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			かかってこいなんすがねぇ！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			あー屋内じゃなくなったな<br>
+			じゃあ50だから失敗
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			男ダロ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次ロボ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			殺シテヤル
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			メラメラの実　神火不知火～～！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			助かったんすがね…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			どうぞ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　メラメラの実 (1D100&lt;=99) ＞ 20 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			2d10で
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			2d10 (2D10) ＞ 18[10,8] ＞ 18
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			よくやった！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			殺戮シテヤル
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よくやったァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			お前は誇りだ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			エースは思いっきり殴ります<br>
+			が、思ったよりその怪物に効いていないようです<br>
+			ですが、確実に押してはきているようです
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			勝機見エテキタダロ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			次コナー
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ゴリ押しが正解で確定
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			熱したオーブンの中に怪物の頭を入れる
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			(1D8) ＞ 5
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			どうぞ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=99 (1D100&lt;=99) ＞ 45 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			1d8のダメージ御願いします
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			1d8 (1D8) ＞ 7
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よくやったァ～～～！！！
+		</p>
+		<p class="player p15">
+			<b>怪物</b>
+			ググッゥ…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			今までに比べたらそこそこ効いてそう
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これはオーブンといいまして頭を熱するものです
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			海賊に喧嘩売ったら…死ぬしかないよな(^^)？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>KP</b>
+			回避まで降ってたら戦闘だるくなるし失せた
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			次ター
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よくやった！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			武装色って拳銃に使えるか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			うわあり！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=60 武装色 (1D100&lt;=60) ＞ 56 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ccb&lt;=75 拳銃 (1D100&lt;=75) ＞ 65 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よくやったァ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ダメージ2d8で
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			火拳のダメージ強く設定しすぎた<br>
+			笑ってくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			2d8 四皇のクルーは伊達じゃないんすがね！！ (2D8) ＞ 7[1,6] ＞ 7
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			(^^)
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			そ<br>
+			こ<br>
+			そ<br>
+			こ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			あと少しで倒せそう
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			やりすぎてもいいんだ…乗り越えろ！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			歌舞伎サンダーを使うゥ～～～！！！<br>
+			来い
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			どうぞ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ｃｃｂ＜＝99 (1D100&lt;=99) ＞ 18 ＞ スペシャル
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			2d6で
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			2d6 (2D6) ＞ 6[5,1] ＞ 6
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			怪物は力尽き、地に伏しました
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ぼ<br>
+			ち<br>
+			ぼ<br>
+			ち
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			宴ダァ～～～～～～～～！！！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			すごいすごい！ありがとうみんな！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			宴だァ～～～～！！！！(((🍶))))
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			宴だァ～！
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			ありがとうお兄ちゃん！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			宴だぁ〜！！！
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			フン…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			よかったなァ…よかったなァ～～～！！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			何一つ分かってないけど生き残った方の勝ちだもんな、ルフィ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これ怪物が本物のなつきの可能性あったよな…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>KP</b>
+			で、どうしますか？
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			まだこの部屋になんか残ってないか知りてェ…しりてェなァ～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			メールノ送リ主　誰ダロウナ　ルフィ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			部屋の中を探すのを教える
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			怪物の死体を目星したい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			部屋の中には死体しかありません
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			CCB&lt;=69 (1D100&lt;=69) ＞ 34 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			今まで見た事ない生き物です<br>
+			一応今は動きません
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			操舵はできるか教えろ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			焼イテ料理ニデモスルカ？
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			壊されています
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			料理にするのはともかく焼くのは賛成だなァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			取り敢えず怪物をオーブンで焼く
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			じゃああのボートで脱出するしかないと思うんすがね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			焼イテ　コナーファニ料理シテモラッタ後　ボートデ帰ルゾ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			どうぞ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			ccb&lt;=99 (1D100&lt;=99) ＞ 41 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			怪物焼きが出来ました
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ンマホーーーーーーーーーーー
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			1d100 おいしさ (1D100) ＞ 87
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			宴だぁ〜〜！！！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			う<br>
+			ま<br>
+			う<br>
+			ま
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ウ<br>
+			マ<br>
+			ウ<br>
+			マ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			今は13時半くらいですね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これは怪物焼きといいましてで診んなに説明する
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			じゃあ脱出だなァ～ルフィ！！ﾎﾟﾎﾟﾝ!!!
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			14:00 ニ　月島サン　来ルラシイガ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			これは怪物焼きといいましてで皆に説明する
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			これ脱出してそのまま死なないか怖いだろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			全員で脱出する？
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			もうやり残したことはない？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なつきに尋問したいんすがね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			チョットソノ聞キ方コワイ
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			なにー？
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			月島という男について知ってることを全て話してほしいんすがね…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			んー、ちょっと過保護なところはあるけどイケメンな人だよー
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			すまん…トイレに行くからその間進めておいてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			どんぐらい過保護なのか知りてぇなァ～～～！！！
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			前は女の子の友達と泊まった時にもしつこく言われたかなぁ…<br>
+			最近はあんまり言わなくなったけど
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			いつ頃出会ったのか知りたいのありまして…
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			半年前ー
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			なんで最近はうるさく言わなくなったかに心当たりとかあるか聞きてェなァ～～～
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			月島サン＝ムーンビースト説ヲ教エル
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			私があんまり束縛するのやめて！って言ったからかな
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			彼女の意思を尊重できる彼氏なの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			月島さん、聞き分けが良かった！？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			月島サン　何カヘンナ儀式シテナカッタカ教エロ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			帰ってきたOCL
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			えー？けんけんは宗教とかやってる風には見えなかったけどな…
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			じゃああとは強盗と少女から名前を聞きてェなァ～～～聞きてェなァ～～～！
+		</p>
+		<p class="player p13">
+			<b>男</b>
+			嶋崎ハヤトだ
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			赤城れい
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			前川→老夫妻<br>
+			レオ、きぬ→カップル<br>
+			赤城→母娘<br>
+			デ確定
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			教えてくれてありがてェ～～～ありがてェなァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			一応名簿見せて確認させたいのでありまして…
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			じゃあ戻って確認する？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ター</b>
+			ここから何したらいいのか、俺は、分からなくなってる
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>コナーファ</b>
+			時間を考えたらもう脱出したほうがいいのかなァ…ルフィ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			おれはもうやりたいこととかは無いから<br>
+			一足先に飛び六方で空を飛んで帰ることをあ、教えるゥ～～～！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			まあ確認するくらいの時間はありますが
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			というか操舵室にいるって言って操舵室にいたやつ殺したから問題ないのかもな、ルフィ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			じゃあ歌舞伎は先に空を飛んで海を渡った
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかったァ～～～！！！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			食事ができたってなんなんすかね…
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			人ノコト濃厚
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			なんで俺達にわざわざメールを…まあいいや名簿確認するのを教える
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			名簿には名乗った名前と写真は一致してます
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺ラが彼氏ブッ殺シタンダロウ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			俺モ飛行システムモードデ帰ル　来イ
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			最後に女の子に宝石のことについて聞きたいのを教える
+		</p>
+		<p class="player p14">
+			<b>娘</b>
+			…なにこれ？
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝９９　エースは……ロボなんだろ！？ (1D100&lt;=99) ＞ 45 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ロボも空を飛んで帰った
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			じゃあボートに乗る<br>
+			俺たち二人とNPCの3人で分けるぞ、来い
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			私は脱出ボートで全員と一緒に帰りたいことを教える
+		</p>
+		<p class="player p8">
+			<b>秋月なつき</b>
+			えー…強盗と一緒は嫌だよ…<br>
+			この人だけ別のボートに乗せて私とこの娘はそっちに乗せてよ
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			ボートは二隻あるんだっけ？
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ある
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			じゃあ男と女で分けたいのを教える
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			じゃあいいよ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			脱出するでいい？
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			脱出だァ～！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			脱出だァ〜！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			あなた達はボートを出し、海の上で陸を向かった。
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			出港だァ〜！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			そして…救命ボートを出してから、しばらく経った頃。<br>
+			突然、探索者の携帯が鳴り響く。またメールのようだ。<br>
+			今の時間は、14時。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			出港だァ～！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			それは、登録されているメールアドレスだった。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			きわい
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			こわい
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			差出人の名前を確認すると 「秋月なつき」と表示されている。
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">情報</div>
+		<p class="player p6">
+			<b>KP</b>
+			秋月なつき<br>
+			20XX XX/XX 14:00<br>
+			Sub ほんとゴメン！<br>
+			今まで寝てた！ごめんよー！<br>
+			今日は二人にS谷で買い物に<br>
+			付き合ってほしかったんだ！<br>
+			今からでも大丈夫？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			…探索者がボートの女子の乗った方を振り向くと、 そこには血まみれの何かがあった。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			それに驚き振り返ると、なつきの顔が目の前にあった。
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			いや、本来顔がある場所にそれはなく、真っ黒であった。<br>
+			深淵のような闇、その口に相当する部分がパックリと割れた。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			耳まで及ぶその真っ赤な裂け目を、 笑うように歪ませ、言った。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈
+		</p>
+		<p class="player p16">
+			<b>？？？</b>
+			今日のランチは楽しかったねえ。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			途端、探索者の意識は暗転し、二度と世界を認識することはなかっただろう。
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			沈みゆく意識の中、不気味な女の笑い声だけが、響いていた。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			🌈🌈
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			へ〜…そう
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			わりい 俺死んだ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			…人先に陸に着いていた歌舞伎シャンとロボエース。<br>
+			先程の地獄から抜け出たと安堵し、ボートが来るのを待つだろう。<br>
+			が、ふと振り向くと目の前になつきがいた。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			おわァァアアア～～～～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			愛シテクレテ・・・・アリガトウ・・・・・！！！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			なつきの顔にはパーツがなく、ただの暗闇であった。<br>
+			…その顔を最後に、2人は目を覚ますことはなくなるだろう。
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			ｃｃｂ＜＝99　敗北者 (1D100&lt;=99) ＞ 76 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			全員ロスト
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			宴だァ〜〜〜！！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			わかったァ～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			おわァアアア～～～っ！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			宴だァ～～～～～～！！！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			宴だァ～～～～！！！！(((🍶))))
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			仕方なかったっ！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			なつきを犯人と疑ってればハッピー、なつきをどうにかして船に置いてきたらノーマルでした
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			宴だァ～～～！！！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			疑ってたけどあの状況でどう説得しても船に残るとは思わないんすがね…
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			あの怪物はなんだったのか教えろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			なつきに化けてたニャルラトホテプはトイレに行くと言った時に<br>
+			エントランスに行って人を殺した
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			ムーンビーストだったなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			膀胱スキャンすればよかったの確定
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			ニャルラトホテプっていう怪物を信仰してる化け物
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			最後の方は疲れてて正直バッドエンドなの分かってたけど突き進んだのを教える<br>
+			すまん
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			なんでそれが分かるかってのは女の子がトイレに行った時に人を見た？って聞いた時に<br>
+			マスクをつけてる男の人しか見てないって言ったから<br>
+			なつきが怪しいと分かるはず
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			でもTRPGは疲れるから仕方ないもんな、ルフィ
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			そういえばトイレに行ってたのすっかり忘れていたなの、なの、なのなのなのなの(ﾎﾟﾝﾎﾟﾝﾎﾟﾝﾎﾟﾝ)、バレバレェェ～～！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			目薬さしながらやってたことを教える
+		</p>
+		<p class="player p3">
+			<b>ター</b>
+			とにかくお疲れだァ〜〜！！！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			全然分からなかったの悲しいだろ
+		</p>
+		<p class="player p6">
+			<b>KP</b>
+			お疲れシャンだァ〜〜〜〜！！
+		</p>
+		<p class="player p1">
+			<b>ロボエース</b>
+			お疲れシャンだァ～～～～～～！！！
+		</p>
+		<p class="player p2">
+			<b>コナーファ</b>
+			お疲れシャンだァ～～～～！
+		</p>
+		<p class="player p0">
+			<b>歌舞ンクス</b>
+			お疲れシャンだァ～～～！！！！
+		</p>
+	</div>
+</body>
+</html>

@@ -1,0 +1,5266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [雑談] タブ */
+		.t0 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [情報] タブ */
+		.t1 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [メイン] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GMティ..,匿名さん)] タブ */
+		.t3 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステータス] タブ */
+		.t4 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GMティ..,オシエル)] タブ */
+		.t5 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GMティ..,ダイス)] タブ */
+		.t6 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(GMティ..,まうまう)] タブ */
+		.t7 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：noname */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：GMティマス */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：GMティマス */
+		.p2 { color: #9c27b0; }
+		.p2 .diceroll { background-color: #9c27b0; }
+
+		/* 発言者：シャロ */
+		.p3 { color: #ffeb3b; }
+		.p3 .diceroll { background-color: #ffeb3b; }
+
+		/* 発言者：VVVVVV */
+		.p4 { color: #888888; }
+		.p4 .diceroll { background-color: #888888; }
+
+		/* 発言者：オシエル */
+		.p5 { color: #e91e63; }
+		.p5 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：有栖川ダイス */
+		.p6 { color: #888888; }
+		.p6 .diceroll { background-color: #888888; }
+
+		/* 発言者：有栖川ダイス */
+		.p7 { color: #ffeb3b; }
+		.p7 .diceroll { background-color: #ffeb3b; }
+
+		/* 発言者：まうまう */
+		.p8 { color: #607d8b; }
+		.p8 .diceroll { background-color: #607d8b; }
+
+		/* 発言者：有栖川ダイス */
+		.p9 { color: #727239; }
+		.p9 .diceroll { background-color: #727239; }
+
+		/* 発言者：GMプライム */
+		.p10 { color: #9c27b0; }
+		.p10 .diceroll { background-color: #9c27b0; }
+
+		/* 発言者：system */
+		.p11 { color: #888888; }
+		.p11 .diceroll { background-color: #888888; }
+
+		/* 発言者：警備の人１ */
+		.p12 { color: #888888; }
+		.p12 .diceroll { background-color: #888888; }
+
+		/* 発言者：警備の人２ */
+		.p13 { color: #888888; }
+		.p13 .diceroll { background-color: #888888; }
+
+		/* 発言者：警備の人３ */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：富豪 */
+		.p15 { color: #888888; }
+		.p15 .diceroll { background-color: #888888; }
+
+		/* 発言者：支配人 */
+		.p16 { color: #888888; }
+		.p16 .diceroll { background-color: #888888; }
+
+		/* 発言者：ハングドマン */
+		.p17 { color: #888888; }
+		.p17 .diceroll { background-color: #888888; }
+
+		/* 発言者：ルパン */
+		.p18 { color: #888888; }
+		.p18 .diceroll { background-color: #888888; }
+
+		/* 発言者：？？？ */
+		.p19 { color: #888888; }
+		.p19 .diceroll { background-color: #888888; }
+
+		/* 発言者：マモー */
+		.p20 { color: #888888; }
+		.p20 .diceroll { background-color: #888888; }
+
+		/* 発言者：次元 */
+		.p21 { color: #888888; }
+		.p21 .diceroll { background-color: #888888; }
+
+		/* 発言者：五ェ門 */
+		.p22 { color: #888888; }
+		.p22 .diceroll { background-color: #888888; }
+
+		/* 発言者：超重戦車マウス */
+		.p23 { color: #607d8b; }
+		.p23 .diceroll { background-color: #607d8b; }
+
+		/* 発言者：脳 */
+		.p24 { color: #888888; }
+		.p24 .diceroll { background-color: #888888; }
+
+		/* 発言者：まうまう2世 */
+		.p25 { color: #607d8b; }
+		.p25 .diceroll { background-color: #607d8b; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			来たか…アドリブ卓
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>GMティマス</b>
+			【概要】<br>
+			GMが「スタート地点」と「ゴール地点」を決めて　その間にある「イベント」をPLが1人1個ずつ決めてぶっつけ本番でやる卓を教える<br>
+			技能とイベントは各々秘匿会話でGMに送る　シャンパラと一緒<br>
+			HPが0になっても退場にはならずその場復活　あるいは別地点で復活を教える　どっちにするかはGMが決めろ<br>
+			その代わり「死亡回数」が増える　最終的に死亡回数が最も少ないPLの優勝を教える<br>
+			<br>
+			【能力値】<br>
+			強さ…STRとCONに該当<br>
+			賢さ…INTに該当　他に「アイデア」という項目を追加して賢さの値の5倍に設定する<br>
+			美しさ…POWに該当　他に「幸運」という項目を追加して美しさの値の5倍に設定する<br>
+			速さ…DEXに該当　　他に「回避」という項目を追加して速さの5倍に設定する<br>
+			<br>
+			上記4つをそれぞれ2d6+6で決めることを教える<br>
+			<br>
+			HP…強さと一緒<br>
+			SAN…美しさ×5　幸運と一緒<br>
+			死亡回数…初期値は0 死んだら+1<br>
+			<br>
+			【技能】<br>
+			賢さ×30で「振り分けポイント」を求める　そのポイントを使って様々な技能を自由に作ることができる<br>
+			1つの技能につきポイントを1~80まで振り分ける<br>
+			その値は成功率として扱われ　高ければ高いほど成功しやすいのを教える<br>
+			全技能の成功率の合計は保有ポイント以上になってはならない<br>
+			<br>
+			技能はメインと秘匿会話　どちらで使っても良いが必ずGMに使用宣言を行い許可を貰わないといけないことを教える<br>
+			許可を貰ったら 100面ダイスを振る　ココフォリアでは「1d100&lt;=[使用技能の成功率]　技能名」と書き送信を教える<br>
+			1d100が成功率よりも低い数字の場合　技能ダイスは成功し　その場で使えることを教える<br>
+			失敗した場合　その技能は「死ぬまで」使えなくなることを教える<br>
+			所有技能が全て使用不能になった場合　その場で爆死する<br>
+			<br>
+			またTRPGには「クリティカル」と「ファンブル」の概念があることを教える<br>
+			1d100をやった際にダイスの目が1～5であった場合はクリティカルとなり良い出来事が起こる<br>
+			ダイスの目が96～100の場合はファンブルとなり悪い出来事が起こる<br>
+			このゲームではファンブルが出たらその場で爆死を教える<br>
+			<br>
+			【ダメージダイス　SAN値チェック】<br>
+			何かしらの攻撃を受けた場合はダメージを受けた側がダメージダイスを振ることを教える<br>
+			基本的には以下の感じにするぞォ～～～！！<br>
+			小ダメージ…1d3<br>
+			中ダメージ…2d3<br>
+			大ダメージ…3d3<br>
+			<br>
+			SAN値チェックは1d100&lt;=[SANの値]でダイスを振り　その結果でSAN値がどれほど減るのか決まるのを教える<br>
+			基本的には以下の感じにするぞォ～～～！！<br>
+			小…(0/1d3)←(成功/失敗)<br>
+			中…(1d3/1d6)<br>
+			大…(1d6/2d6)<br>
+			<br>
+			【最後に】<br>
+			何でもありとは言え　TRPGの基本はGMPLの相互協力なことを教える<br>
+			わかったかミズゴロウ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>GMティマス</b>
+			！！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			卓多くて参加悩んだけどアドリブ卓で脳を溶かしに来た
+		</p>
+		<p class="player p1">
+			<b>GMティマス</b>
+			他に卓立ちまくってるから集まらなさそうだな…ルフィ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			シャンクロスに参加しちゃってることを教える<br>
+			取り敢えずno nameだけでも置いて参加表明だけしといていいか教えろ
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			えーーーーーーーーー<br>
+			いいよ<br>
+			1時間で人が集まらなかったら卓を爆破する<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			わかった<br>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			3〜5人くらい来てくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			別卓いるけど同時参加してもいいか教えろ
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			いいよ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			うわ！ありがとう！<br>
+			noname置いておく<br>
+			キャラ選悩むんすがね…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			頼むから昨日みたいなのは頭痛するからほどほどにしてくれ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ちょっとトイレ行ってくるシャン<br>
+			V6で行くぞ来い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			昨日何があったのか教えろ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			すまん(Thanks.)
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			SMAP卓になった
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			ちなみに今回は豪華客船のオークションに潜入してお宝を盗んできてもらう
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			本格的ね
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ただいま
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			おかえり
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 6[4,2]+6 ＞ 12<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 12[6,6]+6 ＞ 18<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 6[4,2]+6 ＞ 12<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 7[1,6]+6 ＞ 13
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			V6は分からねえなあ・・・
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			技能とイベントは勝手に送ってこい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			マドカ・ダイゴは知ってる
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			俺も
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			急用ができたから抜ける<br>
+			許してくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>VVVVVV</b>
+			問題は技能何にするかだな・・・
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>VVVVVV</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 7[4,3]+6 ＞ 13<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 2[1,1]+6 ＞ 8<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 8[4,4]+6 ＞ 14<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 6[3,3]+6 ＞ 12
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			推奨はそうだな…今回は変装があったほうがいいな
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			へ～！
+		</p>
+		<p class="player p4">
+			<b>VVVVVV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(GMティ..,匿名さん)</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			【技能】540<br>
+			見聞 80<br>
+			カフェイン中毒 80<br>
+			ミルク色の異次元 80<br>
+			変装 80<br>
+			手先の早業 80<br>
+			隠密 80<br>
+			射殺　60<br>
+			<br>
+			【イベント】<br>
+			ゾンビが湧く
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			お茶淹れたりして参加シャンをゆっくり待つ<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(GMティ..,匿名さん)</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			わかった<br>
+			客船の中でゾンビ出るの楽しそう
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			大パニックで確定
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			【スタート】豪華客船に乗り込み<br>
+			【ゴール】宝を奪って帰ってくる
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			!
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 6[2,4]+6 ＞ 12<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 7[6,1]+6 ＞ 13<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 6[5,1]+6 ＞ 12<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 11[5,6]+6 ＞ 17
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			強さ 12<br>
+			賢さ 18 アイデア 90<br>
+			美しさ 12 幸運 60<br>
+			速さ 13 回避 65
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			強さ12<br>
+			賢さ13 アイデア65<br>
+			美しさ12 幸運60<br>
+			速さ17 回避85<br>
+			技能値390
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>VVVVVV</b>
+			他参加するから今回はやめとく、すまん
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			悲しいだろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			悲しいだろ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			悲しいだろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			いつまでなら待つのか教えろ
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			まあいつまででもいいんじゃないかな<br>
+			さっき50分に爆破するって言ったけど
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			カイジみたいなやつだっけ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GMティ..,オシエル)</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			オシエル80 教える<br>
+			スゲェ“覇気”80 相変わらず…スゲェ“覇気”だ<br>
+			変装・皇80 どんな姿にも変装出来る<br>
+			トキトキ80 遂に能力を使う描写が！？<br>
+			天使70 天使っぽいことをする<br>
+			<br>
+			イベントはお宝を取ったらマモーが復活<br>
+			ルパン一味と共闘になる
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			わかった<br>
+			駄ニメでルパンVS複製人間を軽く観返す<br>
+			来い
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			真面目だな…せいぜい強くなれ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			Choice 参加しない 寝る (choice 参加しない 寝る) ＞ 寝る<br>
+			冷やかし失せろォォォ<br>
+			スッ…スッ…スヤッ…！
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			ゆっくり休め(^^)
+		</p>
+		<p class="player p6">
+			<b>有栖川ダイス</b>
+			前流行らそうとしてたシャンカーがいたしアニメを機にアニメとドラマCDを聞いて履修してきたのを教える
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			聖者か？
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			真面目だな…せいぜい強くなれ
+		</p>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			いいや...そこまで熱意注いだキャラをこういう遊びに持ち込むのは聖者じゃねェな…
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			誰だこいつ
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			有栖川はダイス振ってくれ(^^)
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			流行らそうとしたシャンカーも草葉の陰で喜んでるの確定
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			勝手に殺すなカタクリ〜！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 5[2,3]+6 ＞ 11<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 9[4,5]+6 ＞ 15<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 5[1,4]+6 ＞ 11<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 10[6,4]+6 ＞ 16
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			あと一人ほしいなァ
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			そうだね
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			強さ11<br>
+			賢さ15アイデア65<br>
+			美しさ11 幸運55<br>
+			速さ16 回避80<br>
+			技能値450
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GMティ..,オシエル)</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			サクッと観直したけど怖すぎだろこの映画
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			初PLでよければ参加することをお前に教える
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			ぜひ参加してくれ(^^)
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			x4 2d6+6 #1<br>
+			(2D6+6) ＞ 7[1,6]+6 ＞ 13<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 7[3,4]+6 ＞ 13<br>
+			<br>
+			#3<br>
+			(2D6+6) ＞ 7[6,1]+6 ＞ 13<br>
+			<br>
+			#4<br>
+			(2D6+6) ＞ 8[4,4]+6 ＞ 14
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			初PLがアドリブ卓とか気は確かか！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			平均的まうまう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			好き勝手に暴れてくれ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GMティ..,オシエル)</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			脳みそもグロいし苦手な人はいるかもしれねェな…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			強さ13<br>
+			賢さ13 アイデア65<br>
+			美しさ13 幸運65<br>
+			速さ14 回避70<br>
+			技能値390
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			ま<br>
+			ぁ<br>
+			ま<br>
+			ぁ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			お頭いいじゃねェか<br>
+			どうせシャンカー相手なんだから
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GMティ..,オシエル)</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			でもクソ面白ェだろ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ああ。
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			SMAPになった奴か
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			そう
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			技能は秘匿で送る？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			どうしてああなったんだろうな　ルフィ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			秘匿の送り方知ってるとか本当に初PLか？
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			... ...(←意味深に無言)
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			送ってくれ(^^)
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			80　ギャンブル　賭けるぜ<br>
+			スロット　回すぜ<br>
+			Max Bet　回って7なら攻撃力が上がるぜ<br>
+			ヒプノシスマイク　相手に催眠をかけるぜ<br>
+			金貸してくれ(^^）金を借りるぜ<br>
+			50　ファッション　渋谷のポッセから服とかドーナツとかもらったのを使うぜ<br>
+			イベント　大スロットカジノ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			終わったぜ！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(GMティ..,オシエル)</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			おれは正当な視聴者<br>
+			マモーはルパンの世界観でガチ超能力使ってくるからヤバかったのだけ覚えてるけど見たの大分前だから🌈詳細忘れたww🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			ありがとよ！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			確認したのを教える
+		</p>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			悪ぃな！時間食っちまったぜ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			エミュうまそうだな…ルフィ
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			えーーーーーーーー<br>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			偵察(80): 小柄な身体を生かしてバレずに偵察する<br>
+			撹乱(80): 仲間を呼んで他の場所に注意を引きつける<br>
+			妨害(80): 仲間にケーブルをかじらせて警報などの電気系統を一時的に無効化する<br>
+			チーズ(80): 回復<br>
+			隠れ身(70): 隠れる<br>
+			<br>
+			イベント: 実はこのまうまうの正体は超重戦車マウス<br>
+			客船にあるナチスに関連するアイテムを見つけると正体を表す<br>
+			正体を現した後は技能はすべて12.8cm戦車砲(80)になる　食らうと死ぬ<br>
+			ストーリー的に難しかったら言ってくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			例えば鍵十字のアイテムとかでいい？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			無料のCDしか聞けてねェからな..正直エミュ精度には期待しないでくれ...
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			全員の技能とイベントを確認したのを教える
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			バレるまでは砲撃は封印するのでタイミングは任せた
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>GMティマス</b>
+			世界を創造するから少し待ってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			二人の名前の色が被っているまうまう
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			わかったわ！
+		</p>
+		<p class="player p7">
+			<b>有栖川ダイス</b>
+			！じゃあこっちが変えるぜ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			前回怪盗ラパンできなかったからリベンジで来たけどシャロエミュそんなわかんにゃい！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			前回よりまともそうな面子で良かったろ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			おれは不当なシャンカー<br>
+			オシエル以外の元ネタがわからない
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			前回よりまともじゃないメンツとか想像出来ないっつーか…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			そもそも俺は海外のコミックが元だから口調もなにもわからないの確定
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			オプティマスならアニメイテッドだのなんだの日本でもあったんじゃねーか？<br>
+			トランスフォーマーだろ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			私にいい考えがあるまうまう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			内田真礼ボイスってことだけ分かってればいいよ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			へ～!!!
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			まあそこはあまり考えないでおこう<br>
+			じゃあそろそろ始めるのを教える
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			CV野津山幸宏でカイジみたいでクズさを減らしたギャンブル狂ってことは覚えといていいかもしんねーな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			！！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			出航まうまう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>GMティマス</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			出航よぉ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			じゃあスタートする
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			出航をオシエル
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			始まりが重なるユニバース
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あなたたちは怪盗グループです
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			怪盗グループのペットまうまう
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			これも生計のためよぉ……
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			まぁいっつも借金取りに追われてるから似たようなモンだな！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			グループ名はシャンカーだと思います
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			うぐっださすぎよぉ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ダサッ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ジャグラーの方が豪勢だっつったのによぉ...
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			誰が考えたのか技能で特定する<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 29 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			神が考えたらしいです。
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			あんたじゃないのよぉ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			お前ならいいまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			今回は某掲示板で議論だのをしているとある情報が目に止まります。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			常々技能のスロット回してていいか？<br>
+			一回判定してずっと使える状態か検査するみたいな意味で
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			おれは天使オシエルなので神ではないことをオシエル
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			しょーもないことすんなアホンダラ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ここのパチスレすっげぇ古い機体でも知ってるヤツがいるんだよな…<br>
+			ひぐらしにガロに...
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ありがとうよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			豪華客船でオークションが開かれるという情報ですね。
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			3d7<br>
+			ダイススロット<br>
+			 (3D7) ＞ 12[1,6,5] ＞ 12
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ツイてねぇぜ...
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			パチはあの花がクソ台ってことぐらいしか知らないのをオシエル
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ちなみになんかいろんな泥棒が来ることも噂としてあるらしいです。
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！<br>
+			私たちも負けてられないわよぉ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			物騒過ぎるだろアホンダラ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			SMAPで確定まうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			怪盗ジョーカーとか…
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			二度と来んなドロボー！くらいは言われたことあるな...
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			盟友はいつも猫から物を盗んでいるまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まあそんな面白そうなものをあなたたちが見過ごすはずがありません。
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			普通ならオークション中止だが…主催者の度量が伺えるな…
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			技能成功で7が揃ったって事に出来ねェか？<br>
+			メインとは別に
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			お宝ぶんどって家計の足しにするわよぉ！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			とんだプライズにベットじゃねェか...燃えてきたぜ！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			1d100<br>
+			年分のチーズを買うまうまう (1D100) ＞ 34
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			うわあり！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			目玉商品とかないか調べる<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 100 ＞ 致命的失敗<br>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ただ技能成功によるスロットはあまりうまあじがないことにする
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			100は仮に99でも失敗だからかなり運が悪いな　ルフィ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オシエルは爆死しました。
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			おわァアアア〜〜！！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			わかった<br>
+			素で揃えてからMAXBETで最　強　だ　ろ　で確定
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>system</b>
+			[ オシエル ] 死亡回数 : 0 → 1
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			かわいそうだからチーズあげるまうまう<br>
+			ccb&lt;=80 チーズ (1D100&lt;=80) ＞ 27 ＞ 成功
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			派手に死んだわね…
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オシエルにチーズをあげました。
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			しゃーねぇ！こいつのサイトのパスの数字揃えて見せらァ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ということで船に乗り込むわけですが
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			ネズミからチーズもらって喜ぶ天使ってシュールすぎるだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			変装または隠密系で振ってください
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 28 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ccb&lt;=80 変装 (1D100&lt;=80) ＞ 81 ＞ 失敗
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 57 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			にゃんでぇ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ワインが天使の分け前ってくらいだし発酵物が好きなのかもな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ccb&lt;=50 (1D100&lt;=50) ＞ 43 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あなたたちは顔がばれています<br>
+			見つかると警備員に殺されることをお忘れなきよう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			さすがポッセ(盟友)の服...なんともないぜ！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			隠密あるからそっちで振らせてくだしゃい！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			うぐっ警備員如きに殺しの権限あるの怖すぎだ〜〜！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ちなみに防御や回避は不可能です<br>
+			いいよ振って
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			失せろ銃で確定まうまう
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			なんだその警備員の強さ！？死神の鎌か何かか…！？
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ccb&lt;=80　隠密 (1D100&lt;=80) ＞ 62 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ということで皆さん船には忍び込めそうですね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			よくやった！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			GM！ついでにマイクで近くの乗客に催眠をかけたいんだがいいか？
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			私を置いていかにゃいでよぉ～！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ有栖川
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80<br>
+			さてこれで警備員に疑われたとき身代わりになってくれるか...っと (1D100&lt;=80) ＞ 43 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			よくやったまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			一回のみ警備員から逃げれるよ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ラッパーは格が違うわね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ネットで適当に見た情報だから確かかは不明だけど現実では有栖川という姓は途絶えてるらしいことをオシエル
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			3d7<br>
+			おうよ！ダイススロット (3D7) ＞ 14[5,2,7] ＞ 14
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			というわけで皆さんは船に乗り、そして出航します。
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			確変かと思ったら端一個...しょっぱすぎだろ...
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			出航だァ〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			出航よぉ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オークションには時間がありそうだね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おっしゃぁ！行くか！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			なにかしたりする猶予はあるしすぐに盗みにもいける
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			お宝がある部屋を調べるまうまう<br>
+			来い
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			その前に同業者がどんな奴か調べる<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 63 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=80 偵察 (1D100&lt;=80) ＞ 38 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			そうだね…
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			よくやった！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ちょっと待ってね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあこっちはマイク使って乗客で知り合いが関係者にいるやつがいないか調べるか...
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まず同業者について<br>
+			ざっと見た感じモブの盗っ人が数組とあとはルパン一味、情報(？)通り怪盗ジョーカーなどがいるね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！<br>
+			怪盗ジョーカーってコロコロのでいいか教えろ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			うわ…またルパンだ…
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			教える
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			この卓何回もルパンに負けてるのよね…
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			いざとなったら銭形警部呼ぶぞ<br>
+			来い
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ルパンの手際は格が違うまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			最悪母ちゃん呼ぶか...
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとお宝のある部屋について<br>
+			かなりわかりやすい場所にあるよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			目玉商品だから目立つように置いてる説さらに濃厚に
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			そうなるとセキュリティシステムがすごそうね…
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			屋上プールの近くの部屋で日光を浴びているね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			見聞でセキュリティを調べるわ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			セレブまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			CCB&lt;=80　見聞 (1D100&lt;=80) ＞ 75 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			スロットで周りの富豪に紛れ込むぜ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ<br>
+			警備について
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 47 ＞ 成功
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			おれも有栖川が出したヤソップスロットを回す<br>
+			来い<br>
+			3b9 (3B9) ＞ 2,6,8
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			かなり厳重だね<br>
+			アリ一匹通さないと言えるね<br>
+			ちなみにこの警備員は催眠聞かないので注意してね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			こいつマイクを出すと出てくるスピーカーの形であって別にスロットそのものではねェんだけどなァ…
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！<br>
+			しょんなぁ…
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ネズミも通れないまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			3d7<br>
+			効くかね...一回運試しと行こうか (3D7) ＞ 10[6,3,1] ＞ 10
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			富豪に紛れ込んでみたよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあ情報収集出来ねェか？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			できるよ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			いい案ね！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			聞き耳系で振って
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おっしゃ！じゃあまずお宝の逸話や内容から聞こうか...っと
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			とりあえず目玉商品が何なのか知りたいのをオシエル
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			技能が無いから代わりに金をこびる経験で拝み倒すぜ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			人と話はできないので🧀を探しに出るまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ccb&lt;=50 (1D100&lt;=50) ＞ 93 ＞ 失敗
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...ギリギリセーフ...か...
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まあいいか<br>
+			今回のお宝は「紅の雫」<br>
+			文字通り紅色に染まった宝石のように見えるね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			モンブランにしか見えないだろアホンダラ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			見えるね？
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			爆死しそうなまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			見えるよね？
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			はい
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			はい。
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			モンブランだったら代わりは用意できるんだが...<br>
+			違ぇみてぇだな！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			あえて逆らう<br>
+			天使でクリ出したらモンブランってことにする<br>
+			来い
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			な！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			CCB&lt;=70 (1D100&lt;=70) ＞ 72 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			GMに逆らったらどうなるか分かってるのかしら？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			いや...俺もやってみてぇ！GM！ギャンブルで挑戦するぜ！
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ 有栖川ダイス ] HP : NaN → 11<br>
+			[ 有栖川ダイス ] SAN : 0 → 55
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オシエルは爆発して死にました
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			当たり前だ！！！！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ オシエル ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			かわいそうだから🧀あげるまうまう<br>
+			ccb&lt;=80 チーズ (1D100&lt;=80) ＞ 50 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あと警備員が向かってくるよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			クリティカルに挑戦いいか？GM
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80 (1D100&lt;=80) ＞ 95 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			何やってんだお前ェ!!!
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			ccb&lt;=80 警備員に変装 (1D100&lt;=80) ＞ 97 ＞ 致命的失敗<br>
+			にゃんでぇえええええええ！？！？！？？
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...ふぅ　大破産だな！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=70 隠れ身 (1D100&lt;=70) ＞ 92 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			前任はGMに意味もなく逆らうアホンダラでしたが今回はチーズ🧀をもらえる完璧で幸福な天使なのをオシエル
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			全員90台！これくらいが燃えてくるぜ
+		</p>
+		<p class="player p12">
+			<b>警備の人１</b>
+			シャロというやつだな死ね
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ シャロ ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			死にました。
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			俺も変装で隠れる
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			おわァァアアア～～～～～～～！！！？！？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 31 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあ今度は変装に挑戦と行こうか！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=50 (1D100&lt;=50) ＞ 79 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			今の私は完璧で幸運な怪盗よぉ！今度こそ変装するわよ！<br>
+			ccb&lt;=80　変装 (1D100&lt;=80) ＞ 84 ＞ 失敗<br>
+			にゃんでぇえええええええ！？！？！？？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>警備の人２</b>
+			有栖川死ね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おれは有栖川夏葉なんだ　誰がなんと言おうと
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ちょっと待て警備員物騒過ぎるだろ…
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！そうだGM
+		</p>
+		<p class="player p14">
+			<b>警備の人３</b>
+			シャロだろお前なんで生きてんだフォトントルピードで死ね
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ シャロ ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			おわァァアアア～～～～～～～！！！？！？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			正直ガンダムとかの方が紅の雫より高くつきそうだな　ルフィ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			（あっこれ許されてるまうまう…）
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			警備員は殺したら帰ったよ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			こ…今度こそ完璧な怪盗よぉ……！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			有栖川どうしたの
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			さっき富豪に巻き込まれたし一回分シャロの身代わりになってもらうことって出来るか？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			聖者
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			聖者なの！？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			じゃあそこらへんの富豪が死にました。
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			うわ！ありがとうダイス！
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ シャロ ] 死亡回数 : 2 → 1
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			よし！気にすんな！しっかり掴まれよこっちだ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			これで一安心みたいだね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ギャンブル狂いなのに頼れるところあるじゃない
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			みんなはなんとか逃げ切ったよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			隠し財産ってとこだ。これで尽きちまったしあとは実力勝負だな
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			そして時間は少し経ちます<br>
+			…
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			…
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！！！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			3d7 (3D7) ＞ 14[3,6,5] ＞ 14<br>
+			やっぱツイてねぇな今日...　トホホ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			有り金すり過ぎよぉ！？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			大きな船内カジノがオープンしたみたいですね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			行きましょう<br>
+			せっかくだしなにかあるかも
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			っしゃぁ！荒稼ぎするぜ兄弟！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			どうせダイスは行くんでしょう？ついていくわ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			来たか　カジノ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			とても豪華なスロットがあります
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			あの台なら当たりそうまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			まずはスロットで安定して稼ぐぜ！<br>
+			スロット技能回していいか？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			どの台が当たりかオシエル<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			さて回してみるにもお金がありません<br>
+			目星系で
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			金ないのにここに来たのアホンダラ過ぎるだろ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おっしゃ気前がいいな！<br>
+			元手の金がないならアレだ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 27 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			落ちている金を探すまうまう<br>
+			来い<br>
+			ccb&lt;=80 偵察 (1D100&lt;=80) ＞ 9 ＞ スペシャル
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			あら　私たちは怪盗よ？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			富豪がおりますね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...やってくるか？
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			そこの富豪から手先の早業で金盗むわよ！
+		</p>
+		<p class="player p15">
+			<b>富豪</b>
+			この台はまさに傑作だY
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			マイクで催眠するぜ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ振って
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80 (1D100&lt;=80) ＞ 42 ＞ 成功
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			トキトキで時止めてる間に盗む<br>
+			来い<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 75 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			CCB&lt;=80　手先の早業 (1D100&lt;=80) ＞ 4 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			隙が出来たし頼んだ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			出目が極端だろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オシエルとシャロのおかげでめっちゃ盗めました
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			よくやった！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			警備員にも気づかれなかったようですね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ガッポガポよ！これで好きなだけ回してきなさいダイス！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあ後は任せてくれ！お前の見つけてくれたあの台で稼ぐぜ！<br>
+			スロット+ギャンブルのあわせ技でいいか？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			じゃあ有栖川に預ける
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			どうせスロット回せないから腹いせにケーブル囓って当たらないようにさせてェな…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			2d100&lt;=80 (2D100&lt;=80) ＞ 78[49,29] ＞ 78 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...ミス！もう一回分！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=80 妨害 (1D100&lt;=80) ＞ 11 ＞ スペシャル
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80 (1D100&lt;=80) ＞ 25 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			幸運も振って
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...結構なジャックポッドだったぜ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=65 (1D100&lt;=65) ＞ 96 ＞ 致命的失敗<br>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まうまうがなにかしようとして爆死しましたね
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			まうまうわァアア～～!!!
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			何やってんだお前ェっ！！！！
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ まうまう ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			何やってんだ...飛んだ外れ演出だぜ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			前回はよからぬことを企むまうまうでしたが今回は普通のまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとスロットの結果ですが
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おう！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まあいい感じのあたりでした
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			よくやった！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			元手+なのでいい方ですね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			よくやったわ！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			っし！まずは一勝！Dead or Aliveってな！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとお金で船内のアイテムが買えます
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			こういうので当てまくるとVIPルームに連れてかれたりする説さらに濃厚に
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			高級チーズがほしいまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			大体なんでもあります
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			欲しいもの言え
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあそうだな...適当に50音で武器の頭文字選ぶか<br>
+			1d50 (1D50) ＞ 35
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			トランスフォーマー買う
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まうまうは高級なチーズをたらふく買いました
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			も...木材頼むぜ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ここのチーズは死ぬほどうめェまうまうな！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			じゃあ麻酔銃でも買うわ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			クラファンのユニクロンがありました
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			今更だけどモビルスーツでもいいならそれがいいけどよ...
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈言っといてアレだけどユニクロン知らなかったww🌈<br>
+			でも買う
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあ適当なザクで
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ちょっと待って……豪華客船沈むでしょ……
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			1d3 ザク (1D3) ＞ 1
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			何だこのロボット群！？⑨卓か何かか…！？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ザクIですね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			PL的に好きなやつだな...おっしゃ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			豪華客船だからザク100台載っても大丈夫まうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとついでにトランスフォーマーなんですが<br>
+			あ、シャロは麻酔銃を買ったよ<br>
+			赤いトラックもありましたね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...GMじゃねェか？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			IQ280
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			俺はノヴァプライムだ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			へ～!!!
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			へ~!!!
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ちなみに違いはわからない
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			オイオイオイ...
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			とりあえず逃走したきゃあ“赤いトラック”へ！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ということで以上ですね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			話についていけない…
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おれはザクで行く！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			まうまうもまうまう
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			おれもノリで適当に合わせてるのをオシエル
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			晩ご飯の後にオークションがあります
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			生きてる変形ロボ(ﾀﾞﾝｯ<br>
+			と空中量産型戦車の初期型みたいなもんだぜ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			来たか<br>
+			オークションまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			今は宴しましょう
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			宴だァ〜〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			宴よぉ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			これから始まる戦争に。
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			((((🧀🐭🧀))))
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おっしゃ...残金幾らあったっけな...<br>
+			まぁいいか！乾パァ～い！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			かんぱ～い！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...おれ未成年じゃねェか！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！<br>
+			私も！！！！！！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ご飯を食べたりしていると、アナウンスンーが聞こえてきます。
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			航海中は特定の国の領海じゃなければ法律に縛られないまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ジュース飲んでるか...
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ネズミも酒飲んでいいのか怪しいしおれしか飲めねえじゃねえかアホンダラ<br>
+			！！
+		</p>
+		<p class="player p16">
+			<b>支配人</b>
+			これよりオークションを開始します。オークション会場へお越し下さい。
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			そろそろ盗むわ……♠
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			そろそろ向かうか...７７７
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			オークションに行くぞ<br>
+			来い
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ここはオークション会場です
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			3d7<br>
+			 (3D7) ＞ 15[3,7,5] ＞ 15<br>
+			リーチも来ないか...
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			揃ったらどうなるのよ
+		</p>
+		<p class="player p16">
+			<b>支配人</b>
+			これよりオークションを始めたいと思います！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			7なら特に強くなる！それだけだ！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			へ～！<br>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			他の同業者がどういう行動に出るのか気になるわね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			10分程度席を外す<br>
+			すまん(Thanks.)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			目玉の紅の雫はどこからでも見える位置にあるね
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			いいぜ！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			トキトキするのか教えろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			それまで少し待つ<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(GMティ..,匿名さん)</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			じゃあこの間にミルク色の異次元で罠を仕掛ける
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			CCB&lt;=80　踏んだら自分が自分を見つめてる空間に移動させられて発狂死する異次元ポータル設置 (1D100&lt;=80) ＞ 82 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ちょっと待て…出目悪すぎだろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			俺も狂気シャン脈のときにそうなった
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			他PLに迷惑かけまくった俺は恥だ！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			いいじゃねェかお頭迷惑かけたって<br>
+			何よりシャン卓は自由っ！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとそこを警備員が厳重に見張ってるよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			今戻ったことを教える<br>
+			おれは…みんなを待たせて…恥ずかしい!!!
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			お前なら…いい
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			お前なら…いい
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			お前なら…いい
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			センゴク、複数人いた!?
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			お前なら…いっぱいいる
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			続き行くぞォ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ｗｋｔ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			出航よぉ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			準備は大丈夫か教えろ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			オシエル
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>シャロ</b>
+			あの警備員に何回も殺されたのよね…
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			大量に同胞を呼んで会場をパニック状態にさせればスキができるまうまう？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			OK
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オークションは紅の雫を最後にかけるみたいだね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			振っていいよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			紅の雫以外も適当に盗めばいい説さらに濃厚に
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあ周りの乗客に一個前の景品をその宝石だと錯覚させたい
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			マイクで出来るか？
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			とりあえず主人達の動きを待つまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まあそれでいいかな
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80 (1D100&lt;=80) ＞ 99 ＞ 失敗
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おわアアァァ～っ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			有栖川は死にました。
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ダイス～～～～～～～！？！？
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			確か一個身代わりなかったか...？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			爆死なので関係ないです
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			身代わりはシャロに使った説なかったか教えろ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=80<br>
+			哀れなご主人さまのために高級チーズ発進！<br>
+			🧀三三三 (1D100&lt;=80) ＞ 22 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			あってる...
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ファンブルだから仕方ないのよね…
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			とんだご破算だぜ...
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			クローンの有栖川は高級チーズを受け取りました。
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ 有栖川ダイス ] 死亡回数 : 0 → 1
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			よくやった！<br>
+			それはクソうめぇチーズ<br>
+			貰って正解だった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ポケットからドーナツ出して一緒に食べるか…
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			1d100　美味しさ (1D100) ＞ 89
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			う<br>
+			ま<br>
+			う<br>
+			ま
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			クソうめェだろ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			食ってみな　飛ぶぞ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100<br>
+			ドーナツの美味さ (1D100) ＞ 97<br>
+			トブな、こいつは
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとはやりたいことある？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			何だこの美味さ！？天使の晩餐か何かか…！？<br>
+			トキトキで時止めてる間に紅の雫盗む<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 74 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			有栖川は爆死なのでダメです
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			今は堅に回るまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			天使の輪の方があってるんじゃねェか…？<br>
+			うっま
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ついでに他のも盗む<br>
+			来い<br>
+			IQ280
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オシエルはトキトキの能力を使いました<br>
+			さて
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！！
+		</p>
+		<p class="player p17">
+			<b>ハングドマン</b>
+			CCB=&lt;100 (1D100) ＞ 76
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！？
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			南無...
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オシエルは入門した主任から飛び蹴りを喰らいました。
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			おわァアアア〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			武装色で死を免れてもいい？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			choice[小,中,大] (choice[小,中,大]) ＞ 中<br>
+			2d3ダメージ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			2d3 (2D3) ＞ 5[2,3] ＞ 5
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ほ<br>
+			ど<br>
+			ほ<br>
+			ど
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ オシエル ] HP : 12 → 7
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			よく半殺しで済んだなまうまう
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			流石にトキトキで簡単にはいかなかったのをオシエル
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まあトキトキは無理そうですね
+		</p>
+		<p class="player p17">
+			<b>ハングドマン</b>
+			ギャハハハハ！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			あっそうだ復活したら一個いいか？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			さて…最後のオークションが始まります
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			どうしたの
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			マイク持って司会面して細工できねェか？<br>
+			一応このマイク元ネタでは政府公認だから持ってても怪しまれないだろうしよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			先に盤面進めさせてくれ(^^)
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			と…なにかトラブルがあったのでしょうか
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			支配人と警備の人が話しています
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			盗み聞きするまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！！！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=80 偵察 (1D100&lt;=80) ＞ 72 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ネズミの聴覚は格が違うわね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			スロット回して音で気を引くぜ
+		</p>
+		<p class="player p12">
+			<b>警備の人１</b>
+			紅の雫がすり替えられたそうです
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			と聞こえたね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			誰がすり替えたのかオシエル
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			上に同じまうまう
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 25 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>警備の人１</b>
+			&nbsp;
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあ支配人呼ぶ為に技能振っていいか？
+		</p>
+		<p class="player p12">
+			<b>警備の人１</b>
+			ということでいちどこちらは仕舞った方がよいかと
+		</p>
+		<p class="player p16">
+			<b>支配人</b>
+			そうだな…頼む
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			偽物らしいので会場を抜け出して本物を探した方がいいまうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			と言って警備員は紅の雫を持っていったよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			陽動担当したいんだが...どっちにするかな...っと
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			まぁ……本物をわざわざあんな場所に置かないわよね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			choice[行く,犠牲や損] (choice[行く,犠牲や損]) ＞ 行く
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			技能なにか振っていいよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			変装して警備員についていく<br>
+			来い<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 74 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			みんなで変装してついていくわよぉ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			オシエルのさっきの技能で誰がすり替えたかは分からなかったまうまう？
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80<br>
+			取り敢えずスロットで他のヤツの注意引くか (1D100&lt;=80) ＞ 21 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ccb&lt;=80　変装 (1D100&lt;=80) ＞ 90 ＞ 失敗<br>
+			にゃんでぇえええええええ！？！？！？？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わからないね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			すり替えたのは警備員らしいのをオシエル
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			さて
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			オイ！ここクソ台じゃねぇか！シャロ！？誰だよ！うっせぇ！直せよオラー！ってやってるぜ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			警備員はいないけどかわりにある人物がいるね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！！！
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			ニヒヒヒ…
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			警備員ルパンだった！？
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			出たわね…
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			あれは本物だったまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			俺にいい考えがある
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			これで紅の雫ゲットよォ〜！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			教えろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			逃げましたね
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ちょっとダイス！さっさと追うわよぉ！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			マイクで不二子ちゃんに見えるようにしながら追うぜ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			とりあえず有栖川に一旦任せてみる
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			SCCB&lt;=100 (1D100&lt;=100) ＞ 1 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			!
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			3d7 (3D7) ＞ 14[5,3,6] ＞ 14
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ルパンはなにか見えない壁のようなものに阻まれました
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			こわい
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			これは…まさか
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			キッツいなぁ...
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p19">
+			<b>？？？</b>
+			そうだよルパン…
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p20">
+			<b>マモー</b>
+			私だ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ちょっと待って…劇場版始まっちゃったじゃない
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			なんで！？(^^)なんで！？(^^)
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			やっぱりあんたか…
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			乱数とは比べ物にならないクソザコクローンじゃねぇか...！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ルパン、複数人いたまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			乱数、複数いた
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ルパンが戸惑っている隙に紅の雫を天使の雫にすり替える<br>
+			CCB&lt;=70 (1D100&lt;=70) ＞ 18 ＞ 成功
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			そこのあんたらは…もしかしてシャンカーか？
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			不二子ちゃんの声色で近づくぜ<br>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 66 ＞ 成功
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			透明な壁に阻まれてるならすり替えられないと思うまうまう
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			シャンカーってそんな有名だったのか教えろ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			シャンカー……え　えぇそうよ！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...バレるか？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			透明な壁に阻まれるなら悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ルパンはそんなことに惑わされてる余裕はなさそうだね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			それはそう
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			お前さんらもこれを狙いに来たんだろ？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			そうよ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			教えるまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			OK　まあそうだな...
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			スロットとMAX　BET回して備えてていいか？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			と話しているとなにかマモーがリモコンのようなものを取り出して操作したよ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80 (1D100&lt;=80) ＞ 90 ＞ 失敗<br>
+			…スキルは発動しないで終わりだぜ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(GMティ..,ダイス)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈敗北者～ｗ🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>マモー</b>
+			なにを隠そうその宝石をいただくためにわたしはここに来たのだよルパン
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			そもそも何で復活してるのか教えろ
+		</p>
+		<p class="player p20">
+			<b>マモー</b>
+			行け私に楯突いたやつらで作ったゾンビ共よ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			そこはわからん
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			中王区の奴らのクローンとはまた違うってのかよ...！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ノリで行け
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ゾンビ全員射殺するわよ！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			マモーのところに大量の同胞をけしかけてリモコンを落とさせるまうまう<br>
+			来い
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあ早速
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ccb&lt;=60　射殺 (1D100&lt;=60) ＞ 33 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			CCB&lt;=80　マイクで無力化！ (1D100&lt;=80) ＞ 64 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			この卓はノリでできてるからな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			ccb&lt;=80 撹乱 (1D100&lt;=80) ＞ 23 ＞ 成功
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			覇王化で倒す<br>
+			来い<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 10 ＞ スペシャル
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ゾンビはいかんせん数が多いよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			GM　おれの声何mまで届く？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			倒しきれないかも<br>
+			S1d100 (1D100) ＞ 13<br>
+			13ｍで
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			まともに相手してたら日が暮れる説濃厚に
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			半径だったら13mまでなら全員制圧できる
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			くぅっ……！弾数が足りないわね……！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			GM　洗脳したゾンビを戦わせることって出来るか？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ここで剣戟と銃弾がゾンビを倒すよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			&nbsp;
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			来たか<br>
+			次元と五エ門
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			来たか　本物のルパンの一味
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			性懲りもなく復活しやがって…<br>
+			すまねえな次元五ェ門
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ルパン今度ばかりは相手が悪い俺は降りるぜで確定
+		</p>
+		<p class="player p21">
+			<b>次元</b>
+			たく…復活しやがったやつにゾンビなんて映画かよ
+		</p>
+		<p class="player p22">
+			<b>五ェ門</b>
+			うむ…
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			これまた私たち置いてきぼりのパターンじゃない…
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			すまん
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			あんたなら…いい！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ところでGM　マイクは催眠効果だよな？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まあ戦いたいなら共闘してもいいよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			でもなァ…本体の脳みそ🧠見当たらないもんな　ルフィ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			どうしたの
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			攻撃手段を持っていないので隠れているまうまう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			さっき制圧したゾンビ操って壁の向こうのマモー攻撃するぜ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			共闘するわよぉ！<br>
+			ccb&lt;=60 ゾンビを射殺 (1D100&lt;=60) ＞ 8 ＞ スペシャル
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ゾンビに鍵十字のマークついたアイテムが引っかかってたことにする
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			わかった<br>
+			メインで説明ある？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ある
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80　一応便乗させてもらうか... (1D100&lt;=80) ＞ 98 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			Thanks.
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			瞬く間にゾンビはたおれていくよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			これシャロにダイス吸われてるな？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			有栖川は爆死したよ
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ぐわあああああ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！！
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ 有栖川ダイス ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ゾンビになにかアイテムが引っかかってるね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			お宝まうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			目星
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 53 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 22 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			うーん<br>
+			なんていうか<br>
+			鍵十字
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(GMティ..,まうまう)</div>
+		<p class="player p8">
+			<b>まうまう</b>
+			身体が徐々に変貌していくナレがほしいことを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			……？？
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			ウッ...ウッ...ウァッ...!!!
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いわゆるナチスのアレだ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			銀城さんですか...？<br>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			こわい
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			まずいマモーの映画あんまり覚えてないから重要アイテムかどうかわからない
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			中王区といっしょ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			とりあえずもらう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			マウマウの体に変化が起きるよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！？
+		</p>
+		<p class="player p8">
+			<b>まうまう</b>
+			あァ～～……（モコ…モコ…）
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			なんで！？(^^)なんで！？(^^)
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			なんていうか…戦車だ
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			さて…
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			あっじゃあおれもザクに乗るか
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まうまうはマウスになったよ
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			第二次世界大戦のときはずいぶんやられたが…… さて本当に…希望はあるのかどうか… ボチボチ反撃してみよう…！！！<br>
+			12.8cm戦車砲で全員粉砕する<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			なんで……？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 50 ＞ 成功
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			粗方終わったらマモーに決戦を挑む<br>
+			来い
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			マウスは砲撃したよ<br>
+			みんな死んだ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			兵隊が戦車に！勝てるわけねェだろうが！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			回避防御とかはナシだ
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ シャロ ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ザクに乗ってるから無効化できねェ？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			存分に死んでもらうぜ？<br>
+			だめ
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ オシエル ] 死亡回数 : 2 → 3
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おわアアァァ～っ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			Schoice[弾切れ,まだ] (choice[弾切れ,まだ]) ＞ 弾切れ<br>
+			弾切れしちゃいましたね
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			悲しいだろ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			クローンが送られてきたよ<br>
+			あとゾンビは全員死んだよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			気を取り直してマモー倒すぞ<br>
+			来い
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			巻き込んだ件はすまなかった…<br>
+			後の攻撃はおれの車体が弾く…良かったな
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おれももう一個減らしておくか
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ 有栖川ダイス ] 死亡回数 : 2 → 3
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			いいよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			お前なら…いい
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			あんたならいいわよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			優しいだろ
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ 有栖川ダイス ] 死亡回数 : 3 → 2
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			ナチスとは格が違う
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あとはマモー殺すだけだな
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ザクからおれの歌を聴けえええ！出来ないか？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ルパン達は何やってるのか教えろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			砲撃から逃げてた
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			よ<br>
+			わ<br>
+			よ<br>
+			わ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			振っていいよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			1d100&lt;=80 (1D100&lt;=80) ＞ 69 ＞ 成功<br>
+			良かった...良かったぜ…
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			じゃあユニクロンをマモーと戦わせる<br>
+			来い
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ザクから熱いシャウトが聞こえるね
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			マイク越しで歌をぶつけてる
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			玩具だろアホンダラ
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			これは…総統!?
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった<br>
+			㌧㌧マモーは歌を聞いてユニクロンと戦い死にました。
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			よくやったわ！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			よくやった！
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			貴様は誇りだ！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			マモー弱かった！？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			マモーのクローンが出てきます
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			理鶯さんみたいなテンションで来られると困るな...でもありがとうよ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			いやクローン来るの！？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈クローンあったww🌈
+		</p>
+		<p class="player p20">
+			<b>マモー</b>
+			まだだ…
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			...エピローグって話の所だろ！？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			よく考えたらマモーの本体ってデカイ脳みそ🧠だもんな　ルフィ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			といってマモーは逃げたよ
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			アカの兵隊共を思い出す…！畑から取れると言われるほどに湧いて出る…！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			何しに来たんだあいつ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			またね～～！！
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			待ちやがれ！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			追随していいか？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ルパン一味はマモーを追ったよ<br>
+			いいよ<br>
+			あと警備員は全員死んでるよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			よし！ルパン一味の同方向へ潜入！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			せっかくだから追う<br>
+			来い
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			時速20kmで追従する<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ルパン一味に変装しちゃおうかしら
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			当然ザクに乗ってな！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まあまだルパンが宝石持ってるしな
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ユニクロンに乗ってくのをオシエル
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			じゃあ別に俺たちマモー倒す必要ない説濃厚に
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			それはそう
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ccb&lt;=80　峰不二子に変装 (1D100&lt;=80) ＞ 56 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			追いかけないと話進まんのだが
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			追いかけはする
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			追いかける
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ccb&lt;=80　ついでに銭型に変装 (1D100&lt;=80) ＞ 43 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった<br>
+			シャロと有栖川は変装したよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			これで二方面から追い詰められるな...幻太郎ィ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			追いつきさえすればイチコロよぉ！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			例によってなんか客船にでかい脳があるね
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			きも
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			チーズを発射する<br>
+			来い
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			マイクでバイノーラル脳細胞破壊するぜ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			皆がわちゃってる間にルパンの紅の雫を天使の雫にすり替える<br>
+			CCB&lt;=70 (1D100&lt;=70) ＞ 56 ＞ 成功
+		</p>
+		<p class="player p24">
+			<b>脳</b>
+			私は…蘇ったのだ…そしてその宝石は私が生きるためのエネルギーになるのだ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			持ってた宝石は超能力で奪われたよ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			！
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			GM　ちょっといいか？
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			はい
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			原作だとこのマイクで洗脳されるとだな
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			はい
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			まずい屁理屈合戦が始まった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			超能力や超自然能力　<br>
+			脳由来の特殊能力が消えちまうって設定があるんだ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			しらそん
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			&nbsp;
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おれは当然オシエルの近くにいるし力を失って堕ちてきた宝石はコクピットの隙間に転がり込むよな？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			うん
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあマイクで勝負！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 1 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			はっははっはははは！！！！
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！<br>
+			よくやったわダイス！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			有栖川は紅の雫を手に入れたよ<br>
+			あとはそうだな
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			これがデッドオアアライブだ！！！！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			原作由来の能力が特攻だったのオシャレだろ
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			よくやった！総統も貴様を誇りに思うだろう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			例の例によって脳が飛んでくよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			またね〜〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			バランスを崩した船が沈みます
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			おっしゃ！ここでザクとかの出番だな！飛ぶぜ！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>ルパン</b>
+			俺たちはずらかるか
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ユニクロンにも乗ってく
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			現代に戦争兵器は必要ねェ<br>
+			おれの後釜にはエコカーが就く…良かったな
+		</p>
+		<p class="player p21">
+			<b>次元</b>
+			せっかく手に入れたとおもったのになァ　ルパン
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			トキトキでマウスを元のまうまうに戻す<br>
+			CCB&lt;=80 (1D100&lt;=80) ＞ 89 ＞ 失敗
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			マウスはマウスでした。
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			🌈
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			おわァアアア～～!!!
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			🌈
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			I CAN&#39;T SWIM.
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			有栖川はザクで飛んでった
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ちょっと置いていかないでよぉ！？
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			オシエルはユニクロンに乗ってった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			まうまうや好きならシャロも乗っけてくぜ！いいかGM?
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			でもルパンには天使の雫があるからなァ…
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			どっちか一人だ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			ダイス………！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ちなみにルパンはもう帰ったよ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			武器を捨てて砲塔として合体させることで実質一人分にできねぇか？
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			また別のまうまうを探してくれ(^^)
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ダメです<br>
+			死んでください
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			じゃあシャロだな！沈んでいけ！まうまう！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			まうまうは海の藻屑となりました。
+		</p>
+		<p class="player p23">
+			<b>超重戦車マウス</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>system</b>
+			[ 超重戦車マウス ] 死亡回数 : 1 → 2
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			うわ！ありがとうダイス！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ということでみんなは隠れ家に戻りました
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ああ！あいつは丈夫だし多分なんとかなる！こいつを払う金にするんだろ！お前ならできる！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			あ、まうまうは隠れ家にいるよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！<br>
+			へ〜！
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			ここ数時間の記憶がないまうまう<br>
+			もしもその間に何かあったとしてもまうまうは知らないまうまう
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			このお宝を売って宴ね！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ということで今回の怪盗仕事は成功ですね！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			よくやった！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			みんなで手に入れた勝利です！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			いいギャンブルだったぜ！！！！！！！！！！！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			宴だァ〜〜〜〜〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			宴よぉ！！
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			宴だァ～～～～～!!!! ((((🧀))))
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			宴だァ~～～～～～～～～！！！！！！！！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			今回は割とまともだったな　ルフィ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			そして紅の雫は今まで見たことないような価格で売れたみたいですね
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			！！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			ギャンブラーキャラとして最後1クリで大勝利できたのは嬉しかっただろ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			今回はかなりまともだったな
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			それまでダイス目が腐ってた反動で確定まうまう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			というかSMAPが異常すぎただろ
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			それはそう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			原作でも運の変動とかこんなキャラだから興味があったらsportifyとかyoutubeで曲聴いてみてくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			それはそう
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			それはそう
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			これじゃあ有栖川ダイマだな...ルフィ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			トランスフォーマーのダイマするぞ<br>
+			来い
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			え～～～～～!!!いいよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			1d100 しゃれの上手さ (1D100) ＞ 61
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			無<br>
+			為<br>
+			無<br>
+			為
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			いいよ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			トランスフォーマーは映画しか知らないことをオシエル<br>
+			ビーストウォーズは見たことある
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			今月WFCトリロジーキングダムからオプティマスプライマルが出るのをオシエル
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			何だ!?(^^)何だ!?(^^)
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			アニメは見たんだけどなァ...マルチバースがキツいもんなァ...
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			かのゴリラコンボイだ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			私にいい考えがあるの元ネタで確定
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			へ～!!!
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			海外版買ったけどめちゃくちゃ遊んでて楽しかったから買ってくれ(^^)
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			1d101-1 このダイマで購入するシャンカーの数 (1D101-1) ＞ 31[31]-1 ＞ 30
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			そこそこ禁止
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			多すぎだァ～！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			コンボイの玩具ならアースライズのオプティマスプライムをおすすめするだろ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			ま<br>
+			あ<br>
+			ま<br>
+			あ<br>
+			と言いたいけど30人も買うなら割と上々で確定
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			うぐっ…分からなさすぎだァ～！
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			おれは不当なPL<br>
+			トランスフォーマーの知識はコンボイの謎しか知らなかった
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			高さ止まらねェ～！昔の緑色のやつ買おうと思ったら値段の高騰の雨が止まねェよ！！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			可動もいいし変形も楽しいしぜひ買ってほしい
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			コンボイの謎も言うほどコンボイの謎要素出てこないしなァ…<br>
+			値段はいくらか教えろ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			割とざっくり言うと海軍と海賊みたいな金属の生命体が戦い続ける物語であることを教える<br>
+			20000言ってたな...シャンクスィ
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			どうしてコンボイが死んだのかっていう謎を解くゲームだからな…ルフィ
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			へ〜！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			そろそろ時間いいし切り上げるか...幻太郎ィ
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			へ～！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			オシエル80 教える<br>
+			スゲェ“覇気”80 相変わらず…スゲェ“覇気”だ<br>
+			変装・皇80 どんな姿にも変装出来る<br>
+			トキトキ80 遂に能力を使う描写が！？<br>
+			天使70 天使っぽいことをする<br>
+			<br>
+			イベントはお宝を取ったらマモーが復活<br>
+			ルパン一味と共闘になる
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			技能貼ったらまたね～～～！
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			偵察(80): 小柄な身体を生かしてバレずに偵察する<br>
+			撹乱(80): 仲間を呼んで他の場所に注意を引きつける<br>
+			妨害(80): 仲間にケーブルをかじらせて警報などの電気系統を一時的に無効化する<br>
+			チーズ(80): 回復<br>
+			隠れ身(70): 隠れる<br>
+			<br>
+			イベント: 実はこのまうまうの正体は超重戦車マウス<br>
+			客船にあるナチスに関連するアイテムを見つけると正体を表す<br>
+			正体を現した後は技能はすべて12.8cm戦車砲(80)になる　食らうと死ぬ
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			80　ギャンブル　賭けるぜ<br>
+			スロット　回すぜ<br>
+			Max Bet　回って7なら攻撃力が上がるぜ<br>
+			ヒプノシスマイク　相手に催眠をかけるぜ<br>
+			金貸してくれ(^^）金を借りるぜ<br>
+			50　ファッション　渋谷のポッセから服とかドーナツとかもらったのを使うぜ<br>
+			イベント　大スロットカジノ
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			【技能】540<br>
+			見聞 80<br>
+			カフェイン中毒 80<br>
+			ミルク色の異次元 80<br>
+			変装 80<br>
+			手先の早業 80<br>
+			隠密 80<br>
+			射殺　60<br>
+			<br>
+			【イベント】<br>
+			ゾンビが湧く
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			これでおわり
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			お疲れシャン
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			またね〜！
+		</p>
+		<p class="player p3">
+			<b>シャロ</b>
+			またね～！
+		</p>
+		<p class="player p5">
+			<b>オシエル</b>
+			またね〜〜〜〜〜〜〜〜〜〜〜〜〜〜！！！！
+		</p>
+		<p class="player p9">
+			<b>有栖川ダイス</b>
+			お疲れシャンだァ～！またね～～～～～～～～～～～～！
+		</p>
+		<p class="player p10">
+			<b>GMプライム</b>
+			ログ取るぞォ！<br>
+			またね〜〜〜〜〜！
+		</p>
+		<p class="player p25">
+			<b>まうまう2世</b>
+			Ausgezeichnet.
+		</p>
+	</div>
+</body>
+</html>

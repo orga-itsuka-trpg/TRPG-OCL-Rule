@@ -1,0 +1,6090 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [雑談] タブ */
+		.t0 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [メイン] タブ */
+		.t1 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステータス] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [情報] タブ */
+		.t3 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：GM */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：星をみるひと */
+		.p1 { color: #607d8b; }
+		.p1 .diceroll { background-color: #607d8b; }
+
+		/* 発言者：noname */
+		.p2 { color: #888888; }
+		.p2 .diceroll { background-color: #888888; }
+
+		/* 発言者：ドラクエ */
+		.p3 { color: #00bcd4; }
+		.p3 .diceroll { background-color: #00bcd4; }
+
+		/* 発言者：右下のnoname */
+		.p4 { color: #888888; }
+		.p4 .diceroll { background-color: #888888; }
+
+		/* 発言者：パラディン */
+		.p5 { color: #ffc107; }
+		.p5 .diceroll { background-color: #ffc107; }
+
+		/* 発言者：プリコネ */
+		.p6 { color: #ff5722; }
+		.p6 .diceroll { background-color: #ff5722; }
+
+		/* 発言者：世界樹の迷宮 */
+		.p7 { color: #009688; }
+		.p7 .diceroll { background-color: #009688; }
+
+		/* 発言者：final fantasy7 */
+		.p8 { color: #888888; }
+		.p8 .diceroll { background-color: #888888; }
+
+		/* 発言者：青キジ */
+		.p9 { color: #3f51b5; }
+		.p9 .diceroll { background-color: #3f51b5; }
+
+		/* 発言者：system */
+		.p10 { color: #888888; }
+		.p10 .diceroll { background-color: #888888; }
+
+		/* 発言者：白い男 */
+		.p11 { color: #e0e0e0; }
+		.p11 .diceroll { background-color: #e0e0e0; }
+
+		/* 発言者：ああああ */
+		.p12 { color: #e0e0e0; }
+		.p12 .diceroll { background-color: #e0e0e0; }
+
+		/* 発言者：閉まっている */
+		.p13 { color: #888888; }
+		.p13 .diceroll { background-color: #888888; }
+
+		/* 発言者：天使1 */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：天使2 */
+		.p15 { color: #888888; }
+		.p15 .diceroll { background-color: #888888; }
+
+		/* 発言者：コッコロ */
+		.p16 { color: #888888; }
+		.p16 .diceroll { background-color: #888888; }
+
+		/* 発言者：ねこ */
+		.p17 { color: #888888; }
+		.p17 .diceroll { background-color: #888888; }
+
+		/* 発言者：ニャンクス */
+		.p18 { color: #888888; }
+		.p18 .diceroll { background-color: #888888; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			参加したきゃあ盤面へ…！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 6[3,2,1] ＞ 6<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 7[1,5,1] ＞ 7<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 14[4,4,6] ＞ 14<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 13[3,4,6] ＞ 13<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 9[1,6,2] ＞ 9
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			推奨技能　戦闘、目星<br>
+			準推奨　対人、英語（ほぼ不要）
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			なんか分からないことあったら教えろ
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			準推奨の対人って何なのか教えてくれ(^^)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			対人技能は説得とか言いくるめとかなのを教える
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			分かった<br>
+			盤面には出したが食事中なので時間がかかることを教える<br>
+			埋まってて悲しいだろ<br>
+			って思ったら消えた
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 16[6,5,5] ＞ 16<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 6[1,4,1] ＞ 6<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 9[1,2,6] ＞ 9<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 15[3,6,6] ＞ 15<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 9[3,5,1] ＞ 9
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			5人くらいまでならなんとかなる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			STR6<br>
+			CON7<br>
+			DEX14<br>
+			POW13 幸運65<br>
+			INT9 アイデア45<br>
+			技能値270<br>
+			<br>
+			ESP99 ESP(ちょうのうりょく)を使う<br>
+			覇気99 3種類の覇気を使う<br>
+			精神分析72
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			一回参加したけど参加したくなるメンツだろ<br>
+			参加するぞォ～！
+		</p>
+		<p class="player p4">
+			<b>右下のnoname</b>
+			場合によって20分くらい抜ける可能性あるので他に参加希望シャンいるなら明日のほうにすることを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			STR16<br>
+			CON6<br>
+			DEX9<br>
+			POW15<br>
+			INT12<br>
+			<br>
+			はなす80<br>
+			しらべる80<br>
+			どうぐ80<br>
+			じゅもん60<br>
+			とくぎ60
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみさん　こんにちは。<br>
+			わたしのことは　おはなししましたか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一応明日の21時からもあるのを教える<br>
+			ちょっと待て今盤面見たけどこのメンツなんだよ…
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			しろいおとこたくへ　ようこそ。<br>
+			ここに　いれば　あんぜんです。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ここは　しろいおとこたく
+		</p>
+		<p class="player p5">
+			<b>パラディン</b>
+			ゲームが思い浮かばなかったからししょーで行く
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			おまえは、はじめて　ここに　きたのか　？<br>
+			▶︎はい<br>
+			　いいえ
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			コマンド？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ決まったらとりあえずステとか技能とか決めてくれ(^^)
+		</p>
+		<p class="player p5">
+			<b>パラディン</b>
+			&gt;▶はい<br>
+			シャンクトゥルフは初めてだなァ…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ワカッタ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 6[1,1,4] ＞ 6<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 12[5,4,3] ＞ 12<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 9[5,3,1] ＞ 9<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 14[4,6,4] ＞ 14<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 6[1,2,3] ＞ 6
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			やばいさっき食事中って言ったシャンカーだけど<br>
+			プライベートモードで入って戻ったせいか自分の出したNONAMEがどれかわからない
+		</p>
+		<p class="player p4">
+			<b>右下のnoname</b>
+			&nbsp;
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			&gt;ぱらでぃん<br>
+			よいたびを　！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			STR6<br>
+			CON12<br>
+			DEX9<br>
+			POW14<br>
+			INT6<br>
+			<br>
+			ヤバイですね☆　70<br>
+			ヤバイわよ！　50<br>
+			キレそうでございます・・・　60
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p5">
+			<b>パラディン</b>
+			まずい人間が私しかいない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>パラディン</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 11[1,4,6] ＞ 11<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 10[6,2,2] ＞ 10<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 7[2,1,4] ＞ 7<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 8[4,3,1] ＞ 8<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 8[1,3,4] ＞ 8
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			低いステ振り直したきゃ2d6+6にしても良いのを教える
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			とりあえず食事から戻ってきたし<br>
+			キャラ出すか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			2d6+6 (2D6+6) ＞ 6[1,5]+6 ＞ 12
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p5">
+			<b>パラディン</b>
+			みんながゲームタイトル化するなら私も元ゲームになろうかなァ…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			面倒だから振りなおしませんね☆
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			なんだこれ…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			まずい勝手に姿が変わった
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			noname - 今日 19:19<br>
+			なんだこれ…<br>
+			聞きたいのは俺なのを教える
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			悲しいだろ<br>
+			コワ〜…<br>
+			それはそう<br>
+			何だこの卓！？ゲームカタログかなんかか！？
+		</p>
+		<p class="player p8">
+			<b>final fantasy7</b>
+			しまった出遅れた
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			ゲーム卓なんじゃないかい？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=70 ヤバイですね☆ (1D100&lt;=70) ＞ 97 ＞ 致命的失敗
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ゲームのエミュとかできないから<br>
+			青キジで行く　来い
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			ヤバいな…ペコ<br>
+			ゲームのエミュなんて誰も出来ないと思ってんすがね……<br>
+			青雉エミュも大概な難しさだと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			x5　3ｄ6 #1<br>
+			(3D6) ＞ 8[1,5,2] ＞ 8<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 15[5,6,4] ＞ 15<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 7[5,1,1] ＞ 7<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 6[4,1,1] ＞ 6<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 6[1,1,4] ＞ 6
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>final fantasy7</b>
+			まずい青キジがONE PIECEになった
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			まずい青雉がワンピースになった
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			勝手に変えられたことを教える
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			無茶苦茶ですね☆
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			青キジ、ワンピースだった！？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			このたくには　げーむたいとるさんが、いっぱい　いるんだ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			STR11<br>
+			CON10<br>
+			DEX7<br>
+			POW8　幸運40<br>
+			INT14　アイデア70<br>
+			技能値420<br>
+			<br>
+			冒険者　99　色々探索できる<br>
+			フロントガード　99　防御する<br>
+			アクセルドライブ　99　攻撃する<br>
+			挑発　80　注意を引き付ける<br>
+			完全防御　70　凄い防御<br>
+			アリアドネの糸　20　帰る
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ぷるぷる　ぼく　わるい　ゲームタイトルじゃ　ないよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			荒らされてるなら秘匿で別部屋に移った方が良いんすかね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			POWとINTを振りなおしたいな…ニコ・ロビン
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			うぐっ今度は海賊無双になったァ〜！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			2d6+6で振り直して良いよ〜！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			この程度ならシャンカーの悪ノリだと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			うわ！ありがとう！<br>
+			x2 2d6+6 #1<br>
+			(2D6+6) ＞ 6[3,3]+6 ＞ 12<br>
+			<br>
+			#2<br>
+			(2D6+6) ＞ 2[1,1]+6 ＞ 8
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			1d100 悪ノリ度 (1D100) ＞ 20
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			NPC増やすくらいにしろカタクリ〜！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ…GMとしては別にコイツらがどんな姿でも関係ないから良いんすがね…
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			お頭いいじゃねェか<br>
+			見た目がタイトルなだけで中身は元のキャラを含んでるんだから
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			まあこれでいいか
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			INT振りなおしたいなァ…<br>
+			2d6+6 INT (2D6+6) ＞ 8[2,6]+6 ＞ 14
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			いっしょに、わるのりを　やらないか？<br>
+			(きのしたと　もうします。)
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			疲れたからキャラ画像に変えますね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			技能はどんなの取ればいいか教えてくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			伝説の元祖まどマギ卓だってアクア混じってたんだぞ<br>
+			キャラが統一されてなくても我慢しろ男だろ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			（げーむたいとるの　えみゅをするには、てれぱしーれべるが　５いじょうしつようだ。）
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			推奨技能　戦闘、目星<br>
+			準推奨　対人技能（説得や言いくるめ）、英語（ほぼ不要）
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			目星はマップを探索するときに使う技能なのを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">ステータス</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			STR8<br>
+			CON15<br>
+			DEX7<br>
+			POW12<br>
+			INT8<br>
+			<br>
+			HP15<br>
+			SAN　60<br>
+			幸運　60<br>
+			アイデア　40<br>
+			技能　240<br>
+			技能<br>
+			ヒエヒエの実　90<br>
+			見聞色　70<br>
+			説得　80
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			画像でもステータスでもなんでも良いからとにかく準備できたらOCLO
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			はい
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			おしえる。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			教えますね☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			技能の決め方分からないとかあったら言ってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			教える
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			世界樹の迷宮は技能値420なのを教える
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			いらっしゃい<br>
+			そと　から　しいれた　しなりお　が、　ありますよ。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			うぐっ高すぎだァ～！ヤバいですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			つぎのことばを　おぼえておくのだ。
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			見学しに来たらちょっと待てよなんだよこの絵面…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			俺が聞きたい
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			これはお前が始めた卓だろ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャ頼もしいな…世界・樹
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			そして　シナリオが　はじまった！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			いざ行けボウケンシャー！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			よろしい、われわれと<br>
+			あたらしいせかいを、きづこう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ出航だァ〜！！！！！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			よいしゅっこうを　！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			あなた達は出港してもいいし、しなくてもいい
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			海図を広げて
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			探索者達はいつも通りの日常を謳歌し、今日も自分自身にお疲れ様と告げて眠りについただろう。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			今日もお疲れ様です☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			んあァ～…眠いじゃないの……
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			さくやは　おたのしみ　でしたね
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			グビッ！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんな感じで思いに思いに寝ていた貴方達。心地よい眠りかと思っていたが、次第に一度は沈んだはずの意識が浮上する。<br>
+			そして、意識が段々と覚醒に近づいていくにつれて、今自分が眠っている場所が暖かな布団の中ではなく、何か硬く冷たい物の上に眠っている状態になっていることに気がつくだろう。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			硬いですね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいマジか……！！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみは、とじこめられて　うごけない。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			テーレーレーレ↓レッテッ→テ↑ー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			意を決して目を開けるとそこには暗闇しか広がっていない。<br>
+			そしてとてつもない圧迫感が探索者を襲う。<br>
+			ここは、そう、箱の中・・・そんな感覚に悪寒が背筋を駆け上がる。<br>
+			気がつくと暗闇の中の箱の中に閉じ込められていたという有り得ない状況、圧迫感、意識していくと感じる酸素が減っていく現状に対して＜SANチェック＞。0/1D6。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=75 SAN (1D100&lt;=75) ＞ 83 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=65 (1D100&lt;=65) ＞ 77 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			1d6 (1D6) ＞ 6
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=70  (1D100&lt;=70) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=40 SAN (1D100&lt;=40) ＞ 11 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ ドラクエ ] SAN : 75 → 69
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			1d6 (1D6) ＞ 4
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ｃｃｂ＜＝60 (1D100&lt;=60) ＞ 7 ＞ スペシャル
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 星をみるひと ] SAN : 65 → 61
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ドラクエはアイデアで振ってくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=60 アイデア (1D100&lt;=60) ＞ 89 ＞ 失敗<br>
+			ちぇっ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			めっちゃビビったが発狂はしなかった
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			発狂したいですね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			どらくえは、あいであを　つかった。<br>
+			はっきょう　せずに　すんだ。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			とんでもねェ所に呼び寄せられたかもなァ…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ドラクエは　こんらんしていない！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			というわけで貴方たちは気がつくと妙な箱の中に閉じ込められています<br>
+			大きさは掃除用具入れくらいで、自分の他に何もありません<br>
+			もちろん他の人間の存在も確認できません
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			くしょん　くしょん<br>
+			とじこめられて　くるしい。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではここからどうしますか？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞しらべる
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			とりあえず目星ですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			見聞色をする
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=80 しらべる (1D100&lt;=80) ＞ 52 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			冒険者で箱を調べる
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=70 ヤバいですね☆ (1D100&lt;=70) ＞ 9 ＞ スペシャル
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみ　は　けんぶんしょくのはきを　つかった。<br>
+			CCB&lt;=99 覇気 (1D100&lt;=99) ＞ 37 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=99　冒険者 (1D100&lt;=99) ＞ 41 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ｃｃｂ＜＝70　見聞色 (1D100&lt;=70) ＞ 31 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では成功したあなたたちは仰向けに寝ている自分の正面…つまり普段なら天井がある上側の側面は押せば開きそうだと気が付きます
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			じゃあそこを押すことを教える
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみ　は　おした。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ドラクエは　そくめんを　おした
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			押しますね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			押してみますか？<br>
+			▶はい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではあなた達が力を込めてその側面を押すと…<br>
+			ようやくといった様子で外に出るとそこはまるで黒色の霧にでも包まれているのではないかと言わんばかりに薄暗い場所。<br>
+			空気はどこか生暖かく、肌をじっとりと舐め回しているような不快感が襲う。<br>
+			空を見上げるとまるで曇夜空の写真を雑にコピーアンドペーストしたかのように錯覚してしまうような重たい曇夜空。<br>
+			視界がそんなにいいとは言い難いそんな場所に五人は立っていた。
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			おまえは、はじめて　ここに　きたのか　？<br>
+			▶︎はい<br>
+			　いいえ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららまーまーそう殺気立つなよ兄ちゃん達………
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんなところで探索者達が辺りを見渡すと、そこは日本人には見慣れないがどう見ても間違うことがない場所、『墓地』だ。<br>
+			十字架の墓石が並ぶ、『墓地』…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			おおゆうしゃよ　しんでしまうとは　なさけない
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ちょっと待てよ日本人なんていないですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			まむすのぼちへ　ようこそ。<br>
+			ここに　いても　あんぜんではないです。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🍃
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャとんでもないところに来ちまったかもな…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして、ここが【墓地】で、探索者は先ほどまで人が収まるサイズの箱に入っていた……
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			私たちは……埋葬されていた？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			…自分が入っていたのがなんの箱か分かりますか？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			☆・・・
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			この状況から考えて棺桶じゃねえの？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ただのかんおけのようだ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			世界樹RPが分からなくなってきたから普通にししょーでいく
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			そう…貴方達は自分がさっきまで入っていたのは【棺桶】である、ということに気がついてしまいます
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			それは、あなたに　ぴったりです。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			かんおけは　そうび　しないと　いみが　ないぜ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかる奴なんていねえと思うんだがな…ニコ・ロビン
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			当然その状況に困惑する貴方たち……<br>
+			その時です
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			貴方たちは近づいてくる足音に気がつきます
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きをつけて。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいマジか……！！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			FOEかなんかか！？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ドラゴンですかね☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しろいおとこ　が　あらわれた！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			近づいてきたのは、髪の白い男。<br>
+			髪が白く、肌が白く、青い色の瞳のひょろっとした男。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			……！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			しろいおとこ　に<br>
+			とつぜん　であった。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			手には成人男性の腰ほどまでの長さの鉄製スコップを持っている。<br>
+			白い男は探索者に近づくと少し大きめの青い色の瞳をパチクリする。
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかいもの　は、いいなぁ<br>
+			さいきん　め　が、かすむし　てつや　が、つらい。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			いたずらもぐら　が　あらわれた
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あららら兄ちゃんなんかここについて知っているか…？
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			…驚いたな。生きた人間がここに現れるとは…もう少しで生き埋めにしてしまうところだった<br>
+			ここ…？ご覧の通り【墓地】だ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			お前はここの墓守かなにかで？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			この男にキレそうでございますしてもいいですかね☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ここは　ぼち
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			待ってね？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららまーまーそう殺気立つなよ姉ちゃん…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			男の言葉に反応してあたりを見回すと自分たちがいるのは【墓地】で、あたりを見回すと十字架が無数に立ち並んでいることに気がつく。<br>
+			そして建物としては【物置】【教会】【納骨堂】の三箇所が見受けられます。
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			へ～☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			へー！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			キレそうでごさいます良いよ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=60 キレそうでございます・・・ (1D100&lt;=60) ＞ 6 ＞ スペシャル
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			キレそうです☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			プリコネはキレました…するとどうなる？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞ルーラ　＞トイレ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			な<br>
+			に<br>
+			も
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			ゾッ！？？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららまーまーそう殺気立つなよ姉ちゃん…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			わかりました☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			じったいの　ない　からっぽの　ぎのう　なんだ！
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			……怒らせてしまったならすまん（Thanks.）
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかった。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			謝ったからいいですよ☆
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ここから自由行動開始です
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった<br>
+			おれはもう少し白い男に話を聞きてえな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……ここは何処だ？<br>
+			私たちは眠りに付いていた筈だが
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			しろいおとこ　に　ばどてれぱしを　つかって　なかまに　してもいいか　おしえろ。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			墓地ですかね☆
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			俺が知ってることなら話すが…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			てれぱしもいいよ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			んあァ～…ありがたいじゃないの……
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 7 ＞ スペシャル
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			あいねは、ばどてれぱしを　つかった<br>
+			しろいおとこを　なかまに　するのに　せいこうした。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			特に白い男の様子が変わった感じはしませんがなかまになりました
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかった。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しろいおとこ　が　なかまに　くわわった！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			名前を付けれますかね☆
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			それで？何か聞きたいことがあるのか？なんでも知っているわけではないが…<br>
+			名前…？俺にはないな…好きなように呼んでくれ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			では、先ずここは何処だ？<br>
+			何故私たちはここに居る？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ああああ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			パパス
+		</p>
+		<p class="player p11">
+			<b>白い男</b>
+			choice パパス　ああああ (choice パパス ああああ) ＞ ああああ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			では俺のことはああああとでも呼んでくれ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャ何とも言えない名前になったな…ああああ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……わかった
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			よろしくです☆<br>
+			ああああくん☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			で、ここがどこかと言う質問だがここは【墓地】だぞ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			墓地つっても○○墓地みたいな名前ぐらいはあるんじゃねえの？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			さあ…？あるかも知れないが俺は知らないな…
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そうか
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			そして何故ここに来たかは知らない……まあ大方奴らの仕業だろうが
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			やつら？
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			奴ら、とは？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			奴らと言うのはこの空間の主…と言ったところだ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ここの墓地ってまだ目星出来ますかね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあペコリーヌが墓地を見回すと<br>
+			【墓地】をよく見回すと墓穴の側にこれから埋められるのであろう【蓋の閉まっている棺桶】や探索者達が出てきた【蓋の開いた棺桶】が目に付いた。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あららら空間の主ってことは…ここもしかして俺たちの世界とは別の世界なのか…ああああの兄ちゃん？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しらべる＞蓋の閉まっている棺桶
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……この棺桶、開けてもいいだろうか？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まあ俺も詳しくは知らないが…少なくともこの空間は時間が経つ様子はないぞ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			とんでもねェ所に呼び寄せられたなァ…
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			別に開けて良いが…棺桶の中身が見たいのか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どっちの棺桶も開けられます
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ああ、私達の様な者がまだ居るかもしれないだろう
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			私は見学しておきますね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おれはやばそうな雰囲気がするから別の方向見ておくぜ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きゅう、きゅう、きゅう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ【蓋のしまってる棺桶】と【蓋の開いてる棺桶】がありますが…どうしますか？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			じゃあおれは蓋の開いている方調べようかな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			【蓋のしまってる棺桶】を私が開こう
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞いろいろやろうぜ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			けけけけ、けけけ<br>
+			（このせかいは、さいきっくたちいがいの　べつの　ものたちのものに、なろうとしている。)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではまず閉まってる方から
+		</p>
+		<p class="player p13">
+			<b>閉まっている</b>
+			・蓋の閉まっている棺桶<br>
+			　中途半端に土がかけられているものと、土がかけられていないものがある。<br>
+			白い男が言うには今から埋める所らしい<br>
+			&nbsp;
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">情報</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			男の言葉に反応してあたりを見回すと自分たちがいるのは【墓地】で、あたりを見回すと十字架が無数に立ち並んでいることに気がつく。<br>
+			そして建物としては【物置】【教会】【納骨堂】の三箇所が見受けられます。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			数は４つ。<br>
+			蓋が釘で打ち付けられているので、道具を使うかもしくは破壊することで中身を見ることができる。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			アクセルドライブで棺桶の扉を破壊する
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=99　アクセルドライブ (1D100&lt;=99) ＞ 35 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では扉が壊されて中身が露わになります
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			………
+		</p>
+		<p class="player p13">
+			<b>閉まっている</b>
+			中に入っているのは骨。<br>
+			そして骨にこびりついている腐敗しかけている肉。<br>
+			骨はどう見ても成人の人間サイズ。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……すまない
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみの　すがたが　みえないのは、さんちぇっくを<br>
+			けいかいして　すがたを、<br>
+			けしているからです。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			くさったしたいが　あらわれた！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			・・・☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			特にそれらが動き出す様子もありませんが…死体を間近で見てしまった世界樹はSANチェックです
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=40 SAN (1D100&lt;=40) ＞ 64 ＞ 失敗
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			1d5です
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			1d5 (1D5) ＞ 5
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 世界樹の迷宮 ] SAN : 40 → 35
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			INTの5倍の数値で振ってくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 27 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			せいこう　すると　いちじてきはっきょう　する。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			一時発狂ですね☆ヤバいですね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			世界樹は　こんらんしている！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			1d10で振るか自由に発狂してくれ(^^)
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			1d10 (1D10) ＞ 9
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			奇妙なモノ、異様なものを食べたがる
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャ精神分析の出番だな…スター・ゲイザー
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			死体とかですかね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			けさ　の　ちょうしょく　の　けろっぐ　は、<br>
+			なっとう　の　あじ　で、　うまかった。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバイわよで直しますね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			うっ……そういえばここに来てから何か食べていただろうか……？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			……もっと強く引き止めるべきだったか
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			なっとうあじ　の　けろっぐ　を　たべさせる。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			くさったにく
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=50 ヤバいわよ！ (1D100&lt;=50) ＞ 28 ＞ 成功<br>
+			ヤバいですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			それ精神分析なのか…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			いろんなことが出来ます☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ良いや一瞬目の前の死肉がうまそうに見えた世界樹だったがしょうきに　もどった
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャやばそうな女だな…ペコ・リーヌ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			はっ！　私は何を……
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			腐ったお肉は食べられませんよ☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きみが、かかった　びょうきは<br>
+			いしょくしょう　と　いうらしいわ。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……そうだな<br>
+			早く宿屋にでも帰って美味しいご飯を食べたいものだ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして正気に戻った世界樹は気が付きます
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			自分が先程美味しそうと思った死肉…それらはよく見れば何者かに食い荒らされたような実の減り方をしていたことに
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			なっとう　の　あじ　で、　うまそうだ。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			あんた気は確かか！？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きゅる、きゅる、きゅる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			それで青キジが【開いてる棺桶】だっけ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そうだ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			こわいなら　ああああ　に　しらべさせると　いい。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ひとまず開けても空です
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しかし　なかは　からっぽのようだ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			何か調べたいなら…
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			じゃあ見聞色で調べてみるか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			はい
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ccb&lt;=70  (1D100&lt;=70) ＞ 26 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では青キジは先ほどまで自分が入っていた箱を開けてみると…<br>
+			よくよく見れば『小さな金色の鍵』が足元に落ちていることに気がつきます
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャなんだ？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			・アイテム：『小さな金色の鍵』<br>
+			　金属でできているようだが、形はまるでオモチャの鍵のようだ。<br>
+			　小さくうっかりすると無くしてしまいそうになる。
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">情報</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			・アイテム：『小さな金色の鍵』<br>
+			　金属でできているようだが、形はまるでオモチャの鍵のようだ。<br>
+			　小さくうっかりすると無くしてしまいそうになる。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			とりあえずほかのやつらにも伝えておくか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ棺桶はそれくらいですね
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			なにか見つけましたか☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			それは鍵、か？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ああ、小さい金色のカギみたいなもんが見つかってよ…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			まほうのかぎ　を　みつけた
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			どんな扉でも開くようになる鍵だといいですね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ああああの兄ちゃんこれが何かわかるか？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			その鍵は…<br>
+			少なくともお前達の脱出に役立つようなものではない
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいマジか……！！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			では何の鍵だ？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			箱の鍵だ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			箱？<br>
+			この棺桶のことか？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ほんとうか　どうか　てれぱし　で　こころを　よんでもいいか　おしえろ。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			いや……それらの棺桶ではないが…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			読んでいいよ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 88 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ嘘をついてるようには感じませんが……隠し事があるように思います
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			・・・☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			この　みじゅくもの　！<br>
+			かくしごとを、してしまうとは．．．<br>
+			もういちど　でなおしてこい　！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			かくしごと　なんて　なにも　ないよ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ま、人間誰にだって隠し事の一つや二つあるもんさ……
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			そろそろ他の場所に行きましょう☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかった。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			　ぼち<br>
+			＞ものおき<br>
+			　きょうかい<br>
+			　のうこつどう
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			そうしよう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あ、ちなみにああああは呼べば来ますが呼ばなかったらその辺で作業を続けます
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			作業って何をするんだ兄ちゃん？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			……そこのそいつが壊した棺桶を直したりだな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……すまない(thanks.)
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			このさきは、６にん　そろって　いかないと、<br>
+			きけんだ。<br>
+			だれも　もどってきたものが、いない。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			☆<br>
+			分かれた方が楽ですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			それと　かぎのついたはこ　が　どこにあるか　おしえろ。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			直さないとなんか不都合でもあんのか？<br>
+			どうせ死んでいるだし後で空いている棺桶にでも放り込んでおけばいいだろう
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			わかった…ちなみにあの【物置】は普段俺が使ってるが…別に中のものは取ってくれて構わない<br>
+			確かに不都合はないが死んだ人間を丁重に弔ってやりたい気持ちがある
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャいい奴だな…ああああの兄ちゃん
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			この墓場で生きているのはああああ一人だけだったのか？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まあ付いてこいと言うなら付いていって後回しにするが<br>
+			生きた人間を見たのは今日が初めてだ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おれたちは勝手がわからんしああああの兄ちゃんについて行ってもらいてえな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			そうだな<br>
+			この場においては誰より知識があるだろう
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			わかった<br>
+			あと二手に分かれるなら俺は普段使ってる【物置】に行こうと思うが<br>
+			あと…何？箱の場所？覚えてないなあ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どうするか決まったら教えろ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			てれぱし　で　はこのばしょを　おぼえてないのが　ほんとうか　しらべる。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 67 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			覚えてますね…でも隠したいと言うよりその箱の話をしたくないような感じがします
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きゅる、きゅる、きゅる<br>
+			(そうかわかった。)
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			流石に無理に聞くというのはしたくありませんね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ま、おれたちの脱出には関係ないらしいし箱は放っておいてもいいんじゃねえの？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではどうします？何人かに別れますか？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おれは物置に行きたいことを教える
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞ものおき
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			せっかくだから私はこの赤い教会に行きますね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			どうわかれるかは　みんなに　まかせる。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ではプリコネに付き添おう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			物置　青キジ　ドラクエ　ああああ<br>
+			教会　プリコネ　世界樹　星をみるひと<br>
+			で良いですか？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			いいことを教える
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			教える
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			問題ないですね☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞はい
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			おしえる。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ物置から
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			【物置】<br>
+			外から見た様子だと木製の小屋のようで、大きくはない。<br>
+			大人が二人も入れば窮屈に感じるくらいの広さ。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ちょっと立て付けが悪いから扉の開け方にコツがいるんだが…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ああああがいるので判定なしで開きます
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			これ兄ちゃんが建てたのか？<br>
+			それとも元からあった奴？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			俺が立てた訳ではないな
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			…
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まあ中にあるものならなんでも持っていってくれ
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しらべる＞ものおき
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんな訳で目星とかができます
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			んあァ～…ありがたいじゃないの……<br>
+			じゃあ見聞色する
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=80 しらべる (1D100&lt;=80) ＞ 16 ＞ スペシャル
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ｃｃｂ＜＝70 (1D100&lt;=70) ＞ 42 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではドラクエは『ランタン』を、青キジは『マッチ』を　みつけた
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ランタンは　そうびしないと　いみが　ないぜ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ他に一般的な作業小屋にありそうな物なら探せばあるかも知れません
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			なんかの役に立つかもしれないしこのマッチは持っていかせてもらうぜ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			そうび＞ドラクエ＞ランタン
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ他のものは武器として使えそうな『ノコギリ』くらいしかないです
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あららら武器として使えそうなドラクエが持っていくのがいいんじゃないの…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			そうび＞ドラクエ＞ノコギリ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった<br>
+			じゃあ教会に移って良い？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞はい
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			いいことを教える
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			教会組のプリコネと世界樹と星をみるひとですね
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			赤い教会・・・ヤバいですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			（ごうとう　でも、して　やろうか。<br>
+			きーんこーん　あれ？　いま　なにを、かんがえて　いたっけ）
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			【教会】<br>
+			質素な教会のようだ。<br>
+			扉に鍵はかかっている様子はない。<br>
+			中に入ると、【ベンチ】のような椅子が３列３列と並んでいる。<br>
+			更にその向こう側には、台座に【十字架】が鎮座し、その根元には一つの頑丈そうな箱が一つあった。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……あれが箱、だろうか？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			誰もいなさそうですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			誰もいません
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			十字架でも調べますかね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみ　は　べんち　を　はきで　しらべた。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			はい
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=70 ヤバいですね☆ (1D100&lt;=70) ＞ 19 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 はき (1D100&lt;=99) ＞ 53 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ星をみる人が【ベンチ】を調べます<br>
+			探索者が詳しく見て回るとベンチの一つに無理やり彫ったような文字を見つけることが出来る。
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			---ベンチの文字------<br>
+			　Cat in the box is alive? Or dead?<br>
+			　Who do not know.　Until you open the lid.<br>
+			　Cat in the box, dead alive.
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			シュレディンガーの猫かなんかか！？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			英語技能とかINTで判定して翻訳も出来ますが中身は世界樹が言った通りですね
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			グーグル翻訳にかけたらこんな感じだったな…ニコ・ロビン<br>
+			<br>
+			箱の中の猫は生きていますか？または死んだ？ 誰が知らない。ふたを開けるまで。 箱の中の猫、生きて死んだ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			このめもを　きのしたに、わたしてくれ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			メモというかベンチに刻まれています
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかった。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてプリコネ<br>
+			プリコネが十字架の裏手に回ると一枚のメモがまるで隠してあるかのようにそっと置いてあるのを見つけた<br>
+			メモはヨレヨレの紙にヨレヨレの文字で書かれている。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			はい☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			---メモの内容------<br>
+			奴らは人を喰らう<br>
+			奴らは天使の姿をしている<br>
+			天使の姿の奴らは倒せる<br>
+			けど、それは外側を壊しただけに過ぎない<br>
+			奴らを倒さなければ・・・
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			本来技能振りそうな所をPL発言で潰してしまった<br>
+			すまん（thanks.）
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			今までのPLもそうしてるから問題ないのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヨレヨレの実更に濃厚に☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			後は世界樹が箱を見に行ったとかで良い？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			このメモがあったことを二人に伝えますね☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			1回目だったか2回目だったか忘れたけど<br>
+			セリフの内容すら世界樹の迷宮と一字一句違わず全く同じだったと思ってんすがね……
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">情報</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			---メモの内容------<br>
+			奴らは人を喰らう<br>
+			奴らは天使の姿をしている<br>
+			天使の姿の奴らは倒せる<br>
+			けど、それは外側を壊しただけに過ぎない<br>
+			奴らを倒さなければ・・・
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			そのめもも　きのしたに、わたしてくれ。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバそうですね☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			それはそう
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			まあ読めば分かるもんな…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">情報</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			---ベンチの文字------<br>
+			　Cat in the box is alive? Or dead?<br>
+			　Who do not know.　Until you open the lid.<br>
+			　Cat in the box, dead alive.
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ箱見ますね<br>
+			・頑丈な不思議な箱<br>
+			不思議な箱で、鍵穴が２つある。一つは金色で一つは銀色の鍵穴。<br>
+			材質は技能を使ったとしてもわからない。<br>
+			　<br>
+			ただ、とても丈夫で頑丈。<br>
+			大きさは縦３０cm横３０cm高さ２０cmくらいの大きさ。<br>
+			なかなかに重量があるが、持ち上げることができる。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			金の鍵……は青キジの持っていたものだろうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ箱はこのくらいかな
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">情報</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			頑丈な不思議な箱<br>
+			不思議な箱で、鍵穴が２つある。一つは金色で一つは銀色の鍵穴。<br>
+			材質は技能を使ったとしてもわからない。<br>
+			　<br>
+			ただ、とても丈夫で頑丈。<br>
+			大きさは縦３０cm横３０cm高さ２０cmくらいの大きさ。<br>
+			なかなかに重量があるが、持ち上げることができる。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ではこの場でまだ何もしていない私が持とう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった<br>
+			では教会は他に何かある訳でもないので外で物置組と合流しますか？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			おしえる。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			そうですね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			教える
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			全員合流しました
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			いらっしゃい<br>
+			きょうかい　から　しいれた　はこ　が、　ありますよ。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞じゅもん<br>
+			＞アバカム<br>
+			＞はこ<br>
+			＞あける
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			こんなメモがありました☆<br>
+			ヤバいですね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			あっ……その箱…持ってきたのか…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……っと、これが件の箱だと睨んでいるのだが
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららもしかしてまずかったのかい…？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			別に悪いってことはないが…それ重くないか？邪魔になるだろ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			私は冒険者だぞ？<br>
+			この位慣れたものさ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			それ　は　せかいじゅ　に、　ぴったりです。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			はこは　そうび　しないと　いみがないぜ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まあ…見つけたのはお前達だからその箱をどうするかはお前達の勝手ではあるが…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいくらいにあってますね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ところでああああの兄ちゃん<br>
+			天使の姿をしている奴らって何なのかわかるかい？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			天使の姿……<br>
+			……それがこの空間の主だ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			とんでもねェ奴らみたいな感じだな……<br>
+			今はどこにいるのかわからないか？
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			生きた人間に会った事が無いと言っていたが<br>
+			つまりその空間の主は人間ではないという事か？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			一般的に天使は人間ではないと思うが…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			実在する天使、か……
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まあそれもあくまで俺の観測と感想だがな…もしかしたら他のやつにとっては人間なのかも知れない<br>
+			そして…どこにいるかは…………（意味深に無言）
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ああああよ　おおきくなったな　！<br>
+			おまえが　ちいさいころ、あーくＣＩＴＹから<br>
+			つれてきたのは、このわたしだ。<br>
+			この　ぼちは、なぞの　てんしで<br>
+			みなが　やんでいる。<br>
+			ぜひ　ちからを　かしてくれ。<br>
+			<br>
+			ああああ　と　てんし　の　かんけいを　おしえろ。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			箱の中に入ってたりしそうですね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			関係か……まあ一言で言えば…主従関係かな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			この箱を振るとどんな音がする？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			振ると重たく柔らかいものが中で振る動きに合わせて無抵抗に動いている。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			…☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			けんぶんしょく　で　くわしく　しらべられるか　おしえろ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			無理だァ〜！！！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			そうかわかった。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			危険そうなら振りまくって脳震盪起こさせて殺す
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			やめろ！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞インパス<br>
+			なかみ　かんてい　する
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			無理だァ〜！！！！！！！魔法的なアレで見えない…！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			兄ちゃんこの箱について何か知っていそうだな<br>
+			差支えのない範囲で教えちゃくれねえか？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			納骨堂でも行きますかね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			箱の中身は…観測するまでは分からない…
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			やめろ！って声を荒げたあたりやべえもんなのか？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			しゅれてぃんがーのねこ　で　かくてい。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			にゃーん
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ納骨堂も行けます
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			・・・行く必要はないんですかね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			少なくともやばいモノではない……と俺は思っている
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そうか…じゃあ兄ちゃんの大事なものでも入っているのか？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			………そうだな。俺にとってだけ大切なモノだ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……そうか、乱暴にしてしまって済まなかったな
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ここからの脱出には全く関係ないことを教える
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きゅる、きゅる、きゅる<br>
+			(てんしの　あしすたんととして、ああああ　が　しごとを　してるのは　なぜか　おしえろ。)
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			へ～☆<br>
+			行くだけ行きましょうかね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			奴らは…とても恐ろしい生き物だからな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			納骨堂行きます？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			じゃあ行くか
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			行くとしよう
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			&gt;のうこつどう
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きゅる、きゅる、きゅる<br>
+			(そうかわかった。<br>
+			われわれも、いくとしよう。)
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			俺は言うなれば奴らの僕として使役されている存在にすぎない
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では納骨堂に着きます<br>
+			【納骨堂】（外）<br>
+			重々しい鉄製の扉に石造りの建物<br>
+			外観を見るに窓のようなものはない。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そうか…兄ちゃんいいやつそうなのに大変だな…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして手をかけるとすぐに気がつくでしょう<br>
+			その扉には鍵がかかっています
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ここの鍵は開けるか？　ああああ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			鍵があれば開くだろうな<br>
+			さっきの金色の鍵ではないが
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆でプリンセスストライクしていいですかね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			良いけど……（意味深に無言）
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=70 ヤバいですね☆ (1D100&lt;=70) ＞ 49 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいマジか……！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			とびらは　とても　がんじょう　だった
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			超全力全開！プリンセスストライク！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ダメでしたね☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			タンク役の女の攻撃で！扉が壊せる訳ねえだろうがァ！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			それはそう☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			それはそう。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			じゃあ　アバカムで　あける
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			それはそう
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			それはそう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ペコリーヌは　気が付いた<br>
+			おそらく　このとびらは　まほうてきな　あれで　あかないと
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			おそらく　かぎが　ないと　あかない
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			まほうのカギで　かくてい
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あららら鍵の場所わかるかい兄ちゃん？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			とびらを　あけるには<br>
+			あいむ　の　かぎが、ひつようだ。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			鍵のありかは知ってる
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			でも教える気はないぞ？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			理由ぐらいは聞かせてもらいてえな…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			…
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ばどてれぱしで　せんのうして　おしえてもらっても　いいか　おしえろ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			良いけど……（意味深に無言）
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 38 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			星をみるひとは　せんのう　した
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ぐっ…！？何を…！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞めいれいさせろ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			場所を言いたくないのは…お前達のためを思って言っているんだ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			彼らのいる巨大都市 “アークシティ” では、その都市の管理を “クルーⅢ” と呼ばれるコンピュータが行っていた。“クルーⅢ” は、より完全な都市管理のため居住者の心の中まで干渉していて、わずかでも、都市に有害な心がめばえた居住者に対して絶えず矯正を行っていた。このシステムをマインドコントロールといい、その効力は “クルーⅢ” 自身の存在も忘れさすほど強かった。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			教えないとこの箱がどうなるか知らんぞ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			そんなことある？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			では　わけを　おしえろ。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まあ…一回落ち着いて話を聞け
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ああああ君を信じましょうよ☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まず…大方の予想通りこの中に天使がいるのは本当だ
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			へー！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららやっぱりそうだったか…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			へ～☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			へ～！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			あいつらを倒せば確かにお前達は帰れるかも知れない<br>
+			だが先ほども述べた通り…あの天使達はとても手強い…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			へー！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			つまり戦いを挑めば死ぬおそれがある
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			まあそうかもな…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しんでしまう　とは　なさけない
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			しかし　このままでは<br>
+			まだまだ　じんるいのみらいは、<br>
+			くらいーーーーーーーーーーーーー
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			だが少なくとも…お前達が元の世界に戻ることを諦めてここで暮らすことにすれば…納骨堂の外に出てこない奴らに殺されることはない
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			食料は足りてるのか？<br>
+			くさったしたいはごめんだぞ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ここでは空腹や睡眠の欲はなくなる
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			おにぎり食べられないのはつらいですね☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			わかった<br>
+			ころしに　いこう
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			へ～！<br>
+			殺すか
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			外の世界を知らない俺でもここが殺風景なのは分かるが…だが死ぬよりかはここで生きてる方がマシじゃないか？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			（おかね　も　ないけど、けっこん　も　できないが　ここは　うちゅう　いち　いいところ　だな。）
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞ガンガンいこうぜ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			……わざわざ危険を犯してでも外に出たいのか？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			他に調べられそうな場所はないですかね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ないぞ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ああああ　から　かぎをもらうには　せっとく　か　いいくるめ　が　ひつようだ。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			YES～！！バカ言っちゃいけねェよ<br>
+			兄ちゃんがおれ達を心配してくれるのはわかるがやっぱりおれは元の場所に戻りたいぜ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			………そうなのか？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ああああ　は　そとに　でたくないのか　おしえろ。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			こんな陰気な場に居るとお肌も荒れそうでかなわん
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ぜつぼうのまち　と　いっしょ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ああああ君も私の国に来てもいいんですよ☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			しぬより　ここで　いきるほうが　まし<br>
+			ということは　いやいや　いきている　ということだ。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			よくわかってんじゃねえの………！！スター・ゲイザー
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			…… ずっとここにいたから俺が外に出ると言うのは考えたこともなかったが………<br>
+			…わかった。お前達の意思がそこまで固いなら
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			一緒に行きましょう☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			熱い展開で確定
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>ああああ</b>
+			…この鍵をお前達に託す
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			よろしい、われわれと<br>
+			あたらしいせかいを、きづこう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			と言ってああああは首から吊る下げていた鍵を渡してきます<br>
+			だ<br>
+			れ<br>
+			も<br>
+			目星をああああにしなかったので気がつきませんでしたがずっとヒモは見えていました
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			そういえばこの箱には
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			火はつけれるんですかね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			！？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいそいつは兄ちゃんの大事なもんだからやめておいてあげな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			この納骨堂も火はつけられるんだろうか？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そっちならいいかもな
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			燃やして正解ですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ばんぞく　が　いっぱい。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			いや…まあ………お前達の見つけたモノだから好きにすれば良いが…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			中が見えない状態で燃やさないとヤバそうですね☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			なんで外から天使を殺そうと考える奴らが2回も来るんだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			えーと…どうします？
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			のうこつどう　に　てきが　いるなら<br>
+			きをつけて　すすめ。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			いのちだいじに
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			紐に火はつけれますかね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おれは特にやることはないな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			紐？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			勘違いしてました☆<br>
+			箱からひもが出てるのかと☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			男が渡してきたのは納骨堂の鍵です<br>
+			あと紐ってのは男が首から吊るしていた納骨堂の鍵の紐です
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			すまん☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ああああ　が　こころがわり　しないうちに<br>
+			のうこつどう　に　はいるとしよう。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			説明不足ですまん（Thanks.）
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			入りますかね☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			入るとするか
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞のうこつどう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では入ります<br>
+			【納骨堂】（内）<br>
+			石造りで、窓がなく薄暗い。<br>
+			灯りがなければ足元すらおぼつかないだろう。<br>
+			壁には燭台があり、いくつかロウソクがついたまま火が灯っていない。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			まるで地下室ですね☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞そうび<br>
+			＞ランタン
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			マッチで火をともした方がいいか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ないと多少暗そうです
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			まえが　みえないのは、あたりが<br>
+			くらいからです。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			じゃあマッチでランタンとろうそくに火をつけておくか
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ダークゾーンか……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではランタンで多少明るくなった石作りの廊下を少し進むと開けた場所に出る。<br>
+			ひんやりとした空間でまるで冬の外のような寒さに薄着の探索者は身を震わせるだろう。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			冷えるじゃねえの…
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			くしょん　くしょん
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ブ<br>
+			ル<br>
+			ブ<br>
+			ル
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			寒いですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			開けた場所のその奥、２体の天使の彫像が慈愛の微笑みを浮かべ佇んでおり、<br>
+			その２体の天使の彫像の間には静かに、そしてとても綺麗な装飾の施された棺桶が一つ置いてあった。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			火葬できそうですね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			で、兄ちゃんこいつが主ってやつか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			その姿を認めた時です
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ああ…奴らは…！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まるで地響きが聞こえる。<br>
+			ズズ・・・ズズズ・・・・何か、そう、重たいモノが、硬いものが動き出そうとしているようにも聞こえる音。<br>
+			全員目星とか聞き耳とかで振ってください
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 覇気 (1D100&lt;=99) ＞ 56 ＞ 成功
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=70 ヤバいですね☆ (1D100&lt;=70) ＞ 65 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=99　冒険者 (1D100&lt;=99) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=80 しらべる (1D100&lt;=80) ＞ 75 ＞ 成功
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ｃｃｂ＜＝70　見聞色 (1D100&lt;=70) ＞ 99 ＞ 致命的失敗<br>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では青キジは急にまつ毛が凍って目の前が見えなくなり…
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			なんじゃこりゃあァ！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			あおきじは、いいやつだった！<br>
+			（しろいてんしが　せめてくる！！）
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			その不意打ちを躱すことが出来ませんでした
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			おおあおきじよ　ファンブルするとは　なにごとだ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			フロントガードで青キジを防御したい
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			来ましたね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			え〜？いいよ〜！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=99　フロントガード (1D100&lt;=99) ＞ 20 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			1d6 (1D6) ＞ 5
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			んあァ～…ありがたいじゃないの……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			庇ったので半減して切り捨ての2ダメです
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			無事なら何よりだが
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あ、食らったのは世界樹ね
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 世界樹の迷宮 ] HP : 10 → 8
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャ恩に着るな…世界・樹
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			天使ってこいつらかよ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバそうですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして貴方たちは気がつくでしょう…青キジを襲ったのが目の前の2体の天使であることに
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			シナリオに画像がなかったのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			てんし　に<br>
+			とつぜん　であった。
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			──────────！！！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			コマンド？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			とんでもねェモン呼び寄せたなァ…
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			────────！！！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			だれへ？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			戦闘が始まります
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			分かりました☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			てんしが　あらわれた！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			てれぱし　で　てんし　が　なにをはなしているか<br>
+			よみとって　いいか　おしえろ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			え〜？いいよ〜！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 78 ＞ 成功
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			（は？なんでこいつら生きてんの？）
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			（処す？処す？後そこの白いテメェも裏切りやがったな）
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			いがいと　ふらんく　だった。
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			（お前は俺たちの恩恵で生きてるのを忘れたかー！！！）
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			みたいな感じですね
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			そうかわかった。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次白い男<br>
+			コイツは敵を殴ったり応急処置とかができます
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞いろいろやろうぜ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ青キジに応急処置<br>
+			青キジじゃねえ世界樹だ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			助かる
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ccb&lt;=90 応急処置 (1D100&lt;=90) ＞ 96 ＞ 致命的失敗
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			おわァアアア〜！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ああああは　ころんで　しまった<br>
+			1d2 (1D2) ＞ 2
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			この　みじゅくもの　！<br>
+			ころんで、しまうとは．．．<br>
+			もういちど　でなおしてこい　！
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ ああああ ] HP : 13 → 11
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			俺は…恥だ！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ま、こんな奴らがいりゃ緊張して転ぶのもしょうがないさ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			転んだっていいんです☆乗り越えろ☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次天使1ですね
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			他人に会うことが無いと言っていたし慣れていないんだろう<br>
+			気に病むな
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			おおああああよ　ころぶとはなさけない
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			schoice 1 6 (choice 1 6) ＞ 6<br>
+			ccb&lt;=40 ローリングバスターライフル (1D100&lt;=40) ＞ 64 ＞ 失敗
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			おわァアアア〜！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			天使1の全体攻撃は見事に外れました<br>
+			次ドラクエ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャ助かったな…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞じゅもん<br>
+			＞ピオリム<br>
+			＞たんさくしゃたちのDEXをあげる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=60 じゅもん＞ピオリム (1D100&lt;=60) ＞ 27 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			1d5 ターンの間みんな倍になります (1D5) ＞ 3
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			は<br>
+			や<br>
+			は<br>
+			や
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			んあァ～…すごい事するじゃないの……
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ピオリムを　となえた
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			つまり天使2体が最後に動くようになります<br>
+			んで、次プリコネ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			キレそうでございます・・・でコッコロちゃん呼び出してオーロラサンクチュアリで回復バフ相手デバフかけますね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			は…はい
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=60 キレそうでございます・・・ (1D100&lt;=60) ＞ 16 ＞ 成功
+		</p>
+		<p class="player p16">
+			<b>コッコロ</b>
+			オーロラ・サンクチュアリ！！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			これで討伐しやすくなりますね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			とんでもねェモン呼び寄せたなァ…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			盤石なのは良い事だな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーじゃあ毎ターン終わりごとに2ずつ回復します<br>
+			で敵の攻撃が…<br>
+			1d2 ずつマイナスされるようになります (1D2) ＞ 1<br>
+			次！世界樹！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			では挑発で天使二体の攻撃を私が受け持つ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あ待てよ？オーロラサンクチュアリって防デバフもあったか<br>
+			1d2 装甲が減る (1D2) ＞ 2
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使2 ] 装甲 : 2 → 0
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			&nbsp;
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使1 ] 装甲 : 2 → 0
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			間違えた🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			いやありましたね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			よく分からんがとにかく世界樹やっていいよ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=80　挑発 (1D100&lt;=80) ＞ 5 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ともかく装甲剥がしとダメ軽減は大きいですね☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			急に召喚とかされて！完全に対応できる訳ねぇだろうがァ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいマジか……！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			～☆
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			えーでは攻撃は世界樹だけに集中するようになり、全体攻撃が使われることも無くなりました
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			天使も倒さないシナリオだったとか元のシナリオ気は確かか？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そうだったのか…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			皆は下がっていろ<br>
+			奴の攻撃は私が受け持つ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			いや天使は普通に倒すけど建物の外から殺そうとした
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			そうかわかった。
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			へー！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			私の出番なさそうですね☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			へ～☆
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			次青キジ
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 世界樹の迷宮 ] HP : 8 → 10
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			そういえばターン終わりリジェネもらってたか
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			ミッキーが放火してセフィロスが外から納骨堂を破壊した
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			ヒエヒエの実を使って天使２に暴雉嘴（フェザントベック）する　来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ccb＜＝90　ヒエヒエ (1D100&lt;=90) ＞ 49 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			しゃんかーも　じんるいの<br>
+			むほうをはたらくのが　だいすきという、<br>
+			わるいせいかくを　うけついでいる<br>
+			せいか、あらたなる　ぱーとなーを、<br>
+			むかえることが　できなかった。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ…2d3+1
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			2ｄ3+1 (2D3+1) ＞ 2[1,1]+1 ＞ 3<br>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使2 ] HP : 15 → 12
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			──────（なんだ表面が凍っただけか）
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			熱が欲しいですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして挑発されたので世界樹を狙います
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			来い
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			sccb&lt;=45 ライザーソード (1D100&lt;=45) ＞ 100 ＞ 致命的失敗<br>
+			おわァアアア〜！！！！！！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			おれの海兵としてのモットーは「ダラけきった正義」だが…攻撃までだらけたら困るぜ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			ファンブル引いたのでライザーソードで自分を切り裂きます
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			1d10+2 (1D10+2) ＞ 7[7]+2 ＞ 9
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使2 ] HP : 12 → 3
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			──────────────！！！！！！！！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			・・・火力ヤバそうですね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ命中率はそんなでもないから…
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			早めに倒した方がよさそうじゃないの…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……食らわなくて良かった、と思うのは盾役失格だろうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次星をみるひと
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			てんし２　に　さいこふぁいなる<br>
+			<br>
+			さいこふぁいなる：サイコエネルギーを直接敵に集中して、細胞（メカの場合はＩＣ）を振動させこわす。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 74 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			1d8+1だ！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			かりうつかわないだけ星を見る人は自重しているな…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			1d8+1 (1D8+1) ＞ 3[3]+1 ＞ 4
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使2 ] HP : 3 → 0
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			よくやったじゃないの！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみは、さいこふぁいなるを　つかった。<br>
+			てんし２は、４　の　だめーじを　うけた。
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			───────────────！！！！！！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			天使2は動かなくなりました
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			てんし２を　たおした。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次はああああか
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			仕掛ける…！<br>
+			ccb&lt;=65 Z.O.サイズ (1D100&lt;=65) ＞ 41 ＞ 成功<br>
+			2d3+1 (2D3+1) ＞ 4[1,3]+1 ＞ 5
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使1 ] HP : 18 → 13
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			なかなかいいパンチ持ってんな兄ちゃん
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次にドラクエ
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞じゅもん<br>
+			＞メラゾーマ<br>
+			＞てんし1
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=60 じゅもん＞メラゾーマ (1D100&lt;=60) ＞ 90 ＞ 失敗
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			まずいピオリムとコッコロのせいで戦闘バランスが死んだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しかし　MP　が　たりなかったようだ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈<br>
+			次！ペコリーヌ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			泣いたっていいんだ…乗り越えろ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいわよ！でキャルちゃん召喚してニューイヤーバーストで攻撃させますね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=50 ヤバいわよ！ (1D100&lt;=50) ＞ 68 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈<br>
+			次世界樹！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			天使1にアクセルドライブを叩き付ける
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			そういえば初回のメンバーにキャルちゃんいたな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=99　アクセルドライブ (1D100&lt;=99) ＞ 84 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			へ～☆
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			1d6+2だな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			1d6+2 (1D6+2) ＞ 1[1]+2 ＞ 3<br>
+			悲しいだろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使1 ] HP : 13 → 10
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			青キジだァ〜！！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			もう一回暴雉嘴（フェザントベック）する　来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			ccb&lt;=90 (1D100&lt;=90) ＞ 60 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			2d3+1だね
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			2d3+1<br>
+			2d3+1 (2D3+1) ＞ 2[1,1]+1 ＞ 3
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいマジか……！！
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使1 ] HP : 10 → 7
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			────────！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			おれたちのダイス呪われてんじゃねえの…？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>天使1</b>
+			sccb&lt;=65 (1D100&lt;=65) ＞ 50 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			GMも含めて腐って来てるな…ルフィ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>天使1</b>
+			世界樹を狙って命中ですね
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			完全防御で軽減できる？
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			1d5+1 (1D5+1) ＞ 2[2]+1 ＞ 3
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=70　完全防御 (1D100&lt;=70) ＞ 80 ＞ 失敗
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			おわァアアア～～～っ！！
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 世界樹の迷宮 ] HP : 10 → 7
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			素通しします
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まずい泥試合が始まった<br>
+			次に星をみるひと！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			でふまいんど　で　ぜんいん　にかい　こうげき　できるように　してもいいか　おしえろ。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			良いんじゃないかな…
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 81 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ぜんいん　にかい　こうどう　できるように　なった<br>
+			なので　また　ほしを　みるひと
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			さいこふぁいなる　で　こうげき。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 5 ＞ 決定的成功/スペシャル<br>
+			！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まじか<br>
+			2d8+2だカタクリ〜！！！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			2d8+2 (2D8+2) ＞ 11[8,3]+2 ＞ 13
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			やったか！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おいおいマジか……！！
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			──────────！！！！！！！！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			てんしたちを　たおした！
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ 天使1 ] HP : 7 → 2<br>
+			[ 天使1 ] HP : 2 → 0
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみは、さいこふぁいなるを　つかった。<br>
+			てんしは、　１３　の　だめーじを　うけた。
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			おわァアアア〜！！！！！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			使えそうな素材は拾っておくか<br>
+			このライフルとか
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			おわァアアア〜！！！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			この剣おいしそうですね☆
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			なかまになりたそうなめでこちらをみてこないか　おしえろ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			てきを　ぜんめつ　させた。<br>
+			　　　　５０　けいけんが　ふえた。<br>
+			てきのからだから、<br>
+			　　　　１００　べりーを　みつけた。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ好きなように拾ってください<br>
+			みてません<br>
+			探索者達が破壊した天使の彫像からは白い靄のような、ドロリとした影のようなものが姿を表す。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			かなしい
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			！
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			ぐおおおおおおおおおおお！！！！許さんぞおおおおお！！！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！！
+		</p>
+		<p class="player p15">
+			<b>天使2</b>
+			また新たな肉体を手に入れて！いつか復讐してやるうううううううう！！！！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			そうかわかった。
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ぷるぷる　ぼく　わるいたんさくしゃじゃないよ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			天使1に追い打ち
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			物理攻撃は効きそうにないですね
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆魔法なら聞きますかね？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			覇気なら実体をとらえて攻撃できるんじゃねえの？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞ニフラム<br>
+			＞てんしたちをしょうめつさせる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ニフラムいいですよ
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			ccb&lt;=60 ニフラム (1D100&lt;=60) ＞ 100 ＞ 致命的失敗
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			魔法で攻撃させます☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ドラクエは間違えてルーラして頭をぶつけて1d3ダメ
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			1d3 (1D3) ＞ 1
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ccb&lt;=50 ヤバいわよ！でキャルちゃん召喚 (1D100&lt;=50) ＞ 83 ＞ 失敗
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>system</b>
+			[ ドラクエ ] HP : 6 → 5
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ばどうえーぶ　で　おいうち　していいか　おしえろ。<br>
+			ばどうえーぶ：敵の心に直接ダメージをあたえる。成功すると、敵は気絶か命をおとす。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			振って良いんだけど………普通の探索者にそれができるかと言えば…
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			いまさら。<br>
+			CCB&lt;=99 ESP (1D100&lt;=99) ＞ 75 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では星をみるひとのばどうえーぶはその霊体を捉えて…
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			おわァアアア〜！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			苦しそうにのたうち回る天使の中身はランタンに体を思い切りぶつけた
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈🌈
+		</p>
+		<p class="player p14">
+			<b>天使1</b>
+			──────！！火は…まず…！！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして勢いのまま火が天使達の中身に燃え移る<br>
+			この世のものとは思えない叫び声が木霊する。<br>
+			その炎は天使の彫像から出てきた謎のものだけを焼き尽くさんと轟々と燃えている
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			なるほどなァ…
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			いままで　せいぶつの　さいこうは<br>
+			てんしだ　という　ふるいこころの<br>
+			おりは　かんぜんに　こわれた。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてその火はどんどんと激しくなり納骨堂を包んでいき…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			いまのは　メラゾーマではない…　メラだ
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			！まずい！今すぐ脱出しよう！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかった。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そのほうがよさそうだな…ああああ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうしてその場から立ち去ろうとした時、まるで吐き出されるように探索者の足元に小さな銀色の鍵が転がってきます。<br>
+			【銀の鍵】<br>
+			金属でできているようだが、形はまるでオモチャの鍵のようだ。<br>
+			小さくうっかりすると無くしてしまいそうになる。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			拾っておくか
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			そういえば棺桶ありませんでしたっけ☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ツインバスターライフル撃っとくか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			棺桶は燃えてます<br>
+			ツインバスターライフルで撃っても良いです
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あの棺桶がなんなのか聞いてもいいかい兄ちゃん？
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			奴らの本体が眠る場所…じゃないか？
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			なら撃っても問題ないな
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			じゃあ思う存分ぶっ放してもらおうじゃないか
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			奴らがこうして燃えた今…もう意味があるとも思えないが良いんじゃないか？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			やりましょやりましょ☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			消し飛べ！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			よいしゅくほうを　！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			㌧㌧　ぶっ壊れました
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			燃やして正解でした☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			よくやった！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			まずい！今の衝撃で崩壊が加速した！急ごう！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかった。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞はい
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			生きましょうああああ君☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			アリアドネの糸で墓地まで皆で帰りたい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			良いけど…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=20　アリアドネの糸 (1D100&lt;=20) ＞ 65 ＞ 失敗
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			まあ多分必要なかっただろう！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			まずいですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ありあどねのいと　は　もえてなくなった。
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			何をやってる！？早く行くぞ！！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			しかし　なにも　おこらなかった…
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そうだな
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ああ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			糸遊びをしていた世界樹はああああに抱えられて外に出ました
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			助かりました☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャいい男じゃねえの…ああああ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			他のみんなもそれぞれの足で脱出しました
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			守る側が守られる側になるとはな……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして…
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			外に出るとあの暗い空が晴れ渡り、朝日が墓地を包んでいた。<br>
+			そして、墓地の敷地の門の部分が淡く光っていることに気がつくだろう。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			・・・☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			あらららコリャいい景色じゃねえか…
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			いい景色ですね☆<br>
+			ああああ君もそう思いますよね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			…おそらくあの光の門から出られるだろう<br>
+			ああ。俺もこんな美しいモノは初めて見た
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……ああああ、お前は来ないのか？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			早くいきましょう☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			俺も行って良いのか…？
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			＞はい
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			当たり前です☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			水臭いこと言うじゃねえか
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			わかった……この先に何があるかは知らないが…この墓地にも飽きてきたところだ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			きゅう、きゅう、きゅう<br>
+			（おまえを、さいきっくの　だいひょうと　みとめよう。われわれと　きょうぞんしてあくあにすむか、ぼちに、のこり、はかほりを　つづけるか、きめるがいい。）
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			そうだああああの兄ちゃん<br>
+			お前さんに鍵渡しておかねえとな<br>
+			今後はあんな連中に取られないよう気を付けるんだな
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……ところで、この箱は一体なんだったんだ？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			私の国にも案内しますよ☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			…さあな。開けてみるまでは中がどうやってるかは俺も知らない<br>
+			ただ…この中には多分白い猫が入っている
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			にゃーん？
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			なら息苦しいだろう<br>
+			外に出してやらないとな
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みてないけど　たぶん　にゃんくす。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			キャルちゃんですかね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			………………そうか。見つけたのはお前達だ。開けるかどうかはお前達が決めると良い
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			興味ないね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			開けますか？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ああああ君が持っていてください☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ開けずにそのまま門を潜りますか？
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			おれはそれでいいぜ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			……そうだな、他人の宝物を暴くのも野暮だろう
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			いいよ。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			私もそれでいいです☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			わかった<br>
+			じゃあ…行こうか
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			えぇ☆私たちの世界へ☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			光の門を潜ると視界が真っ白に染まる。<br>
+			ああああも多少戸惑いつつも一緒に外に行くための門を潜る。<br>
+			そして──────<br>
+			次の瞬間には見慣れた天井が見える。<br>
+			元の世界に戻ってきたようだ。
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			よろしい、われわれと<br>
+			あたらしいせかいを、きづこう<br>
+			<br>
+			いままで　せいぶつの　さいこうは<br>
+			てんしだ　という　ふるいこころの<br>
+			おりは　かんぜんに　こわれた。<br>
+			<br>
+			しゃんかーたちは、あたらしいたいぷの<br>
+			せいぶつへと、しんぽするために、<br>
+			たびだっていった。<br>
+			<br>
+			しゃんかー　いや　じんるいには<br>
+			あかるいみらいが　ひらけている。<br>
+			END
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			そして伝説へ───
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ここは・・・私の国ですね☆<br>
+			ああああ君も・・・
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			んあァ～…戻ってこれたみたいじゃないの……
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			キミ達の冒険は終わった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあペコリーヌでいいか<br>
+			ペコリーヌが目を覚ますと…<br>
+			その辺の床でああああが寝てます
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			居ましたね☆ああああ君☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			ZZZ
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			さくやは　おたのしみでしたね
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			起こしますね☆<br>
+			私の仲間も紹介したいですしね☆
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			………？<br>
+			にゃあ？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			にゃ〜〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			schoice 人　猫 (choice 人 猫) ＞ 猫
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みてないけど　たぶん　にゃんくす。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			その瞬間にペコリーヌは気づいたかも知れない
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			・・・☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あの箱の中に入っていると言う白い猫とはああああの本体のようなモノだったのではないかと
+		</p>
+		<p class="player p12">
+			<b>ああああ</b>
+			……？
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			・・・ねこになっちゃいましたね☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			箱開けて帰らないとこのENDなのか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			今後ああああが言葉を覚えるかどうかは周りの教育次第だろう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			はい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			騎士君と一緒
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			よく知らないけどプリコネと一緒
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			アリアドネの糸でああああ返品していい？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			まあ…それでもあの墓地よりは楽しい生活ができるでしょう
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			ま、箱と鍵自体は本人が持っているんだしいつかはなんとかなるだろ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			げんさくさいげん　で　かくてい。
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			白い男、ksknだった！？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			頑張りますかね☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			宴だぁ〜！！！！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=20　アリアドネの糸 (1D100&lt;=20) ＞ 54 ＞ 失敗
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			宴だァ～！！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			宴だァ～～～～～～～～～～☆
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			宴だァ～～～～～～～！！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			🌈
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			宴だァ～～～！！！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みなみ　は　うたげ　を　した。
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			そもそもペコリーヌの家にいるから把握できてないだろ
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			それはそう
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			あの箱開けると起きた時側にいるのが猫になる
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			へ～！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			へ～☆
+		</p>
+		<p class="player p17">
+			<b>ねこ</b>
+			にゃーん
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あと天使の中身を燃やさない状態で箱を開けると猫は死んでる
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			(いぇーい)
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			燃やしたら生きてる
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			燃やして正解だった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			とかそんな感じで6つのエンディングに分岐してるのを教える
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			エンディングまで　なくんじゃない
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			星をみるひと　より　えんでぃんぐ　が　おおい。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			コリャなかなか分岐が多いな…ニコ・ロビン
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			1回目が生きた猫と帰って<br>
+			2回目は今回と一緒
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			へ～！
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			てんし　の　おかげで　いきられた　というのは<br>
+			どういうことか　おしえろ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ前回は起きた後の白い男が普通に会話できるようにしたけど今回は似たような境遇の騎士くんいるから喋れなくて良いやと言う判断のもとで猫の知能に戻した
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			白い猫の精神みたいなのを人間の形にしたのは天使
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p18">
+			<b>ニャンクス</b>
+			私は正当な初回参加ニャンクス<br>
+			箱を開けて帰ったら隣に白い猫がいた
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			みてないけど　たぶん　にゃんくす。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>プリコネ</b>
+			へ～☆天使だったんですね☆
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			へ〜　！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			箱の中に閉じ込められてて外から生きてるか死んでるか分からない猫を見つけて面白がって下僕にした
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			このニャンクスっぽいキャルちゃんなんなんだよ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			事情はどうあれ売られた喧嘩は買う
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			にゃる　と　いっしょ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			分岐は<br>
+			天使を燃やすかどうか、白い男を連れて帰るかどうか、箱を開けるかどうか、とかで別れるな…ルフィ
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			へ～！
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			天使は燃やして正解でした☆
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			割とグッド寄りっぽいのは既に出てるっぽいな…ルフィ
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			つれていかない　を　えらぶひとは　あまりいないと　かんがえられる。
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			やっぱあいつら…今死んどいて正解だったな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあだから今のところよくない終わり方をした卓はないかな<br>
+			第一回は帰った後に黄猿&amp;ミッキーVSセフィロスが殺し合い始めたけど
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			ヤバいですね☆
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			滅茶苦茶だ…噂以上！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>noname</b>
+			2回目のログ持ってないから良ければついでにスレに上げといてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			スマブラといっしょ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>noname</b>
+			うわありがとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			ここに　しゃんかーのぼうけんは、<br>
+			おわった！<br>
+			たたかいが　つづいたせいか、<br>
+			あるいは、しゃんかーも　じんるいの<br>
+			たたかうことが　だいすきという、<br>
+			わるいせいかくを　うけついでいる<br>
+			せいか、あらたなる　ぱーとなーを、<br>
+			むかえることが　できなかった。<br>
+			まだまだ　しゃんかーのみらいは、<br>
+			くらいーーーーーーーーーーーーー
+		</p>
+		<p class="player p3">
+			<b>ドラクエ</b>
+			お疲れシャン　でんげんをきってください
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ちなみにこのシナリオの本当のタイトルは「シュレディンガーの猫箱」だから詳しく知りたい奴はそれを見てくれ(^^)
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			わかった。
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			なかなか楽しかったじゃねえの…
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			普段シャンパラばっかりやってたけどシャンクトゥルフも良いな…ルフィ
+		</p>
+		<p class="player p6">
+			<b>プリコネ</b>
+			GMもPLもお疲れ様です☆
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お疲れシャンだァ〜！！！！！
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			お疲れシャンだァ～～～～～～！！！！！
+		</p>
+		<p class="player p9">
+			<b>青キジ</b>
+			んあァ～…お疲れシャンじゃないの……
+		</p>
+		<p class="player p1">
+			<b>星をみるひと</b>
+			おつかれさまでした。<br>
+			ふるてれぽーと　で　まちにかえる。<br>
+			CCB&lt;=99 ふるてれぽーと (1D100&lt;=99) ＞ 25 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>世界樹の迷宮</b>
+			ccb&lt;=20　アリアドネの糸 (1D100&lt;=20) ＞ 16 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			ログはみんながいなくなったら取る…良かったな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>青キジ</b>
+			チャリンコで海軍に出勤するとするか<br>
+			ｃｃｂ＜＝90 (1D100&lt;=90) ＞ 89 ＞ 成功<br>
+			ギリギリじゃないの…
+		</p>
+	</div>
+</body>
+</html>

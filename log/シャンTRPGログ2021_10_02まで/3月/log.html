@@ -1,0 +1,5639 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [メイン] タブ */
+		.t0 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：GM */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：NONAME */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：黄猿 */
+		.p2 { color: #ffeb3b; }
+		.p2 .diceroll { background-color: #ffeb3b; }
+
+		/* 発言者：◯ッキー・◯ウ */
+		.p3 { color: #888888; }
+		.p3 .diceroll { background-color: #888888; }
+
+		/* 発言者：ベックマン */
+		.p4 { color: #607d8b; }
+		.p4 .diceroll { background-color: #607d8b; }
+
+		/* 発言者：ニャンクス */
+		.p5 { color: #888888; }
+		.p5 .diceroll { background-color: #888888; }
+
+		/* 発言者：デッカチャン */
+		.p6 { color: #888888; }
+		.p6 .diceroll { background-color: #888888; }
+
+		/* 発言者：ニャンクス */
+		.p7 { color: #673ab7; }
+		.p7 .diceroll { background-color: #673ab7; }
+
+		/* 発言者：◯ッキー・◯ウ */
+		.p8 { color: #e91e63; }
+		.p8 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：セフィロス */
+		.p9 { color: #888888; }
+		.p9 .diceroll { background-color: #888888; }
+
+		/* 発言者：セフィロス */
+		.p10 { color: #9e9e9e; }
+		.p10 .diceroll { background-color: #9e9e9e; }
+
+		/* 発言者：デッカチャン */
+		.p11 { color: #e91e63; }
+		.p11 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：◯ッキー・◯ウ */
+		.p12 { color: #f44336; }
+		.p12 .diceroll { background-color: #f44336; }
+
+		/* 発言者：system */
+		.p13 { color: #888888; }
+		.p13 .diceroll { background-color: #888888; }
+
+		/* 発言者：白い男 */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：白い男 */
+		.p15 { color: #e0e0e0; }
+		.p15 .diceroll { background-color: #e0e0e0; }
+
+		/* 発言者：セフィロス(0) */
+		.p16 { color: #9e9e9e; }
+		.p16 .diceroll { background-color: #9e9e9e; }
+
+		/* 発言者：セフィロス(1) */
+		.p17 { color: #9e9e9e; }
+		.p17 .diceroll { background-color: #9e9e9e; }
+
+		/* 発言者：天使1 */
+		.p18 { color: #888888; }
+		.p18 .diceroll { background-color: #888888; }
+
+		/* 発言者：天使2 */
+		.p19 { color: #888888; }
+		.p19 .diceroll { background-color: #888888; }
+
+		/* 発言者：白い猫 */
+		.p20 { color: #e0e0e0; }
+		.p20 .diceroll { background-color: #e0e0e0; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			推奨技能　戦闘技能、目星<br>
+			準推奨　対人技能、英語（中学レベルの英語に自信がないなら）
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 11[4,1,6] ＞ 11<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 13[2,6,5] ＞ 13<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 11[4,6,1] ＞ 11<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 14[5,5,4] ＞ 14<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 7[3,1,3] ＞ 7
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 7[2,2,3] ＞ 7<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 7[2,3,2] ＞ 7<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 12[6,5,1] ＞ 12<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 10[5,4,1] ＞ 10<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 8[4,1,3] ＞ 8
+		</p>
+		<p class="player p3">
+			<b>◯ッキー・◯ウ</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 11[4,5,2] ＞ 11<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 8[1,2,5] ＞ 8<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 6[4,1,1] ＞ 6<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 13[3,4,6] ＞ 13<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 10[2,2,6] ＞ 10
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 7[4,2,1] ＞ 7<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 11[3,3,5] ＞ 11<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 11[2,4,5] ＞ 11<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 11[3,6,2] ＞ 11<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 9[1,4,4] ＞ 9
+		</p>
+		<p class="player p5">
+			<b>ニャンクス</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 11[5,4,2] ＞ 11<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 11[3,2,6] ＞ 11<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 14[6,2,6] ＞ 14<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 13[4,5,4] ＞ 13<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 8[3,1,4] ＞ 8
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			振り直しは自由だ…良かったな
+		</p>
+		<p class="player p6">
+			<b>デッカチャン</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 13[5,6,2] ＞ 13<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 15[3,6,6] ＞ 15<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 8[4,1,3] ＞ 8<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 10[4,1,5] ＞ 10<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 13[4,5,4] ＞ 13
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			じゃあINT振り直すわねー<br>
+			3d6 (3D6) ＞ 11[2,3,6] ＞ 11
+		</p>
+		<p class="player p8">
+			<b>◯ッキー・◯ウ</b>
+			3d6 (3D6) ＞ 6[1,3,2] ＞ 6<br>
+			3d6 (3D6) ＞ 11[3,5,3] ＞ 11
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			全部死んでるから全部振り直すぞ<br>
+			来い
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			ダイスの結果は曲げねェ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 11[5,1,5] ＞ 11<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 13[6,4,3] ＞ 13<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 11[6,3,2] ＞ 11<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 12[1,5,6] ＞ 12<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 12[4,6,2] ＞ 12
+		</p>
+		<p class="player p9">
+			<b>セフィロス</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 14[3,5,6] ＞ 14<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 14[4,4,6] ＞ 14<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 8[1,4,3] ＞ 8<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 13[5,4,4] ＞ 13<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 13[5,5,3] ＞ 13
+		</p>
+		<p class="player p8">
+			<b>◯ッキー・◯ウ</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 7[1,2,4] ＞ 7<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 5[1,2,2] ＞ 5<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 9[3,2,4] ＞ 9<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 12[5,2,5] ＞ 12<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 11[4,6,1] ＞ 11
+		</p>
+		<p class="player p9">
+			<b>セフィロス</b>
+			だいたい高水準だな
+		</p>
+		<p class="player p8">
+			<b>◯ッキー・◯ウ</b>
+			x5 3d6 #1<br>
+			(3D6) ＞ 10[2,5,3] ＞ 10<br>
+			<br>
+			#2<br>
+			(3D6) ＞ 10[4,5,1] ＞ 10<br>
+			<br>
+			#3<br>
+			(3D6) ＞ 12[3,5,4] ＞ 12<br>
+			<br>
+			#4<br>
+			(3D6) ＞ 14[5,4,5] ＞ 14<br>
+			<br>
+			#5<br>
+			(3D6) ＞ 11[5,3,3] ＞ 11
+		</p>
+		<p class="player p6">
+			<b>デッカチャン</b>
+			まァこのままでいいか
+		</p>
+		<p class="player p8">
+			<b>◯ッキー・◯ウ</b>
+			3d6 (3D6) ＞ 17[6,6,5] ＞ 17
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あと技能とかも決めててくれ(^^)<br>
+			準備できたら教えろ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			教える
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			人が7人いるんすがね…
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			私目星と英語取るわねー
+		</p>
+		<p class="player p8">
+			<b>◯ッキー・◯ウ</b>
+			もうちょっとかかる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった<br>
+			あれ7人いるじゃねえかアホンダラ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			できた
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			……←意味深に無言
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあいいか俺が頑張れば良いもんな、ルフィ
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			聖者か？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			抜けろと言われたら抜けようかァ〜？
+		</p>
+		<p class="player p9">
+			<b>セフィロス</b>
+			私は別に抜けても構わないよクラウド
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			俺も…いい…
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			ならおれが抜けるぞ、来い
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			GMに無理はさせたくからなァ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ベックマン…すまん（Thanks.）
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ベックマン聖者か？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			悲しいわねー
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			貴重なワンピ要素が消えた<br>
+			世界の先端だ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ウッ…ウッ…ウアッ…！
+		</p>
+		<p class="player p4">
+			<b>ベックマン</b>
+			後日また参加してェからこの卓は見ない…悲しいだろ
+		</p>
+		<p class="player p8">
+			<b>◯ッキー・◯ウ</b>
+			準備できたんじゃないかい？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった<br>
+			また明日とかにもやると思うからその時参加してくれ(^^)
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ちょっと待てその○の中身ミとマだったのかよ…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			よりにもよってわっしと関連してたベックマンが抜けたの悲しいだろ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいに太ってる人は準備完了が遅いよね
+		</p>
+		<p class="player p8">
+			<b>◯ッキー・◯ウ</b>
+			遅くたっていいんだ…乗り越えろ！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			“気付いちゃった”
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まだ出来てない奴がいたら教えろ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			大丈夫よ…
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			私は構わないよ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			僕も大丈夫だよ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			OK
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			準備できたねェ〜
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ちょっと待てスーパーノヴァが通るのかよこの卓…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			やっぱり6人多い気がするから抜けようかしらねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いや…抜けたいなら抜けても良いが別に良い…
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			あんまりGMに負担かけさせずスムーズ進行を心がけるぞ　来い
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ああ。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ああ。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			じゃあお言葉に甘えるわねー
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			わかった<br>
+			勝手に技能を振らない
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			聖者達か？<br>
+			そんな訳で出航だァ〜！！！！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			出航だァ～～～！！！！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			出航だァ〜〜〜！！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			出航だァ〜！！！！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			出航ねェ〜〜〜〜〜！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			出港だな…クラウド
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ワーイワイ！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			探索者はいつも通りの日常を謳歌し、今日も自分自身にお疲れ様と告げて眠りについただろう。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ﾊﾊｯ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			スッ…スッ…スヤッ…！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			私星と一体化してんだけど
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			みんなどんな格好で寝てたか教えろ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ライフストリーム内で半裸
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			普通にいつもの格好でいいか
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいにふっとてる人はいびきがうるさいよね
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			見てないけど多分黒コート
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			どんな寝方でもない寝方
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			仰向け
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあそんな感じで思いに思いに寝ていた貴方達。心地よい眠りかと思っていたが、次第に一度は沈んだはずの意識が浮上する。<br>
+			そして、意識が段々と覚醒に近づいていくにつれて、今自分が眠っている場所が暖かな布団の中ではなく、何か硬く冷たい物の上に眠っている状態になっていることに気がつくだろう。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づいちゃった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			意を決して目を開けるとそこには暗闇しか広がっていない。<br>
+			そしてとてつもない圧迫感が探索者を襲う。<br>
+			ここは、何か、そう、箱の中にいるような・・・そんな感覚に悪寒が背筋を駆け上がる。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			狭いわねー
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			気がつくと暗闇の中の箱の中に閉じ込められていたという有り得ない状況、圧迫感、意識していくと感じる酸素が減っていく現状に対して＜SANチェック＞。0/1D6。
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			世界の先端だ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいに太ってるひとはいつも圧迫感を感じるよね
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=[SAN] SAN (1D100) ＞ 31
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=60 SAN値 (1D100&lt;=60) ＞ 8 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 55 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=50 (1D100&lt;=50) ＞ 74 ＞ 失敗<br>
+			1d6 (1D6) ＞ 4
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=70　SAN (1D100&lt;=70) ＞ 22 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ デッカチャン ] SAN : 50 → 46
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=65 (1D100&lt;=65) ＞ 3 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			発狂者はギリギリいない…良かったな
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			SANチェックでクリってもなぁ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さて…どうしますか？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			頼む…開けてくれェ！　と壁？を叩く
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ピカピカで光ったら取り敢えず明るくなる…違いますか？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づいちゃった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			壁というか横たわっている状態で上の面をノックしても特に何も起きません<br>
+			ピカピカ良いよ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=99 ピカピカの実 (1D100&lt;=99) ＞ 47 ＞ 成功
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			明るくなったようだな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			黄猿が発光すると黄猿は自分がとても小さな箱に閉じ込められていることに気がつきます<br>
+			周りに人はいません
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			とりあえず扉がないか調べたいんじゃないかい？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			なにかないか探す
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			太陽系滅ぼしていい？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			黄猿は一人です
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			え〜！いいよ〜！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった<br>
+			全員1人ずつと見たねェ〜
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			今ってそれぞれみんな箱の中に閉じ込められてる状態よねー？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうですね
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			なるほど
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 43 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			セフィロスは太陽系を滅ぼそうとしました
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づいちゃっていい？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			しかしここは太陽系じゃないので出来ませんでした
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			僕はスーパーノヴァに対してリフレガするんじゃないかい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			気づいちゃって良いよ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=90 気づいちゃった (1D100&lt;=90) ＞ 57 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			魔術で箱吹っ飛ばすわねー
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			なるほど取り敢えずここが太陽系でないことがわかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			デッカちゃんはこの箱はまだ完全に施錠されていないので思いきり前面を押し出すなり蹴飛ばせば外に出れるかも？と思いました<br>
+			魔術良いよ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=90 目星/魔術 (1D100&lt;=90) ＞ 79 ＞ 成功<br>
+			シャアッ！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			じゃあ爆（ドーン）で箱を吹き飛ばす
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			キャぬちゃんは魔術によって前面を吹き飛ばしました…他の人はどうしますか？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			僕はキーブレードで部屋を破壊して外に出るんじゃないかい？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			蹴り飛ばすぞ<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			部屋というか本当に掃除用具入れくらいの箱ですね
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ジェノバ細胞でなんかキモいスライム状になって出る
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあそれぞれ試したいことをやってください
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=90 光の速さの蹴り (1D100&lt;=90) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　キーブレード使い・王 (1D100&lt;=90) ＞ 91 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=90 オトオトの実(仮) (1D100&lt;=90) ＞ 61 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			おわァァアアアアア～～～！！！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 80 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NONAMEで形状を喪失して滲み出る<br>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 60 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では○ッキー以外の全員は外に出ることができました
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			こんばんは
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			悲しいね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そこで皆さんは顔を合わせます
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			怖いねェ〜
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			チェケラァw
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NONAME
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			やあみんな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ようやくといった様子で外に出るとそこはまるで黒色の霧にでも包まれているのではないかと言わんばかりに薄暗い場所。<br>
+			空気はどこか生暖かく、肌をじっとりと舐め回しているような不快感が襲う。<br>
+			空を見上げるとまるで曇夜空の写真を雑にコピーアンドペーストしたかのように錯覚してしまうような重たい曇夜空。<br>
+			視界がそんなにいいとは言い難いそんな場所に探索者は立っていた。
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			太陽系を滅ぼしていい？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			良いよ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 72 ＞ 失敗
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			おわァアアア〜〜〜っ！！！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			nizi
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			その膨大な力が自分自身に向かってセフィロスは1d3のダメージを喰らいます
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			おわァアアア〜〜〜っ！！！<br>
+			1d3 (1D3) ＞ 2
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ セフィロス ] HP : 14 → 11<br>
+			[ セフィロス ] HP : 11 → 12
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			僕はセフィロスにケアルガをして回復させるんじゃないかい？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			外に出た貴方達は自分たちの入っていた箱の近くから甲高い声が漏れ出てくる箱があることに気がつきます
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			お前その場にいないと思ってんすがね…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			kowai
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			怖いねェ〜
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			まだ閉じ込められてるのがいるみたいねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			王の勘の良さは格が違う
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			クラウド…？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			その甲高い声の持ち主はどうしますか？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			メガフレアで箱を破壊する　来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　メガフレア (1D100&lt;=90) ＞ 52 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			外に出た探索者達の様子を把握していたような口ぶりで中から話しかけてきていた甲高い声の持ち主は箱を破壊して外へと現れました
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ﾊﾊｯ　ようやく出てこれたよ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			こんばんは
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			いずれわかる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんなところで探索者達が辺りを見渡すと、そこは見慣れないがどう見ても間違うことがない場所、『墓地』だ。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			こわいわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			十字架の墓石が並ぶ、『墓地』…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			kowai
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして、探索者がさっきまで入っていたモノ、振り返らずとも、よく確認せずとももう感づいてしまうだろう。
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			棺桶を君たちに送ろうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうですね。棺桶です<br>
+			自分がさっきまで入っていたのは『棺桶』である、ということに気がついてしまいます
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づいちゃった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			僕は棺桶の中でメガフレアを放ったのかい…？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうだよ？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NOLIFE
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			また、貴方達は寝た時と同じ格好…つまりセフィロスは半裸でここにいます
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			さむそう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんなところで聞き耳を持っている人は振ってください
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=90 気づいちゃった (1D100&lt;=90) ＞ 51 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			半裸はいいよね<br>
+			僕もよく半裸になるからわかるよ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			さむい
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=81 見聞色の覇気 (1D100&lt;=81) ＞ 6 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　世界の人気者は格が違う (1D100&lt;=90) ＞ 55 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ccb&lt;=70 OMEN  (1D100&lt;=70) ＞ 31 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では成功したメンバーは感じます…この場に近づいてくる者の足音があることを
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			!
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づいちゃった気づいちゃったわーいわい
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			どうかしたかお前たち？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			なんかあったのかしらねー？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			足音が聞こえたねェ〜
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			足音か…誰だろうか<br>
+			クラウド？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p14">
+			<b>白い男</b>
+			近づいてきたのは、髪の白い男。<br>
+			髪が白く、肌が白く、青い色の瞳のひょろっとした男。
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NOCOLOR
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			手には成人男性の腰ほどまでの長さの鉄製スコップを持っている。<br>
+			白い男は探索者に近づくと少し大きめの青い色の瞳をパチクリする。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			見てないけど多分ゼアノート
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			見てないけど多分ナインボールの中ボス
+		</p>
+		<p class="player p14">
+			<b>白い男</b>
+			「…驚いたな。生きた人間がここに現れるとは…もう少しで生き埋めにしてしまうところだった」
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ha?
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			こんばんは
+		</p>
+		<p class="player p14">
+			<b>白い男</b>
+			こんばんは
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			やべえ<br>
+			ナインボール卓で図書館滅ぼす遠因作ったやつじゃん
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ここはどこかしらねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			ナインボール…？<br>
+			ここは…まあ墓地だ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ぼ<br>
+			ち<br>
+			ぼ<br>
+			ち
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕は芸人の墓場にいるよ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			なんで俺たちはここにいるんだ？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			世界の先端だ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			男の言葉に反応してあたりを見回すと自分たちがいるのは【墓地】で、あたりを見回すと十字架が無数に立ち並んでいることに気がつく。<br>
+			そして建物としては【物置】【教会】【納骨堂】の三箇所が見受けられます。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			なんでここにいるか…と言うのは知らない<br>
+			ここで生きている人間を見るのは初めてだからな
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			oh...
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あなたは何をやってる人なのかしらねー
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			君が何者か聞きたいねェ〜
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			墓を作って棺桶を埋めている人だ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			俺が何者か…？それは知らない<br>
+			ところでお前達はこれからどうするんだ？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			帰りたい…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			とりあえずおうちに帰りたいわねー
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			いずれ分かる
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			大舞台に帰りたい
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			お前の力が必要だクラウド
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			帰りたいのか……生憎その直接的な手段は知らないな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんな訳で今から自由行動ができます
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			間接的な手段ならあるのかい？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ではスーパーノヴァで太陽系を滅ぼします
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			いや…まあ……手段になるかも知れないことは知っているが…
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			滅ぼして良いですよ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			できれば教えてほしいわねー
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			話を聞いた後は取り敢えず教会に行くべきだと思うねェ〜
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			tell me
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			ええ…言いたくない
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			why?
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			殺していいかこいつ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			悲しいわねー
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 40 ＞ 成功
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			危ないから
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			なら無理強いはしないよ<br>
+			色々と教えてくれてありがとう
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			はいこれでお前らの帰る場所なくなった〜
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ok...
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			地道に探索してくしかないわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			セフィロスは太陽系を滅ぼそうとしましたがここは太陽系ではないので不可能でした
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ちくしょうめ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			まあ俺はこの場所で作業を続けてるから何か用があったら言ってくれ…なんなら探索も手伝おうか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			この男は連れてくことも出来ますし連れて行かないこともできます
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			いや…いい<br>
+			作業の迷惑になると申し訳ないからな
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			choice[連れていく,連れて行かない] (choice[連れていく,連れて行かない]) ＞ 連れていく
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			そうだね…もしこの先危険があるのならついてこない方がいいかもしれない
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			取り敢えず建物に移動するべきだと思うねェ〜
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			sorry.
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			じゃあ黄猿が言ってた教会行きたいわねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			まあそれなら俺はここで待ってるよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			という訳で白い男に見送られた貴方達は教会に向かうということで構いませんか？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			取り敢えずジェノバ細胞でセフィロスコピーいっぱい作る
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			教える
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ニャンクス
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			作って良いよ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 42 ＞ 成功<br>
+			まあ探索の目くらいにはなるだろ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			これで安心だねセフィロス
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			相変わらず化け物染みてて怖いねェ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			セフィロスは己のコピーを大量に増やしました<br>
+			そして一行は教会に向かいます
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			こいつらリユニオンしか言わないけど肉壁とか探索の時の人手にはなると思うから
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			便利だね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			【教会】<br>
+			質素な教会のようだ。<br>
+			扉に鍵はかかっている様子はない。
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			thank you
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			入るぞ<br>
+			来い
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ok
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			入っちゃった入っちゃったわーいわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			中に入ると、【ベンチ】のような椅子が３列３列と並んでいる。<br>
+			更にその向こう側には、台座に【十字架】が鎮座し、その根元には一つの頑丈そうな箱が一つあった。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			おじゃましまーす
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			へーここが教会かぁ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			取り敢えず教会全体に見聞色するぞ<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=81 (1D100&lt;=81) ＞ 38 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			じゃあ僕もしておこう
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=90 気づいちゃった (1D100&lt;=90) ＞ 12 ＞ スペシャル
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　世界の人気者は格が違う (1D100&lt;=90) ＞ 37 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーでは黄猿は【ベンチ】に何か文字が刻まれていることに気がつきます
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！<br>
+			読むかァ〜…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			---ベンチの文字------<br>
+			　Cat in the box is alive? Or dead?<br>
+			　Who do not know.　Until you open the lid.<br>
+			　Cat in the box, dead alive.
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			わたしねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			シュレディンガーのニャンクスだなこれ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			見てないけど多分シュレディンガーの猫
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			有名なあれだね
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=70 ニャンクス (1D100&lt;=70) ＞ 94 ＞ 失敗
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ﾐｼﾞﾒﾈｰ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			蓋を開けるまで死んでるか生きてるかわからないって書いてあるねェ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どうやらここで言われているcatとは特定のニャンクスとか言うのとは関係なさそうです
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			へ〜
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			十字架のところの箱と関係があるのか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			英語振っても良いけど別にみんな内容分かってるっぽいし振らなくても良いです
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			特定のニャンクスじゃないけど多分ニャンクス
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			英語持ってきたけどこんぐらいならいらなかったかもしんないわねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			箱というのはあそこにあるものと関係があったりするのだろうか
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			十字架にOMEN使って神託を得たい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいけどその前に目星の処理するね
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			sorry.
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			デッカちゃんとミッキーは十字架の裏手に回ると一枚のメモがまるで隠してあるかのようにそっと置いてあるのを見つけた<br>
+			メモはヨレヨレの紙にヨレヨレの文字で書かれている。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ヨ<br>
+			レ<br>
+			ヨ<br>
+			レ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			---メモの内容------<br>
+			奴らは人を喰らう<br>
+			奴らは天使の姿をしている<br>
+			天使の姿の奴らは倒せる<br>
+			けど、それは外側を壊しただけに過ぎない<br>
+			奴らを倒さなければ・・・
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			へ〜！！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいに太ってる人はシャツがすぐヨレヨレになるよね
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			何か怖いのがいるのかしらねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーそして何？神託？良いよ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			天使なら既に片翼の奴がすぐ近くにいるんじゃないかい？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ccb&lt;=70 OMEN (1D100&lt;=70) ＞ 68 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			セフィロスお前倒されろ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			なんだお前らやる気か
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			おお神よ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			怖いねェ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではNONAMEは目の前の半裸はメモの天使とは別なのでそいつが死んでても生きてても関係ないことに気が付きます
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			oh...
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			お前は仲間だと信じてた
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			死んでても生きてても関係ないなら殺してもいいのねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			お詫びとしてセフィロスにケアルガをかけて回復させてあげる
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			まったく…ものを聞いただけでしょうがァ……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ〜！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			なんだよお前ら
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　ケアルガ (1D100&lt;=90) ＞ 5 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			！！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			!
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			セフィロスの怪我はまるで無かったかのように綺麗に完治しました
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			すごい
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			元から全回復が効果だしあんまりクリティカルの効果がないんじゃないかい？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			箱の下まで行くぞ<br>
+			来い
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			箱ですね<br>
+			・頑丈な不思議な箱<br>
+			不思議な箱で、鍵穴が２つある。一つは金色で一つは銀色の鍵穴。<br>
+			材質は技能を使ったとしてもわからない。<br>
+			　<br>
+			ただ、とても丈夫で頑丈。<br>
+			大きさは縦３０cm横３０cm高さ２０cmくらいの大きさ。<br>
+			なかなかに重量があるが、持ち上げることができる。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			鍵穴が2つついてるわねー
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			コピーどもをピクミンみたいに使えば持ち上げられるだろうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ成人男性なら特に苦もなく持ち上げられます
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			じゃあピクミン持ちなさいねー
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいに太ってる人はちょっとの重さでもばてるよね
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			やれっコピーども<br>
+			お前らどうせリユニオンしか言わないだろ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			大きくて強そうな白ピクミンだね
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ セフィロス ] HP : 12 → 13<br>
+			[ セフィロス ] HP : 13 → 14
+		</p>
+		<p class="player p16">
+			<b>セフィロス(0)</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			セフィロスコピーがその箱を持ち運ぶということで良いですか？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			教える
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			はい　ところでどこに持っていくのこれ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さあ？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			特にもう教会に探索出来そうな場所は無さそうだねェ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ無いですね
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			鍵見つけたときいちいち教会に戻らなくて済むからずっともっときなさいねー
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			じゃあ物置か納骨堂のどっちかに行くかァ〜…
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			鍵は別の所にありそうだね<br>
+			正直僕がキーブレードつかえば無理矢理開けられそうだけど
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			まあこいつらリユニオンしか言わないからな<br>
+			不満も言わんだろ
+		</p>
+		<p class="player p16">
+			<b>セフィロス(0)</b>
+			リユニオン
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			&nbsp;
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			choice[納骨堂,物置] (choice[納骨堂,物置]) ＞ 納骨堂
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ミスった🌈
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			納骨堂でもいくわねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			納骨堂だね
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			というわけで納骨堂に行くかァ〜…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			貴方達は納骨堂に向かいます<br>
+			【納骨堂】<br>
+			重々しい鉄製の扉に石造りの建物<br>
+			外観を見るに窓のようなものはない。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			扉は開けれそうかァ〜？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			鍵が掛かっていますね<br>
+			先程の箱とは別のもののようです
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			先物置だったかしらねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			キーブレード使って扉の鍵を開けてもいいかい？
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			……何をしている？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			こんばんは
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ああ。
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			…さっきは気にしなかったが…猫もいるのか
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			にゃーん
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ねずみも猿もいるぞ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			にゃーん<br>
+			ネズミは好きだな
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			まあ…そんなことよりもだ。この建物には近づかない方が良い
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			そうですか。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			なんでかしらねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			死にたくないだろう？
+		</p>
+		<p class="player p17">
+			<b>セフィロス(1)</b>
+			リユ…ニオン…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			理由を教えろ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			取り敢えずここに入らなければ死ぬことはない…死なないと言うことは生きていられるということだろう？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			でも私たちおうち帰りたいわねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			なんで…？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			セフィロスコピー突撃させればいいんじゃないか？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			奇しくも教会のベンチに書いてあったことと似たような事言ってるねェ〜
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			IQ280
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づいちゃった気づいちゃったわーいわい
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			コピーを三体くらい突撃させよう<br>
+			こんな奴らそれくらいしか使い道ないからな
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			あっ……その箱…持ってきたのか
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			生きていられるというのはなんだか引っかかる言い方ですね<br>
+			そういえばこんな墓地で、あなたはどうやって生きているんでしょうか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			突撃させますか？
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			この空間では空腹も眠気も感じないからな
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ゾッ！！？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			その前に鍵がかかっていたはずだね<br>
+			僕のキーブレードで鍵を開けてもいいかい？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			そんなことだろうと思っていたよ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			…？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			開けても良いですね
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			お腹が空かないのはいいことねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			うわ！ありがとう！<br>
+			Ccb&lt;=90　キーブレード使い・王 (1D100&lt;=90) ＞ 92 ＞ 失敗
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			この王のダイスは腐ってるな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そのキーブレードは今後鍵を開ける物としては使用できなくなりました
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			物理的な破壊を試みるよ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			やっぱり私物置が見たいわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			良いですよ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=90 オトオトの実(仮) (1D100&lt;=90) ＞ 47 ＞ 成功<br>
+			スクラ～～～～～ッチ!!!斬（シャーン）
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			物置よりも先に探索するものもあるだろう？<br>
+			ここは棺桶付近を探してもらう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			鉄製の扉が！！！！音で壊せる訳ねえだろうが！！！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			悲しいだろ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			しかしこの墓場に俺たちのようにここに連れ去られたやつらが生き埋めにされているとしたらぞっとしない話だ<br>
+			白い男はどうやら棺桶の区別することなく埋葬しているようだしな
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			スーパーノヴァで扉を破壊する<br>
+			建物ごと破壊する
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			多分わっしなら破壊できるが面倒くさいねェ〜
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			なぜお前達は扉の鍵を探すと言うことができないんだ…？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ壊そうとしても良いです
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			私は探したいわねー…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ええ。まず倉庫を探しに行くのはどうかしら？どの道探索する必要はあるでしょうし…
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			じゃあ探すか
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			黄猿開眼<br>
+			教会のメモの裏とか見てなかったよ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			でもなァ…鍵がどこにあるか知らないもんな…ルフィ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			メモの裏を見ますか？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			白い男お前知ってるなら教えろ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			見る
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			はい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			---メモの裏の内容------<br>
+			　白い猫は奴らの下僕<br>
+			　信じるな
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			多分ニャンクス
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			物置の扉破壊するぞ<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			黒猫でよかったなァ？
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			鍵…？まあ……知らないこともないが…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分黒ニャンクス
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			壊しても良いです
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ピカピカ武装色のキックで跡形も無く蹴り飛ばすぞ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えっ物置の扉？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			コワ〜……
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			間違えた
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			おにーさん鍵のありか知ってるなら教えてちょーだい❤
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			今物置か<br>
+			じゃあいいか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			？？？今物置にいるのか？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あーあー現在地がめちゃくちゃだ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			いや…墓場にいるつもりだったな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			俺は…GMなのに混乱してて恥ずかしい！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			納骨堂の前で話しかけられてその時にメモも見てる感じだと思ってたわねー
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			黄猿提案<br>
+			ここは最初の位置に戻ろうよ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			場を落ちつけるために一発ギャグ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			もういい<br>
+			コピーどもに人海戦術で鍵を探させるぞ<br>
+			来い
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=50 一発ギャグ (1D100&lt;=50) ＞ 35 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			このギャグは死ぬ程おもしれェな！！！！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			1d100 おもしろさ (1D100) ＞ 41
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			1d100 面白さ (1D100) ＞ 24
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100 面白さ (1D100) ＞ 81
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			統一しろ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			1d100 面白さ (1D100) ＞ 76
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			つまんね
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			1d100　面白さ (1D100) ＞ 63
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			このギャグは死ぬほど面白いな！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			私は結構好きねー
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			1d100 面白さ (1D100) ＞ 39
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではデッカちゃんの面白ギャグによって笑ったから笑えなかったかで気力が削がれた一向は一旦【墓地】に戻ってきました
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			お前たち本当にこのギャグが面白いと思ってるのか！？<br>
+			イカれてるぞ！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			バ<br>
+			ラ<br>
+			バ<br>
+			ラ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			面白いとは思ったけど冷静に考えると死ぬ程ではないね
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			反応まちまちなのデッカチャンみたい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			悲しいだろ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ﾊﾟﾌｯ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			棺桶に目星とかした方がいいかもねェ〜…<br>
+			探せてないだろうし
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった<br>
+			振って良いよ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=81 (1D100&lt;=81) ＞ 23 ＞ 成功
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=90 目星/魔術 (1D100&lt;=90) ＞ 9 ＞ スペシャル
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　世界の人気者は格が違う (1D100&lt;=90) ＞ 25 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=90 気づいちゃった (1D100&lt;=90) ＞ 62 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーではまず墓地を見回すと<br>
+			・敷地の周りは囲まれるように成人男性の身長を悠々と超える鉄柵があり、柵を越えて柵の外に行くことは難しいだろう。<br>
+			そして【墓地】をよく見回すと墓穴の側にこれから埋められるのであろう【蓋の閉まっている棺桶】や探索者達が出てきた【蓋の開いた棺桶】が目に付いた。
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			蓋の閉まった棺桶にノックして反応を確かめたいわね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして【蓋のしまっている棺桶】は今まさに埋められようとしている所だ<br>
+			ノックしても反応はないですね
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			なるほど
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			数は４つ。<br>
+			蓋が釘で打ち付けられているので、道具を使うかもしくは破壊することで中身を見ることができる。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			中の人は死んじゃってるのかしらねー
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			さっきのメモを見るに下手に壊すのは良くなさそうだぜ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			殺人犯にはなりたくないよ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			というか…基本的に棺桶って開けて見ない物じゃないか？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			それはそう
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			これにジェノバ細胞を植え付けて支配できるだろうか
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			いや…棺桶の中には財宝が詰まっているべきだな
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			そんなこと言わずにン<br>
+			一個だけ見てみましょうよン
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではジェノバ細胞良いですよ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			じゃあ間をとって破壊！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			中の死体にジェノバ細胞を植え付ける　来い
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			自分達が入ってた棺桶なら見ても何も言われないと思ってんすがね…
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 99 ＞ 致命的失敗
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			くそが…くそがあああああああ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			セフィロスは蓋を開けて中の死体にジェノバ細胞を埋め込もうとしましたが…<br>
+			どの箱の中ももうすっかり骨だけになった死体しかないので細胞が取り付けそうな余地はありませんでした
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてセフィロスは大量の死体を目にしたのでSANチェック<br>
+			成功で2/失敗で1d5+1
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			くそがあああああ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいに太ってる人は骨を見ると骨付きチキンが食べたくなるよね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ファンブルしたので増加量多めです
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=65 (1D100&lt;=65) ＞ 16 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ セフィロス ] SAN : 65 → 63
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			マジでこういう時に役立たねえよなぁコピーはよぉ！！！
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			…棺桶に死体が入っている方が普通だと思うが
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			自分達が入ってた棺桶って何かある？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうですね…では目星に真っ先に成功した黄猿は自分の箱を開けました
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして先程光って中を確認した黄猿は先刻の自分から足元は見えていなかったことに気がつきます
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			何だ⁉︎(^^)何だ⁉︎(^^)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			黄猿が入っていた箱の足元…そこには金色の鍵がありました
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			わーいわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			・アイテム：『小さな金色の鍵』<br>
+			　金属でできているようだが、形はまるでオモチャの鍵のようだ。<br>
+			　小さくうっかりすると無くしてしまいそうになる。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			なくさない内に鍵開けろ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			！その鍵は…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			おや、どうかしましたか
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			……それは納骨堂の鍵ではないな
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			そんくらい分かるわダボハゼが！！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			じゃあ箱のだな
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			金色ってことは箱の鍵の1つかな
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			銀のやつもほしいわねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			…先に言っておくが物置には何もないぞ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			他の棺桶の中を探す<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			本当かァ〜？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			残りはコピーどもに人海戦術で探させよう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			他の棺桶の中には何もないです
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			倉庫がある以上漁るしかないですわ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			行かないってのもアレだから物置に一回行ってみるのもいいかもねェ〜
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			他にやることもないしね
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			よしいけっコピーども<br>
+			物置を片っ端から探すのだ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			倉<br>
+			庫<br>
+			倉<br>
+			庫
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			わー<br>
+			　　わー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			あれは普段俺が使っている物置だが…鍵以外に必要なものは見つかるかもな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			【物置】<br>
+			外から見た様子だと木製の小屋のようで、大きくはない。<br>
+			大人が二人も入れば窮屈に感じるくらいの広さ。
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			じゃあコピーどもに探させるのは非効率か
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			へ～、勝手に漁ってもいいのかな？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			さっきから聞いてたら納骨堂の鍵のありかを知ってるかの様な口ぶりだねェ〜…
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			え〜！いいよ〜！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいに太ってる人は狭い場所に入りたくないよね
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			嬉しいよ…
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あとで精神分析かなにかで白い男のこと調べるのもいいかもしれないわねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			まあ…納骨堂の鍵も知っているといえば知っているが…
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ジェノバ細胞なら植え付けられるがな
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんな訳で物置を探しますか？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			教える
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ちっちゃい私が物置に目星するわねー
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			知ってるのかァ〜？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ここまで助けてもらってるのに無理強いしちゃかわいそうだよ…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			狭いとこは嫌いだから外で待つ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			目星は自由にしてください
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			私もデカイからな
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=90 目星 (1D100&lt;=90) ＞ 37 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ccb&lt;=70 OMEN (1D100&lt;=70) ＞ 34 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　世界の人気者は格が違う (1D100&lt;=90) ＞ 69 ＞ 成功
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			物置まわりになにかないか探す<br>
+			ccb&lt;=90 気づいちゃった (1D100&lt;=90) ＞ 6 ＞ スペシャル
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ニャンクスは【ランタン】を、ノーネームは【火種】を見つけました
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=80 目星 (1D100&lt;=80) ＞ 99 ＞ 致命的失敗
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ランタンがあったわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ミッキーは………何が欲しい？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			なんでだよ！！！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			何があるんだい？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			また99とかダイス操作だろこれ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			マッチ…か？見つけたぜ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ一般的な物置にありそうなものなら
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			うーん…そうだな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			デッカちゃんも何か欲しいものあったら言って<br>
+			あとセフィロスは転びました
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			いたい
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			外だからなァ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			1d3 (1D3) ＞ 3
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			いたい
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ セフィロス ] HP : 14 → 11
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			つらい
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			箒でも貰っておこうかな
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ロープとか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではそれらがありました<br>
+			うーん…じゃあ黄猿とニャンクスアイデア振ってくれ(^^)
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			これでいつでも首をつれるな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=55 アイデア (1D100&lt;=55) ＞ 63 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=60 (1D100&lt;=60) ＞ 87 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			みじめねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ノーネームも振って良いよ！！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			自殺してもケアルガで何度でも回復させてやるから安心してくれ(^^)
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ccb&lt;=35 (1D100&lt;=35) ＞ 40 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			おしい
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ああ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			だめだめねー
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			悲しいだろ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			あきらめちゃダメだ！していい？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			こいつらの勘鈍すぎるだろ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			もう納骨堂に行った方がいいかもねェ〜…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			え〜！いいよ〜！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			うわ！ありがとう！<br>
+			Ccb&lt;=60　あきらめちゃダメだ！ (1D100&lt;=60) ＞ 8 ＞ スペシャル
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ソラ！力を貸すよ！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあもうスペシャルしたのでニャンクスは今まで見て回った所に明かりがないといけないような場所がなかったことに気が付きます
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			納骨堂かなァ…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			そういえばここまで棺桶の中以外真っ暗なところ無かったわねー
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			納骨堂を破壊しに行く<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			じゃあなんであいつはランプなんて用意してたんだ？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			何か怪しいわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あと黄猿もついでに納骨堂の中が暗いとしてそこに入ったことのない人間にランタンが必要か？と思います
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			メモに書いてあるよくわからないのがいると思ってんすがね…<br>
+			！
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			なんだ(^^)？なんだ(^^)？欲しいものはあったか(^^)？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			そうだな…だがまだ一つ見つかってないんだ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			アンタの鍵を貰おうか
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			コピーども！！！こいつを取り押さえろ！！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あなたはこのランタンどこで使ったりするのかしらねー
+		</p>
+		<p class="player p16">
+			<b>セフィロス(0)</b>
+			リユニオン！！
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			おわァアアア〜！！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			落ち着け<br>
+			何もなければ解放する<br>
+			何かあったら…(意味深に無言)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			白い男は取り押さえられました
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			お体に触りますよ…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			服を脱がせろ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			…………お前達は…死ぬことが怖くないのか？<br>
+			あの部屋に行けば…きっと…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			何でそこまで恐れてるのか教えて欲しいねェ〜
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			私はもう死んでる
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			芸人としては半分死んだようなもんなんすがね…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			どの道ここで腐っているのも死んでるみたいなものでしょ？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			早くおうち帰りたいわねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			そうなのか…？<br>
+			……ここにただ存在しているだけでは生きているとは言えないと
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			あなたを否定する気持ちは、ないのだけどね<br>
+			おかげで助けられたしさ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			…………俺は、死ななければ生きていられると<br>
+			生きていられるのなら、それで良いのだと思っていた<br>
+			でも…お前達は死ぬ危険を冒してでも帰りたいのか
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			死んだらこいつら触媒に復活するだけだし…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あったかい布団で眠りたいわねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			まだ僕にはやらなきゃならないことがあるからね
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			セフィロスはちょっと話が噛み合わないな…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			そうだ。俺たちはきっと大切なものを置いてきたからな。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			そもそも死ぬ気無いねェ〜
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			そうか…わかった。納骨堂の鍵を渡そう
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			と言って白い男は首から吊るしていた紐付きの鍵を貴方達に渡しました
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			納骨堂に行くぞ<br>
+			来い
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			あの中には恐ろしい天使達がいる……みんなも気を付けてくれ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			Ok...<br>
+			Thank you.
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あなたは一緒に来ないのかしらねー？
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			行こうか？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			天使か……なんだろうエヴァ量産機かな……
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			危険だし無理についてくる必要はないさ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			まあどっちでも良いんだが…<br>
+			choice 行く　行かない (choice 行く 行かない) ＞ 行く
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			wakatta
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			いや…ここまで来たら俺も共に行こう
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そんな訳で全員で納骨堂に向かうと言うことでいいですか？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ああ。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			いいわねー
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ちっ…こんなモヤシが付いてきて役に立つのかァ？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			当初の予定通りセフィロスコピーに先陣を切らせよう<br>
+			もし彼らが中で殺されたら納骨堂内にメガフレアをぶちこむ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p17">
+			<b>セフィロス(1)</b>
+			リユニオン……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では男から渡された鍵で扉を開くと
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			彼らもわかったと言っています
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			納骨堂【内】<br>
+			石造りで、窓がなく薄暗い。<br>
+			灯りがなければ足元すらおぼつかないだろう。<br>
+			壁には燭台があり、いくつかロウソクがついたまま火が灯っていない。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			今日も運ぶ戦う増えるそして食べられる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まずセフィロスコピーを送り込むと言うことで良いですか？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			あなたが死んでも代わりはいるもの<br>
+			死んで来い
+		</p>
+		<p class="player p16">
+			<b>セフィロス(0)</b>
+			リユニオン？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			異論は無いよ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			はい
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			教える
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			行けっ…行けっ……！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では二体のセフィロスコピーは暗い廊下の中を進んで行きました<br>
+			すると…
+		</p>
+		<p class="player p16">
+			<b>セフィロス(0)</b>
+			おわァアアア〜！！！！！！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			チッ<br>
+			所詮黒マントか
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			セフィロスピクミーーーーン！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			さて
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			とてつもない破壊音と共に中からは巨大な悲鳴が響いてきました
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			尊い犠牲だった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			こわいよ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どうします？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			よし　スーパーノヴァを発動して納骨堂を滅ぼす
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			予定通り納骨堂内にぶちこむよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　メガフレア (1D100&lt;=90) ＞ 83 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			入り口から八尺瓊勾玉
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			黄猿がピカピカしてくか私がランタンつけて行くわねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			えっお前ら意思の疎通できてるか？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			とりあえず爆（ドーン）
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			………
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			……
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			言われてみればコピーが死んだとは限らないね
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			メガフレアでどうなったかだけ教えろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			何はともあれミッキーのメガフレアが納骨堂に向かって放たれました<br>
+			そして段々とその火は燃え広がり…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			うるせェ！コピーごと殺そう！<br>
+			なんだ!?(^^)なんだ!?(^^)
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			うわやべえ　天使じゃん
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			これは凄いのが出てきたねェ〜…
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			おおきい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			燃え盛る納骨堂から三体の天使が飛び出てきました
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ああ外側を壊しただけにすぎないってメモはそういう…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			気乗りしませんね…
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			こいつらが……！
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			─────────────！！！！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			野郎ども！戦闘だァ！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そのまま天使達は貴方達に襲いかかってきます
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ヒャハハハ！血祭りにしてやんよ！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			戦闘ねー！
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			───────！！！！
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			こいつらを倒さなければ俺たちに未来はない……！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			戦闘が始まります
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			デッカチャンのターンが来る前に倒すぞ<br>
+			来い
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			DEX順なのでキャルちゃんからです
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ウイングに魔法ぶっぱするわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=90 グリムバースト！ (1D100&lt;=90) ＞ 5 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			格が違う
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ヤバいわよ！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えークリティカルなので2d3+1です
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			2d3+1 (2D3+1) ＞ 5[2,3]+1 ＞ 6
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使1 ] HP : 18 → 14
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			装甲2ねー
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次はミッキーです
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			もう一度メガフレアを使うよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　メガフレア (1D100&lt;=90) ＞ 32 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			全体攻撃なので1d5です
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			x3　1d5 #1<br>
+			(1D5) ＞ 5<br>
+			<br>
+			#2<br>
+			(1D5) ＞ 3<br>
+			<br>
+			#3<br>
+			(1D5) ＞ 3
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			装甲加味すると効き目が薄いねェ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あーうん…一律同じダメにするから一回だけ振ってくれ(^^)
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった<br>
+			1d5 (1D5) ＞ 1
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			悲しいだろ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			カス
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では表面を少し焦がしただけで特にダメージはありません
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ﾐｼﾞﾒﾈｰ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次は白い男か
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			ccb&lt;=60「フフフ…デッドエンドシュート！！！」 (1D100&lt;=60) ＞ 40 ＞ 成功<br>
+			1d3+1 (1D3+1) ＞ 2[2]+1 ＞ 3
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使1 ] HP : 14 → 13<br>
+			[ 天使2 ] HP : 15 → 14<br>
+			[ 天使3 ] HP : 15 → 14
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次は黄猿ですね
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			見聞色で弱点見抜いた後全技能発動して天使2を倒すぞ<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=81 見聞色の覇気 (1D100&lt;=81) ＞ 52 ＞ 成功<br>
+			1d100&lt;=99 ピカピカの実 (1D100&lt;=99) ＞ 63 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			弱点というか天使3はどうやら力をためているようです
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			2b100&lt;=90 武装色+キック<br>
+			対象は3で (2B100&lt;=90) ＞ 98,16 ＞ 成功数1
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			武装色は無理か<br>
+			蹴りで倒すぞ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えー武装色がファンブルなのでピカピカの分が減ります
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			よく見たらファンブルしてた🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			普通の蹴りなので1d6ですね
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d6 (1D6) ＞ 6
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			格が違う
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			普通の蹴りは格が違う
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使3 ] HP : 14 → 10
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			海軍大将は格が違う
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			普通の蹴りすら格が違う
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次ノーネーム
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NONAMEで相手をNONAMEにします
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			？？？はい
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ccb&lt;=70 NONAME (1D100&lt;=70) ＞ 2 ＞ 決定的成功/スペシャル
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			なんだよこれ　なんの能力だよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			天使という名前を奪われた彼らはこのターン中装甲がなくなりました
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			NO NAMEになってる…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			こわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			うわすげえややこしい
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			なんだよこれ<br>
+			なんだ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NONAME
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			こわい
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			───────────！！！！！<br>
+			schoice NONAME NONAME その他 (choice NONAME NONAME その他) ＞ NONAME<br>
+			名を奪われた───は怒りのままNONAMEに攻撃を加えます
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NONAME
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			NONAMEにリフレガ張っていいかい？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			知らんやつと知らんやつが戦い始めた
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			WE ARE NONAME
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ええいややこしいが今回すでに行動したからダメです
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			なんなんだこいつら
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			s ccb&lt;=70
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			🌈
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			nizi
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			s1d100&lt;=70 (1D100&lt;=70) ＞ 4 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まじかクリティカルだ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ゾッ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			恨み更に濃厚に
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NONAME...
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			回避も出来ずにNONAMEは直撃を喰らいます
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NOLIFE.
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			まァ即死では無いだろう
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			2d5+1 (2D5+1) ＞ 6[5,1]+1 ＞ 7
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ NONAME ] HP : 13 → 6
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			2d5はヤバいわよ！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NOHP
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			続けて天使2が動きます
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			schoice ニャ　NO 黄猿　デッカ　ミッキー　セフィ (choice ニャ NO 黄猿 デッカ ミッキー セフィ) ＞ デッカ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			デッカちゃんが狙われます
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づかれちゃった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			“気づいちゃった”
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			まずい無名化現象のせいで誰が誰を攻撃してどのターンなのかわからなくなった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			天使2じゃねえ1だ<br>
+			NONAMEにされたせいで訳がわからねえ！
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			s1d100&lt;=50 (1D100&lt;=50) ＞ 45 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			命中で、デッカちゃんは回避に使える技能がないのでDEX×2.5で回避振ってください
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=20 (1D100&lt;=20) ＞ 6 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			よけられちゃったよけられちゃったわーいわい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			天使1の攻撃は外れてしまいました<br>
+			次セフィロス
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			天使3を先に仕留めた方がよさそうだな…セフィ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			起きてる？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			DEX1とか絶対やばい攻撃持ってる
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ああ。<br>
+			では3をスーパーノヴァで焼き尽くす
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 30 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ2d6+1
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			2d6+1 (2D6+1) ＞ 10[6,4]+1 ＞ 11
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			格が違う
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			これでも使徒の破壊光線より弱いんだぜ<br>
+			泣きたい
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使3 ] HP : 10 → 9<br>
+			[ 天使3 ] HP : 0 → 0
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			よくやった！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			天使3はそのまま横たわり動けなくなりました
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NICE
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			確かラミエルのビームって4d6だっけ<br>
+			今考えるとイカれてるな
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			あとは二体だけか
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			避けたせいで天使1が未知数だな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次デッカちゃん
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			天使1に殴(ボン)<br>
+			ccb&lt;=90 オトオトの実(仮) (1D100&lt;=90) ＞ 47 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			1と2どっちがゼロカスでどっちがクアンタだっけ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			NONAMEにされたせいで俺にもわからん
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			1が羽つきだったはずねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			とにかくデッカちゃんは1d8
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			SORRY.
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1がゼロカスだと思ってんすがね…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			1d8 (1D8) ＞ 8
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まじか
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			格が違う
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使1 ] HP : 13 → 5
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			エンタ芸人は格が違う
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			最大値多すぎねー
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			えーターンが終わったのでノーネームが解除されて元に戻ります<br>
+			次ニャンクス
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			相手の装甲値さげたいわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ccb&lt;=90 アーマーダウン (1D100&lt;=90) ＞ 29 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			どっちのを下げる？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			まだHP多く残ってる方
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった<br>
+			天使2の装甲は0になりました
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NO...
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使2 ] 装甲 : 2 → 0
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次ミッキー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			フルチャージホーリーで消し炭にする　来い<br>
+			技能6回振って1回でもミスったら失敗
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			6d100&lt;=90　キーブレード使い・王 (6D100&lt;=90) ＞ 455[79,85,99,82,58,52] ＞ 455 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			惜しい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			99が無ければ成功だったなァ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ファンブルが出たのでミッキーは転んで1d3ダメ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			悲しいだろ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			&nbsp;
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			1d3 (1D3) ＞ 2
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ ◯ッキー・◯ウ ] HP : 10 → 9<br>
+			[ ◯ッキー・◯ウ ] HP : 9 → 8<br>
+			[ ◯ッキー・◯ウ ] HP : 10 → 9<br>
+			[ ◯ッキー・◯ウ ] HP : 9 → 8
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			次は俺だな…<br>
+			ccb&lt;=60 (1D100&lt;=60) ＞ 81 ＞ 失敗
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			おわァアアア〜！！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			ダメダメねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			白い男の攻撃はあらぬ方向に飛んで行きました<br>
+			次黄猿
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ピカピカ武装色キックいくよォ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=99 ピカピカ (1D100&lt;=99) ＞ 29 ＞ 成功<br>
+			2b100&lt;=90  (2B100&lt;=90) ＞ 47,30 ＞ 成功数2
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			2に攻撃<br>
+			速度は・・・「重さ」<br>
+			光の速さで蹴られたことはあるか～い？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ2d6+3かな
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			！！！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			2d6+3 (2D6+3) ＞ 6[1,5]+3 ＞ 9
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使2 ] HP : 14 → 5
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			──────────！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			次はNONAME
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NOで天使2の存在を否定する
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ha？<br>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ccb&lt;=70 NO (1D100&lt;=70) ＞ 27 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			存在を否定された天使2は消えました
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			こわい
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			！！！！！
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使2 ] HP : 5 → 0
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			Oh...NO...
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして天使1は全体攻撃に切り替えました
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			!
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ゾッ
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			sccb&lt;=60 ローリングバスターライフル (1D100&lt;=60) ＞ 89 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			nizi
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			おわァアアア〜！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			天使1の攻撃はまるで当たることなく外れました<br>
+			次セフィロス
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ちょうど戻ってきた
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			おかえり
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			後一人か　ではスーパーノヴァで滅ぼす
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=70 (1D100&lt;=70) ＞ 6 ＞ スペシャル
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			よくやった！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ダイスが光ってきた
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			クソ綺麗な幕締めだろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			2d6+1です
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			星に還れ
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			───────────！！！！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			2d6+1 (2D6+1) ＞ 7[3,4]+1 ＞ 8
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ 天使1 ] HP : 5 → 0
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			おわァアアア〜！！！！！！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			宴だァ～～～～～～～！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			本当のことを言うとスーパーノヴァは割合ダメージでこれでHPはゼロにならないがそれは内緒だ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			宴だァ～～～～～！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			知ってるけどもう面倒なんだ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			黄猿提言<br>
+			まだランプとか使ってないよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			探索者達が破壊した天使の彫像からは白い靄のような、ドロリとした影のようなものが姿を表す。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			じゃあメガフレアをランプがわりにする　来い
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			焼け！！！焼け！！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=90　メガフレア (1D100&lt;=90) ＞ 7 ＞ スペシャル
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			八尺瓊勾玉も追加するぞ<br>
+			来い
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ミッキーの放ったメガフレアは投げ捨てられた彫刻から出てきた白い塊に当たり…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ccb&lt;=99 ピカピカの実 (1D100&lt;=99) ＞ 35 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ<br>
+			その上黄猿の光が降り注ぎ──────！
+		</p>
+		<p class="player p18">
+			<b>天使1</b>
+			おわァアアア〜！！！！！！
+		</p>
+		<p class="player p19">
+			<b>天使2</b>
+			おわァアアア〜！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			この世のものとは思えない叫び声が木霊する。<br>
+			その炎は天使の彫像から出てきた謎のものだけを焼き尽くさんと轟々と燃えている<br>
+			その場から立ち去ろうとした時、まるで吐き出されるように探索者の足元に小さな銀色の鍵が転がってきます。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			🌈敗北者～！🌈
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			お、鍵だ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			勝ったんですね…！私たち！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			銀色の鍵もゲットねー
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			取り敢えずここから脱出するぞ<br>
+			来い
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			……その鍵は…！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			知っているのか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			【銀の鍵】<br>
+			金属でできているようだが、形はまるでオモチャの鍵のようだ。<br>
+			小さくうっかりすると無くしてしまいそうになる。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			今気づいたけど箱ってコピーに持たせてたはずだけど大丈夫なのかい？
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			………知っている。だがここから出るには必要のないものだ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			箱はその辺に置いて行ったことにします
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			箱と男連れて墓地から帰るぞ<br>
+			来い
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			うーん…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			外を見るとあの暗い空が晴れ渡り、朝日が墓地を包んでいた。<br>
+			そして、墓地の敷地の門の部分が淡く光っていることに気がつくだろう。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			世界の先端だ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			気づいちゃった
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			……恐らくだがこの空間の主人が死んだことでもうお前達を閉じ込めるものはない。あそこから出られるはずだ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			へ～！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ってことはあなたは別にアレに従っていたわけではない？
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			でも箱の中身気になるわねー
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			従っていた…と言うよりは生殺与奪権を握られて使役されていた感じだな
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			キメハラやめろ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			なるほどね…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			箱は気になるけどどうなるかがちょっと怖いね<br>
+			！！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			…本当に箱の中身は俺たちが知らなくていいものなんだな？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			そうだねェ〜…
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			………見つけたのはお前達だ。箱をどうするかは任せる
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			セフィロスのコピーに確かめさせればいいんじゃないかい？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			そうか
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見てないけど多分ニャンクス
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			choice[開ける,開けない] (choice[開ける,開けない]) ＞ 開ける
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			ただ少なくとも開けてお前達に害を及ぼすようなものではない
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わっしは開けないでおくよ
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			俺は開けたくねェ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			私見たいわねー
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			コピーにやらせるか
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			同じ猫ちゃん友達いるかもしれないわねー
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			僕はどっちでもいいかな
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			そうだねェ〜…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			うーん…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あなたたち先帰ってもいいわねー
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			メモの内容からすると、少なくとも開けないでいれば悪いことは起きないと思うんだよねえ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			…………開けるのか？<br>
+			開けない限りは中の物が生きているか死んでいるか…それとも危険なものかどうかは不確定なままでいられるはずだが
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			そうだねェ〜<br>
+			開けずに帰るぞ<br>
+			来い
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ああ。こういう箱は大抵よくないものが入ってるんだ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			わかった<br>
+			おれが開ける
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			じゃあ私の技能で見ないまま中身ニャンクスにしてから帰るわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあ帰りたい人は先に帰って開けたい人は後から開けても良いですよ
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			念のため開ける君たちにリフレガをかけておくよ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			開けない事を…勧める
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			うるせェ！開けよう！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			できれば君たちにも開けてほしくないけどなァ…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			じゃあここでお別れねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあデッカちゃんが中を開けると……
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			どうせ戻っても碌に仕事なんてねェんだ！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			この白い男の言う通りシュレディンガーなら開く事によって何かが決定されてしまうかもしれないからなァ〜
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			3b100&lt;=90　リフレガ (3B100&lt;=90) ＞ 65,27,92 ＞ 成功数2
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			俺は先に帰らせてもらう…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			帰るか
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			全員にリフレガがかかりました
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ニャンクス、セフィロス、デッカチャン<br>
+			誰か１人リフレガなしだね
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			まあ…死なないように。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			うるせえ！面倒だから全員かかったことにする！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			GOOD BYE
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ帰る人は言ってください
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			失礼する
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			向こうの世界で会えたら会いましょうねー<br>
+			またね〜〜〜
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			帰るかァ〜
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			じゃあ僕も帰るとするよ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			じゃあ私も帰ろうかな
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			ああ…元気でな
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			おや…アンタは来ないのか
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			コピーは置いてくから<br>
+			たぶん言うこと聞くから
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			…少なくとも箱を見届けるまではここを動くつもりはない<br>
+			あとコピーは要らない
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			…まァアンタが何か背負ってるなら止めねェよ
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			というわけでデッカちゃん以外のみんな……さようなら
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			私も残るわねー！！<br>
+			箱見たいわねー！
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			ああうん。わかった
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			このコピー持ち帰るにしても邪魔じゃないかい？
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			棺桶なら沢山あるぞ<br>
+			そんなことより箱を開けて良いんだな？
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			じゃあ燃やしとくか<br>
+			Ccb&lt;=90　メガフレア (1D100&lt;=90) ＞ 99 ＞ 致命的失敗
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ミッキーは外に出る意思が燃やし尽くされました
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			おわァアアアアア～～～！！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			悲しいわねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そしてデッカちゃんミッキーニャンクス以外は全員帰ったってことで良いですね？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ああ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではセフィロス黄猿NONAMEは光の門を潜って行きました
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ああ。
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			デッカチャン早く開けなさいよねー
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして残ったメンバーは箱を開けますね？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			向こうで…また会いましょう！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			開けるぞォ！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			戻れないし開けるしかないよね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			デッカちゃんが箱を開けると…
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			わ<br>
+			く<br>
+			わ<br>
+			く
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そこには一匹の白い子猫が「ミー」とか細く鳴いていた。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			多分ニャンクス
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			見たけど多分ニャンクス
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いつの間にか背後にいた男は涙を流しています
+		</p>
+		<p class="player p15">
+			<b>白い男</b>
+			ああ…そうか……俺も生きていたんだな
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			お前…本当に…生きててよかったなァ…！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして次の瞬間には白い男は塵になり霧散する
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			白い男を復活させる　来い
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			白い男が霧散して…消えた！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ウッ…ウッ…ウアッ…！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			目の前で消えた白い男と箱の中の白い猫…
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			Ccb&lt;=60　あきらめちゃダメだ！ (1D100&lt;=60) ＞ 18 ＞ 成功
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ミッキーは死んだ魂を呼び戻そうとしましたが死んだ魂が近くにいないので効果が発動しませんでした
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			「にゃあ〜」<br>
+			と箱の中の白い猫は弱々しく泣いています
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			おーおー好き勝手なきなさる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			するとその場に光が溢れて───────
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			探索者達6人はその光の門を潜ると視界が真っ白に染まり、次の瞬間には見慣れた天井が見える。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			元の世界に戻ってきたようだ。
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あれは夢だったのだろうか…そう思っていた一同だったが、ニャンクスはあることに気がつく
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			「ミー、ミー」とあの白い猫が側で鳴いているのだ
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			猫ちゃん！ついてきたのねー！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ミッキーマウスの事じゃないかい？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あとセフィロスやNONAMEは夢の中で負った傷が治ってません
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ネコに名前を付けるぞ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			じゃあケアルガする　来い
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			…夢じゃなかったのか？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			choice[シャンクス,ニャンクス,ホーキンス] (choice[シャンクス,ニャンクス,ホーキンス]) ＞ ホーキンス
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			2b100&lt;=90　ケアルガ (2B100&lt;=90) ＞ 47,94 ＞ 成功数1
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あれは果たして夢だったのか…それとも不思議な体験をしたのか…詳しくは分かりませんがとにかく貴方達は戻ってくることができました<br>
+			貴方達同じ家で寝てるんですか？
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			今日からお前は…ホーキンスだ！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			そんなわけないわねー<br>
+			赤の他人ねーこいつら
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ああ。
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			赤の他人だと思ってんすがね…
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			僕KH1で遠く離れてたソラに話しかけてたしなんとかなるんじゃないかい？
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			あ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			こんな売れない芸人の顔とか見たの自体初めてだし多分二度と会う事ないと思うねェ〜
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			今元の世界に戻ってきましたか？
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			まずい
+		</p>
+		<p class="player p20">
+			<b>白い猫</b>
+			にゃあ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			では<br>
+			ジェノバを生やします
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ccb&lt;=80 (1D100&lt;=80) ＞ 18 ＞ 成功
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			NO.
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			最初から太陽系消す気満々だったもんな　ルフィ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ジェノバが生えてきました
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			No.今日も世界は平和ですね？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			この地球はどうなってしまうのでしょうか…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			今からセフィロスの元に着く
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			フルチャージホーリーでジェノバ消すぞ　来い<br>
+			6b100&lt;=90　フルチャージホーリー (6B100&lt;=90) ＞ 31,41,54,84,83,41 ＞ 成功数6
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			星を喰らい尽くそうとするジェノバ…しかしそこに光が──────！！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			ああああああ<br>
+			その前にスーパーノヴァで銀河系を滅ぼす
+		</p>
+		<p class="player p20">
+			<b>白い猫</b>
+			にゃああああああああ！！！！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			ホーリーの前には無意味じゃないかい？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			やめろォ！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			ピカピカの実発動<br>
+			セフィロスを消しとばすぞ<br>
+			来い
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			あーあー地球がめちゃくちゃだ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			黄猿のターンです
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			1d100&lt;=99 ピカピカ (1D100&lt;=99) ＞ 64 ＞ 成功<br>
+			2b100&lt;=90 光の蹴り (2B100&lt;=90) ＞ 4,25 ＞ 成功数2
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			2d6+6です
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			移動もさせない…ムダだよォ～今死ぬよォ～～～!!!
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			頼む…もう思い出の中でじっとしていてくれェ！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			2d6+6 (2D6+6) ＞ 9[5,4]+6 ＞ 15
+		</p>
+		<p class="player p13">
+			<b>system</b>
+			[ セフィロス ] HP : 11 → -4
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			セフィロスが…死んだ！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			おわァアアァ〜〜〜っ！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ジェノバはホーリーによって消しとばされ、本体のセフィロスもピカピカの光によって跡形もなく消滅させられました
+		</p>
+		<p class="player p20">
+			<b>白い猫</b>
+			にゃあ…
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			大丈夫か？ホーキンス
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あの薄暗い墓地に一人で生きていた白い猫が初めて見た世界は光に包まれていた美しいものでした<br>
+			あの箱を開けたことが正しかったのか…それは分かりません<br>
+			しかし白い猫は思いました
+		</p>
+		<p class="player p20">
+			<b>白い猫</b>
+			（これが…生きているということなんぬ…）
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			その喜びを噛み締めて白い猫は強く生きていくことでしょう…貴方達と共に
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ホーキンス…お前…本当に…生きててよかったなァ…！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			宴だァ〜！！！！！！！！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			宴だァ〜！！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			宴だァ〜〜〜！！！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			宴だァ～～～～！！！！！
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			宴だァ～～～～～～～！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			宴だァ〜〜〜〜〜〜！！
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			宴だァ〜〜〜〜〜！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			セフィロスお前スマブラ降りろ
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			ccb&lt;=50 宴会芸　 (1D100&lt;=50) ＞ 62 ＞ 失敗<br>
+			ヒ<br>
+			エ<br>
+			ヒ<br>
+			エ
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			結局太陽系は滅ぼせなかった<br>
+			悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			GMよくやった！お前は誇りだ！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			お疲れさまねー
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			お疲れシャーーーン！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			推奨人数2〜4人のシナリオに…6人も詰め込んで無駄に膨らませた俺は恥だ！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			お疲れシャン
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			お疲れシャンだァ〜〜！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			長くなってごべええええええん！！！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			お前なら…いい
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お疲れシャンだぁ〜！！！！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			いや…お前ならいい…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			うーん…わざわざメモで注意されてるから開けない方がいいのかと思ったけどなァ…<br>
+			白い男が「墓地にいる限り安全～」って言うのに反論して進行する時点でシナリオ全体としては箱を開けさせる方向として動いてるもんな
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			箱はなァ〜…開けなかったらどうなってたのか知りたいねェ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あの天使達燃やさないで開けたら猫は死んでる
+		</p>
+		<p class="player p10">
+			<b>セフィロス</b>
+			もうこんな時間かァ…シャンパラ立てようかなァ…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			！？
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			難しい判断だったが…正しく選んだキャルは誇りだ！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			むしろ想定人数より多いから長くなって当然だと思ってんすがね…
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			コワ～…
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			お前の卓にもうすぐ着く
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			開けずに男連れて帰ったら男が側で寝てる
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			ええ…
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			正直死んだら死んだで好奇心は猫をも殺すオチに持ってけたからどっちでもよかったわねー
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			僕みたいに太ってる人はもうお腹ペコペコなんだよね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			まあそのまま放置して帰っても良い
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			失せる
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			長く拘束してすまなかった！GMは殺しておいた
+		</p>
+		<p class="player p11">
+			<b>デッカチャン</b>
+			お疲れシャーーーン
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			お疲れシャンねー
+		</p>
+		<p class="player p1">
+			<b>NONAME</b>
+			お疲れシャン
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			改めてお疲れシャンだァ〜！！<br>
+			またね〜〜〜〜〜！！！！！！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			またね〜〜〜‼︎!
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			お疲れシャンだァ～～～～～！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			詳しい真相とかはシナリオにも書いてないので俺にも分からないがメモは謎だった。<br>
+			気になるやつはシナリオ名は「シュレディンガーの猫箱」で渋にあるからそっちを見てくれ(^^)
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			へ～！
+		</p>
+		<p class="player p2">
+			<b>黄猿</b>
+			へ〜！
+		</p>
+		<p class="player p12">
+			<b>◯ッキー・◯ウ</b>
+			またね～～～～～～～！！！！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お疲れシャンだァ〜！
+		</p>
+		<p class="player p7">
+			<b>ニャンクス</b>
+			シナリオ名全く知らないのにニャンクスで来たの運命ねー
+		</p>
+	</div>
+</body>
+</html>

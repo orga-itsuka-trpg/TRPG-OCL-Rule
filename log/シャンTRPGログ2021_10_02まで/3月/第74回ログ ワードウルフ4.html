@@ -1,0 +1,3213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [情報] タブ */
+		.t0 {
+			background-color: #ecf4d9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [メイン] タブ */
+		.t1 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名,匿名さん)] タブ */
+		.t2 {
+			background-color: #d3def1;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名さん,匿名さん)] タブ */
+		.t3 {
+			background-color: #fbdac8;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ボルサリ..,匿名さん)] タブ */
+		.t4 {
+			background-color: #fffcdb;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t5 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [秘匿(シャムシ..,匿名さん)] タブ */
+		.t6 {
+			background-color: #d7e7af;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(ロー子,匿名さん)] タブ */
+		.t7 {
+			background-color: #d3def1;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：GM */
+		.p0 { color: #ff0081; }
+		.p0 .diceroll { background-color: #ff0081; }
+
+		/* 発言者：noname */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：ロー子 */
+		.p2 { color: #607d8b; }
+		.p2 .diceroll { background-color: #607d8b; }
+
+		/* 発言者：黄猿 */
+		.p3 { color: #ffb200; }
+		.p3 .diceroll { background-color: #ffb200; }
+
+		/* 発言者：ホーキンス */
+		.p4 { color: #8a8219; }
+		.p4 .diceroll { background-color: #8a8219; }
+
+		/* 発言者：美樹さやか */
+		.p5 { color: #2196f3; }
+		.p5 .diceroll { background-color: #2196f3; }
+
+		/* 発言者：Mr.３ */
+		.p6 { color: #006083; }
+		.p6 .diceroll { background-color: #006083; }
+
+		/* 発言者：Mr.3 */
+		.p7 { color: #5390ff; }
+		.p7 .diceroll { background-color: #5390ff; }
+
+		/* 発言者：ルウ */
+		.p8 { color: #5a1b52; }
+		.p8 .diceroll { background-color: #5a1b52; }
+
+		/* 発言者：くいな */
+		.p9 { color: #005d30; }
+		.p9 .diceroll { background-color: #005d30; }
+
+		/* 発言者：シャウロン */
+		.p10 { color: #333333; }
+		.p10 .diceroll { background-color: #333333; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>GM</b>
+			〜ワードウルフのルール説明〜<br>
+			<br>
+			まず秘匿会話をGMに送ってくれないと、俺は、どうしたら、いいのか、分からなくなる。<br>
+			<br>
+			多数派(ピースメイン)と少数派(モーガニア)に別れる<br>
+			秘匿会話で「お題」が送られる<br>
+			その後約10分間たっぷり議論してもらうぜ(妖艶)<br>
+			10分後少数派<br>
+			バ<br>
+			レ<br>
+			バ<br>
+			レ<br>
+			さらに濃厚にな奴に投票<br>
+			吊られた陣営は🌈<br>
+			<br>
+			だが少数派は吊られても戦え！己の曲げれぬ信念がある限り！<br>
+			多数派のお題を当てられたらその道開けるかもな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			音楽とか背景は勝手に弄っていい事をお前に教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			やったことないけど参加していいか教えろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			これでいいか？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">秘匿(匿名,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			うわあり！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>ホーキンス</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			ちょっと離席するのを教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p6">
+			<b>Mr.３</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			とりあえず55分に始める予定なのをお前に教える
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			あのそうだねの数より人集まらないの悲しいだろ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			ルールの多数派・少数派って何人ずつなのか気になるんすガネ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			人数によって決めるから始める時に宣言する<br>
+			来い
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかったんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			人数によって変わると思うねェ〜<br>
+			今なら4：1くらいかァ〜？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			参加していいかオッシェロ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			5人だったら少数派は1人だな　ルフィ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			うわ！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			人いないと虚無になるからむしろ参加しないとウソップを殺す
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			多数派はいいよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			そうだねが8だから後2人ほど来てくれねェかなァ…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			帰ってきたOCL
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			そうだねして不参加の繰り返しか…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			秘匿会話を教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			この人数なら話し合い時間を狭めて繰り返しやってもいいと思ってんすガネ…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			まーまーそう言いなさんな<br>
+			少人数でも案外楽しいかもよ？
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			おで紅茶好き
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			相変わらず誰かわかんないね<br>
+			ルウのくせに
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			この人数なら5分でもいいかもな　ルフィ
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかったんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			私も来たことを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			もうそろそろ始めるから秘匿会話で挨拶してない奴はしてくれないと、俺は、どうしたら、いいのか、分からなくなる。
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			お゛
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			お願いするんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			思ったより喋りづらいからキャラ変えたい<br>
+			いいよねみんなは…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			うわあり！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			では始める<br>
+			7人なので5:2<br>
+			来い
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			濁点つけるのめどいから脳内補完しといて
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			やだ
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			そもそもルウは濁点つけて話すキャラじゃないだろ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			レイプする
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			キャラエミュならさやかちゃんに任せなさい
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　アーロン
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お題　アーロン
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ネズミ大佐
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			オレなんかそもそも二次創作のキャラだと教える
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ネズミ大佐
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			へ〜！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			マニアックすぎんだろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ネズミ大佐
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			敬語で罫線つければだいたい私になる─────違いますか？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			語れる要素ねぇなァ…
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかったんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ネズミ大佐
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ネズミ大佐
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			分かった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			いいよねシャウロンは…<br>
+			そうやって喋ればシャウロンと認識されて…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			準備出来たら教えろ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			教える
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			くいなも似たようなもんだと思ってんすガネ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			教える
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わっしは出来たよォ〜
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			教える
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			教える
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではスタート
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			まず漫画のキャラだよね…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			うん
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			漫画に出てるよねェ〜
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			そこまで語るもんでもないの濃厚
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			アニメにも出てたな…
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			こいつにどういう印象を持ってるか聞きたいんすガネ…
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			嫌な奴だと思ってんすガネ…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			私はこいつを絶対に許せない……
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わっしはどういう印象とかは無いねェ〜<br>
+			どっちつかずだから
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			悪いやつだよね…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			非道なキャラでしたね
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			しょーもない悪人かな
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			どっちつかずとはどういうことか聞きたいんすガネ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			黄猿のポリシーだよね…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			黄猿エミュだからでしょ
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わっしはこのスタンスは崩せないねェ〜
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			もし黄猿の部下にああいうのいたらどうする？
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			でも海軍的にはどう見ても悪いやつ─────違いますか？
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			やらかすまでは放置かなァ〜
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			まあ海軍所属ではあるよね…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			今何してんだろうな…ルフィ
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			くいな、あんまり言うとバレてしまうガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			正直サカズキが見つけたら殺してると思うねェ〜
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			時間もあんまり無いし絞りはしたいよね…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			癒着するのは卑怯ですよねえ…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			動物で例えてえなァ…でも…
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			麦わらの一味にこいつ恨んでる奴は間違いなくいるんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ある意味「ONE PIECE」の始まりとも言えるキャラかもしれないねェ〜
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			あのシステムをつけたから
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			システム？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			投票だァ〜〜〜！！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			そういえばあれあいつだったな…ルフィ
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかったんすガネ…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			投票は秘匿なのか教えろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			秘匿で誰に投票するか選んでくれ(^^)
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			美樹さやかに投票するよね…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			ロー子
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			美樹さやか教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			投票:くいな
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			ロー子
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			黄猿に入れるんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			投票完了すガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わっしも今終わったよォ〜
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			終わったよね…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			くいな
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			オレも終わったな…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			私も終わった───違いますか？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			終わったよ〜
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			終わっだ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			正直間違えたかもしれないよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			それはそうかもしれないねェ〜
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では開票する<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さやか2<br>
+			ロー子2<br>
+			くいな2<br>
+			黄猿1
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			決選投票だよね…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			同数票多すぎだァ〜！！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			上位３人から再投票すカネ…？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうだな
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			今更だけど自分のエミュの方向性が分からないことを教える
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			決選投票<br>
+			さやか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			自業自得だよね…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			もう一度3人の中から選んで投票してくれ(^^)
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			上位3人は投票権なし？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			うん
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			分かった
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			光の速さで投票されたことはあるかァ〜〜？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			さやかに入れるんすガネ…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			変わらずロー子
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			入れてきたんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			くいな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			ド<br>
+			キ<br>
+			ド<br>
+			キ
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			楽しみだねェ〜
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			私も入れてきた───
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では開票する<br>
+			来い
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			緊張するんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さやか2<br>
+			ロー子1<br>
+			くいな1
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			だよね…
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			だと思ったよォ〜
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			さやかはお題を教えろ
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			アーロン
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			皆のお題は？
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			当てさせなくていいのか教えろ
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			ネズミかモーガンかなぁと思ったんだよね
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			忘れてた
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			当ててくれ
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			おわァアアア〜〜〜！！！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			これ私も当てていい感じ？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>GM</b>
+			という訳でさやかは多数派のお題を当てたら逆転勝利です
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			じゃあ改めて<br>
+			ネズミ
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			GMはダメだね…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあ答え合わせしてくれ(^^)
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ネズミ大佐
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			ネズミ大佐
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			ネズミ大佐
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			ネズミ大佐
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			その通りなんすガネ…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			宴だァ〜〜〜！！！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			少数派はモーガンだと思ったよね…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			というわけでモーガニアの勝ちです<br>
+			宴だァ〜〜〜〜！！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			おわァあああ〜！！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			宴だねェ〜〜！！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			おわァあああ〜〜〜！！！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			宴だァ〜！！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			宴だァ～～！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			おわァアアア〜〜〜っ！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			もう一問やる？
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			やるかァ〜
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			や゛る゛
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			やりたいよね…
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			リベンジする<br>
+			来い
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			これ自分側から見えてるヒントは小さくても合算すると大きくなるから要警戒すカネ…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			やりましょう
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			やろう！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			喋りすぎたね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			正直ミスったと思ってる
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			吊られた奴しか当てられない
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			シャウロンはかなりうまくかわしたと思ってんすガネ…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			ちなみに私もアーロンでした
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			ネズミ大佐を覚えてる正当な読者が多いとは思わなかっただろ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			じゃあお題を送る<br>
+			ちなみにネタ切れるのでワンピース関係ないお題もある事をお前に教える
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			懸賞金をシステムといい変えたのは裏目に出たと思ってる
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ジャッジ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ワポル
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			懸賞金のこと覚えてるのはかなりの正当な読者だと思ってんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ワポル
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ジャッジ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ジャッジ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ジャッジ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			何か特定の作品とかキャラクターとかじゃなくジャッジっていう単語？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			麦わら一味の原点だからなァ…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ジャッジ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			66の？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			あああいつの名前か…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			ワンピースのジャッジでいいんすカネ？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			なんでもないよね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			宴システムのことだと思ってた───
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			そう
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			そう
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			分かった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			名曲だよね…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			準備出来た奴は教えろ
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			教える
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			教える
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			教えるよね…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			教える
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			……(←意味深に未読)<br>
+			まあやるだけやってみるんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			教える
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			OKすガネ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では議論開始だァ〜〜〜〜〜！！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			俺は好きなのを教える
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			まず漫画のキャラだよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			漫画のキャラだねェ〜
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			漫画だな…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			漫画ですね
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			そもそも全員知ってるんすカネ？
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			正当な読者ならわかるよね…
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			流石に読んでる人なら知ってると思うんすがね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			どうかなァ〜？分かる人には分かりそうだねェ〜
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			…？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			なんか秘匿画面消えて見えなかったからもう一回お題送ってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			読んでればそれなりにはって感じですかね…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			正直このキャラちょっとしたヒントが答えになるからうかつに口出せないよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			そうだねェ〜
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			逆にルゥは知らないのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ジャッジ(ワンピースのキャラ)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			じゃあ名前だけ聞いたときの第一印象とかどうすカネ？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			まだ発言してない人に聞きたいんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			名前だけかァ〜…いい名前ではあると思うよォ〜
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			誰……？って感じだったよね正直
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			愉快なやつって感じですかね───
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			いきなり出てきたのを教える
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			名前で連想するものはあるカネ？ルウ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			割と難しい質問で濃厚
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			ヒント出すかもしれないしなァ…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			まあ覚えやすい名前なのを教える
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			オレは正当な読者<br>
+			あのキャラは好きじゃなかった
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わっしからも質問したいねェ〜<br>
+			強さはどんなもんだと思う？
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			まぁローは好きじゃないだろうね……
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			投票だァ〜〜〜〜〜〜！！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかったよォ〜
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			シャウロンだよね…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			Mr.3
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			投票<br>
+			3
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			ルゥに投票だァ〜！！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			投票：シャウロン
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			光の速さで投票した事はあるかァ〜〜？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			ルウに投票するんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			投票したのを教える
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			階段から落ちて…投票した！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			投票したんすガネ…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			投票したよ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			ルゥ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			投票したぞ…GM屋
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			投票したことを───教える
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			今回ヒント少なすぎたよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			逆転もあるから迂闊に喋れないねェ〜<br>
+			仲間は把握できたけど
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では開票
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			まあでも分かってそうなのはなんとなく把握できたんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ルウ3<br>
+			シャウロン2<br>
+			Mr.3 2
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			だと思ったよォ〜
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			ルウ吊りで確定
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ルウは自分のお題を教えろ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			ワポルで確定
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			お前ら…もう許さねえぞおおおおお！！！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			こっちのお題はわかるかァ〜？
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			多分無理だよね…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			というわけでルウはモーガニアだった<br>
+			お題当ててくれ(^^)
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			たぶんワポルに関連してるキャラだと思ってんすがね…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			うぐっわかんないぞォ！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			名前を言って欲しいよね…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			シーザーで
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			皆のお題を教えろ
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ジャッジ
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			ジャッジ
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			ヴィンスモーク・ジャッジだよね…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			ジャッジ
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			ヴィンスモーク・ジャッジ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			うっ…！うっ…！うぁっ…！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			私はワポルでした
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			という訳でクズの王様繋がりでジャッジでした
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			シャウロンに投票したよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			宴だァ〜！！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			宴だァ〜〜〜！！！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			宴だァ～～～～！！！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			宴だァ〜〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			宴だァ〜〜〜！！！！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			宴だァ〜〜〜〜〜！！！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			俺は好きって言った時点でもうダメだったな…ルフィ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			宴だァ〜！！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			名前の印象だよね…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			愉快な名前とか言っちゃった時点でダメだった───違いますか？
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			宴だァ～！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ジャッジだから公平さとかありそうな名前だろ
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			誰かわかんなかったよね…
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			もう片方がレイジュの可能性もあったし王様とかのヒントは出せなかったんすガネ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			後一回やって寝る<br>
+			来い
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ではお題を送る
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			シャウロン嘘つき引きまくってる割に全然吊られないのすごいと思ってんすガネ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			嘘つき！嘘つき！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　タバスコ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　タバスコ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			ぶっちゃけさっきのはルゥにフレンドリーファイアしたせいなのを教える───
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			シャウロンが嘘なんて付くかァ～～！！！
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　タバスコ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ラー油
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			黄金郷は…あったろ？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　タバスコ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　タバスコ
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			分かった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			お題　ラー油
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			そう来たかァ〜…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			それはワンピース関連なんすカネ？<br>
+			タバスコ星とかすカネ？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			準備できたよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わっしも出来たねェ〜
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			準備できたのを教えるぞGM屋…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			特に関係ない
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかったんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			できたことを───教える
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			できたんすガネ…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			教える
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			教える
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			全員準備出来たので議論する<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかったんすガネ…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			もうはじまってる？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			もう議論開始していいよ
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			まず漫画ではない───違いますか？
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			それはそう
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			そうだよね…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			漫画ではないね……
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			そうだねェ〜
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			そうだよね
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			ワンピースに関して直接的な単語ではなさそうなんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			このお題…なんならわっしは今日使ったかもしれないねェ〜…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			正直かなり言及はされてるよね…
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			この言葉を聞いて一番先に連想するのはなんだ…？
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ワンピース本編には…確か出てなかったハズだねェ〜
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			割とよく出てはくると思ってんすガネ…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			言い過ぎたらバレるからなァ…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			ワンピにも出てきた気がするけどなぁ……
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			ワンピースで言えばオレはあるキャラが思い浮かぶ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			最近は出てこないな…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ん〜わっしの記憶も曖昧だからねェ〜
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			ついつい摂取しすぎてしまったりするもの──違いますか？
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			黄猿は何が思い浮かんだ？
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			あいつが使ってる印象があるんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			あ〜思い浮かぶとするならある編で繋がりがあったかもしれないねェ〜
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			もう(意味深に沈黙)してぇなァ…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			刺激物ですからねぇ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			言い過ぎだよね…
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			アレは痛そうだよな…
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			ある意味では爆弾だよね……
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			アレが飛び出るんすガネ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			投票だァ〜〜〜〜〜〜！！！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(シャムシ..,匿名さん)</div>
+		<p class="player p9">
+			<b>くいな</b>
+			黄猿だよね…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			黄猿
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			わかったんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(ロー子,匿名さん)</div>
+		<p class="player p2">
+			<b>ロー子</b>
+			黄猿に投票するのを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			投票終わったのを教える
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			投票：黄猿
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>くいな</b>
+			終わったよね…
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			黄猿に投票するんすガネ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			終わったよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(ボルサリ..,匿名さん)</div>
+		<p class="player p3">
+			<b>黄猿</b>
+			ルウ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ルウ</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			終わったねェ〜
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p10">
+			<b>シャウロン</b>
+			ロー子
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>Mr.3</b>
+			終わったんすガネ…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			終わった───
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			では開票する<br>
+			来い
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			黄猿5<br>
+			ロー子1<br>
+			ルウ1
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			だろうなァ〜
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			だよね…
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			ここからなんすガネ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お題を白状しろ…黄猿！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			だと思ったぞ
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ラー油
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			お察しの通り黄猿はモーガニアです<br>
+			ピースメインのお題を当てろ…黄猿！
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			爆弾
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			という訳で本当のお題を教えろ
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			もう一人に当てさせてもいいと思ってんすガネ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			タバスコ
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			タバスコ
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			タバスコ
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			タバスコ
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			タバスコなんすガネ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			シャウロンは嘘つきだよね…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			タバスコかァ〜…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			もう1人は考えてなかった<br>
+			それやるとモーガニア有利だからなァ…
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			タバスコ星を教える
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			Mr5に火薬と偽ってタバスコを食べさせてたからね
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			それは有利だろうからなァ〜…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			私もラー油でした───
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			シャウロン嘘つきばっかで確定
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			今日の飯<br>
+			バ<br>
+			レ<br>
+			バ<br>
+			レ
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			&gt;それやるとモーガニア有利だからなァ…<br>
+			勝敗に影響なしとかで分かってるか確認するくらいでいいと思ってんすガネ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			嘘つき！嘘つき！
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			シャウロンが嘘なんて付くかァ～～！！！
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			嘘つき！嘘つき！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一応モーガニアを決める方法は他所の部屋で1d7振って決めてたのをお前に教える<br>
+			ダイス操作されたから俺は悪くない
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			軽いステップを加え
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			シャウロンはやっぱり嘘つきだよね…<br>
+			ダイス操作までしてさ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そういう余興なら今度やる時にやっとく
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			ちょっと待てシャウロン全部ランダムダイスで嘘つき引いたんすカネ…？
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			嘘つき！嘘つき！嘘つき！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そうだよ
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			ちなみに私は多数派のお題は塩<br>
+			代表的なキャラは塩投げてゾンビ浄化してたブルックだと思ってました───
+		</p>
+		<p class="player p8">
+			<b>ルウ</b>
+			お疲れシャン
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			ラー油で思い浮かぶとなると八方水軍のアイツらしか出てこないな
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ログいる？
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			お疲れシャン
+		</p>
+		<p class="player p2">
+			<b>ロー子</b>
+			おつシャアン！！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			タバスコ引いた瞬間に自分が少数派で多数派がタバコとかかと思って<br>
+			迂闊に発言できなかったんすガネ…
+		</p>
+		<p class="player p3">
+			<b>黄猿</b>
+			お疲れシャン<br>
+			どっちでもいいと思うねェ〜
+		</p>
+		<p class="player p5">
+			<b>美樹さやか</b>
+			お疲れシャン！
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			ウソップ繋がりで腐った卵かと思ってたよね…
+		</p>
+		<p class="player p10">
+			<b>シャウロン</b>
+			お疲れシャン<br>
+			あったら嬉しいかも───
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			一応皆がいなくなったらログ上げとく<br>
+			またね〜〜〜〜〜〜！
+		</p>
+		<p class="player p7">
+			<b>Mr.3</b>
+			お疲れシャン<br>
+			希望者もいるかもしれないし一応とってもらえると嬉しいんすガネ…
+		</p>
+		<p class="player p9">
+			<b>くいな</b>
+			お疲れシャン
+		</p>
+	</div>
+</body>
+</html>

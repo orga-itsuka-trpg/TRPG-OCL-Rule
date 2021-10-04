@@ -1,0 +1,4864 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [雑談] タブ */
+		.t0 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [情報] タブ */
+		.t1 {
+			background-color: #ecf4d9;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [メイン] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [キャラステータス] タブ */
+		.t3 {
+			background-color: #d3edfb;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(シャンカー,匿名さん)] タブ */
+		.t4 {
+			background-color: #fbdac8;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名さん,匿名さん)] タブ */
+		.t5 {
+			background-color: #fbdac8;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：noname */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：ター坊 */
+		.p1 { color: #ff5722; }
+		.p1 .diceroll { background-color: #ff5722; }
+
+		/* 発言者：赤ちゃん */
+		.p2 { color: #2196f3; }
+		.p2 .diceroll { background-color: #2196f3; }
+
+		/* 発言者：Y凪 */
+		.p3 { color: #607d8b; }
+		.p3 .diceroll { background-color: #607d8b; }
+
+		/* 発言者：system */
+		.p4 { color: #888888; }
+		.p4 .diceroll { background-color: #888888; }
+
+		/* 発言者：お手紙(強い) */
+		.p5 { color: #8a8219; }
+		.p5 .diceroll { background-color: #8a8219; }
+
+		/* 発言者：ラッキールウ */
+		.p6 { color: #7f2334; }
+		.p6 .diceroll { background-color: #7f2334; }
+
+		/* 発言者：勇者 */
+		.p7 { color: #4caf50; }
+		.p7 .diceroll { background-color: #4caf50; }
+
+		/* 発言者：ヒグマ */
+		.p8 { color: #e91e63; }
+		.p8 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：センゴクのヤギ */
+		.p9 { color: #333333; }
+		.p9 .diceroll { background-color: #333333; }
+
+		/* 発言者：こども */
+		.p10 { color: #2196f3; }
+		.p10 .diceroll { background-color: #2196f3; }
+
+		/* 発言者：シャンクス */
+		.p11 { color: #2196f3; }
+		.p11 .diceroll { background-color: #2196f3; }
+
+		/* 発言者：怒れるラッキールウ */
+		.p12 { color: #7f2334; }
+		.p12 .diceroll { background-color: #7f2334; }
+
+		/* 発言者：宴のラッキールウ */
+		.p13 { color: #7f2334; }
+		.p13 .diceroll { background-color: #7f2334; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			他も盛り上がってるからまず集まらないと思ってんすがね…
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			参加する<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			・最初の準備<br>
+			HP：1d10　決闘で使う　来い<br>
+			ポケットのコイン：開始時は固定で5枚，最大値は20ぐらいに設定しておくことを…勧める<br>
+			技能　INTを3d6で振って、出た目×30を自由に振り分けてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			参加するぞ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			1ターン3分のデスゲームだけど様子見で5人ぐらい参加してほしいと思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			とりあえず情報にあるとおりダイスとステ振ってキャラステータスタブに書いてくれ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d10 <br>
+			<span class="diceroll">DiceBot : (1D10) ＞ 8</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			3d6 INT <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 17[6,6,5] ＞ 17</span>
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			・1ターンの流れ（簡易版）<br>
+			1.　まずPLは1人ひとつずつのお手紙を持っていることを教える<br>
+			2.　GMが開始と言ってから3分間、メイン又は秘匿で自由に会話して、自分のお手紙を誰に渡すか決めてくれ。あとコインでの交渉や、決闘の申し込みをしてくれ(^^)　<br>
+			（ここでやれることは後の項で詳しく説明する　来い）　<br>
+			3.　3分経ったら、まず決闘の組み合わせがあったら決闘する<br>
+			4.　決闘が終わったら、お手紙を誰が持っているか確認するぞ、ルフィ（ただし基本は誰が誰に渡したかは教え…ナ―イ！！！）<br>
+			5.　お手紙を一つも貰えなかったPLは即㌧㌧、死にました<br>
+			6.　お手紙を一番多く貰ったPLはGMからコインを5枚プレゼントだァ～～～～！！！！！<br>
+			7.　1へ戻り最後の一人になるまで続ける
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			一応情報にルルブ貼っとくけどどうせ長いしその
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			場のノリで進めると思ってんすがね…
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d10 <br>
+			<span class="diceroll">DiceBot : (1D10) ＞ 5</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			3d6 INT <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 14[2,6,6] ＞ 14</span>
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			・1ターンの2.について詳しい流れ<br>
+			基本的にはメイン欄で「お手紙を交換しあおう」などと話し合ってそのターン生き残ることを目的としろ<br>
+			ただし実際に誰にお手紙を渡す相手は、秘匿欄でGMに教えるした相手であることを教える<br>
+			<br>
+			そこで裏切られたくないなら、コインを使うことを勧める<br>
+			コインは次の様に使える<br>
+			　- GMへの交渉(秘匿欄)で3枚コインを使うことで、好きな1人を選んでそいつが誰にお手紙を渡したかターン最後に公開できることを教える<br>
+			　- 決闘で好きな数賭けて奪いあう<br>
+			　- 単純に裏切られないよう相手に貢ぐ<br>
+			<br>
+			あと決闘は単純に技能で殴りあってHP0になったら負けでコインや好きなもの奪い合え　負け時点で<br>
+			な<br>
+			に<br>
+			も<br>
+			持ってない雑魚は問答無用で脱落させる<br>
+			ターン経過しても基本的にHPは回復しないが、コインでの交渉や技能によっては検討することを教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			だだをこねる 99<br>
+			食べる 99<br>
+			成長する 99<br>
+			ぶりっ子 99<br>
+			泣きわめく 99<br>
+			寝る 15
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			卓多すぎて人来ないの悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			オリジナルルールは参加のハードルが上がるもんな…ター坊
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			長々書いたけど別に難しくないと思ってんすがね…
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			アクタージュ　90<br>
+			演技　90<br>
+			コモドドラゴンを放つ　90<br>
+			プレイボーイ出演　90<br>
+			睡眠　60
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ステと技能はキャラクターメモに書いといてくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">キャラステータス</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			HP 8<br>
+			INT 17<br>
+			だだをこねる 99<br>
+			食べる 99<br>
+			成長する 99<br>
+			ぶりっ子 99<br>
+			泣きわめく 99<br>
+			寝る 15
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			この卓を宣伝しに行く<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			あとステのMPをコインにして5/20とかにしといてくれ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			スレ落ちたw🌈
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">キャラステータス</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			HP  5<br>
+			INT 14<br>
+			アクタージュ　90<br>
+			演技　90<br>
+			コモドドラゴンを放つ　90<br>
+			プレイボーイ出演　90<br>
+			二度寝　60
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			㌧㌧
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			だだをこねてコインを1枚多くもらう<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			1d100で50以上出したらいいよ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			ジャンプ看板作品だからコイン一枚欲しいな
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100 <br>
+			<span class="diceroll">DiceBot : (1D100) ＞ 56</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			でもなァ…打ち切られたもんなァ…
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			おぎャァアアア～～！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100 打ち切られた悲しさ <br>
+			<span class="diceroll">DiceBot : (1D100) ＞ 53</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			赤ちゃんのだだと一緒
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 赤ちゃん ] コイン : 5 → 6
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			スレ立ったから宣伝するぞ<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！！
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			ID貼っちゃったけど大丈夫かな…
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			荒れたらウソップ海賊団を解散とする！！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！！
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			！！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			🌈荒れさえしないw🌈
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100　悲しさ <br>
+			<span class="diceroll">DiceBot : (1D100) ＞ 89</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=99 泣きわめく <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=99) ＞ 79 ＞ 成功</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			おぎャァアアアア～～～～！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&lt;＝90 演技して泣き止めさせる <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=90) ＞ 21 ＞ 成功</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			よーしよしよし
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			名AV女優で確定
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=15 寝る  <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=15) ＞ 52 ＞ 失敗</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			夜凪さんのことをAV女優っていうのやめろ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			泣き止んだw🌈
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいや赤ちゃんには死ぬまで起きてもらう
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			ター坊を食べる
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=99 食べる <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=99) ＞ 76 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			イタイイタイなんすがね…
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&lt;90=ター坊にコモドドラゴンを放つ <br>
+			<span class="diceroll">DiceBot : (1D100&lt;0) ＞ 37 ＞ 失敗</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=15 寝る  <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=15) ＞ 26 ＞ 失敗</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90=ター坊にコモドドラゴンを放つ <br>
+			<span class="diceroll">DiceBot : (1D100&gt;0) ＞ 72 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			うぐっ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=99 コモドドラゴンを食べる <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=99) ＞ 60 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90= プレイボーイ出演 <br>
+			<span class="diceroll">DiceBot : (1D100&gt;0) ＞ 64 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			悲しいだろ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100　悲しさ <br>
+			<span class="diceroll">DiceBot : (1D100) ＞ 41</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			割と受け入れてるの濃厚
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			何だこの卓！保育園の一室かなにかか…！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			そういえばこれデスゲームだったw🌈
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100 忘れてた度 <br>
+			<span class="diceroll">DiceBot : (1D100) ＞ 88</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			お手紙を貰えなかったら即㌧㌧
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			未来ある赤子が死ぬかもしれないの<br>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			どのみちろくな赤子じゃないんだ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			シャンカーの赤ちゃんとか<br>
+			将来楽しみだw
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			暇だから成長する
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			配信のテストにされてるらしいけど何も変わらないの<br>
+			バ<br>
+			レ<br>
+			バ<br>
+			レ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=99 成長する <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=99) ＞ 38 ＞ 成功</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			特になにも変わらないけど
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ハイハイを教える
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			じゃあ四つん這いになってター坊のところへ行く<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			これでもちったァあんよが上手だと思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=15 疲れたから寝る  <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=15) ＞ 80 ＞ 失敗</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;60=　二度寝 <br>
+			<span class="diceroll">DiceBot : (1D100&gt;0) ＞ 2 ＞ 成功</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			ス<br>
+			ヤ<br>
+			ス<br>
+			ヤ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			夜に二度寝ってなんだアホンダラ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			普通に就寝で確定
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			とりあえずHPを1d10とINTを3d6で決めてくれ(^^)
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			1d10 <br>
+			<span class="diceroll">DiceBot : (1D10) ＞ 10</span>
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			3d6 <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 10[5,1,4] ＞ 10</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			絵面がおぞましいだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			そういえば決闘時の行動順はどうするのか教えろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			よくわからないから失せる
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			悲しいでしょ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			いっそのことスープやったら？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			おれにその技量はないことを教える
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			何事も経験
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90= プレイボーイ出演 <br>
+			<span class="diceroll">DiceBot : (1D100&gt;0) ＞ 55 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			汚れ仕事で勇気づけようとするのやめろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			23:10になっても集まらなかったら…この卓を解散する！！！！！
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			コリーダコロシアムは解散したんだけどなァ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			卓終わったら行くから12時からやってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1時間待機かな
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			じゃあここ0時まで放置することを教える
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			23:55にまた来るのを教える
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ルールが難しそうなんすがね…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			再起動しよ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			あと決闘の行動順はDEXで決めることにする<br>
+			3d6振ってイニシアティブに書いといてくれ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			最低でもやることはお手紙渡す相手を決めるだけなのを教える
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			無駄に複雑そうなのは<br>
+			す<br>
+			ま<br>
+			ん
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			12時にまたくる
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			あと決闘の行動順はDEXで決めることにする<br>
+			3d6振ってイニシアティブに書いといてくれ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			多分その時参加する事を教える
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p0">
+			<b>noname</b>
+			参加していいか教えろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			1d10 <br>
+			<span class="diceroll">DiceBot : (1D10) ＞ 4</span>
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ お手紙(強い) ] MP : 0 → 5
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			3d6 <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 11[4,5,2] ＞ 11</span>
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			3d6 <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 10[2,5,3] ＞ 10</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			3d6 <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 10[6,1,3] ＞ 10</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p6">
+			<b>ラッキールウ</b>
+			遊びに来た
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			参加しにきた事を教える
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			まだやってなかったのか
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			荒らし来るかもしれないから別部屋を教えてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			3d6 <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 11[2,5,4] ＞ 11</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			多分俺の勘だと1ターンで終わると思ってんすがね…
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			荒れるのはあれだけど1ターンで終わればそれでいいと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			1d10 <br>
+			<span class="diceroll">DiceBot : (1D10) ＞ 5</span>
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			3d6 <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 7[4,1,2] ＞ 7</span>
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			3d6 <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 10[4,1,5] ＞ 10</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			名前の色変えてくれ(^^)
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ステ準備できたら始めることを教える
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			技能まだ決めてないから待ってくれ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			画像変えた
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			お手紙食べたら即㌧㌧なことを教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			1d10　HP <br>
+			<span class="diceroll">DiceBot : (1D10) ＞ 10</span>
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">情報</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			1d10 HP <br>
+			<span class="diceroll">DiceBot : (1D10) ＞ 1</span>
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			俺はそれを望んでいる
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ センゴクのヤギ ] HP : 0 → 1
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			海軍大将で確定
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			3d6　INT <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 9[2,4,3] ＞ 9</span>
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">キャラステータス</div>
+		<p class="player p7">
+			<b>勇者</b>
+			HP5<br>
+			INT7<br>
+			ベホイミ70<br>
+			かえんぎり70<br>
+			二フラム70
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			3d6 INT <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 10[4,3,3] ＞ 10</span>
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			3d6 DEX <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 10[3,3,4] ＞ 10</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			決まったらキャラステータス欄に書いといてくれ(^^)
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			これでいい？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">キャラステータス</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			HP１<br>
+			INT10<br>
+			DEX10<br>
+			手紙を食べる　99<br>
+			ムシャムシャ　99<br>
+			モグモグ　99
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			すまんがタブの雑談の横のとこにも書いてくれ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			むしろ平日の0時に何時間やるつもりだアホンダラ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">キャラステータス</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			DEX　11
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			HP　10<br>
+			INT　9<br>
+			DEX　9<br>
+			技能　270<br>
+			山賊たる者の拳　90<br>
+			覇王化　90<br>
+			宴　90
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">キャラステータス</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			DEX 10
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			DEX10
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			HP4<br>
+			INT11<br>
+			DEX10<br>
+			郵便　99<br>
+			投函　99<br>
+			圧殺　99<br>
+			記述　33
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			準備いいか教えろ
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			お前に教える
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			教える
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			3d6　DEX <br>
+			<span class="diceroll">DiceBot : (3D6) ＞ 9[2,2,5] ＞ 9</span>
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			教える
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			じゃあ始めると思ってんすがね…
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			簡単に説明するとPLは3分の間にお手紙を渡す相手を決めてほしいんすがね…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			お手紙くれ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			じゃ赤ちゃんに渡そうかな
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			誰かお手紙交換してくれ^^
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			くれ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			秘匿でおれに渡す先に教えろ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			いいよ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			俺にくれ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			メインでは好き勝手会話してくれ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			Y凪にお手紙を渡す
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			誰陥れる？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			俺に全部投資しろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			今から3分を数えることを教える
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			1ターン目は様子見する事を教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			勇者は俺と交換できないか教えろ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			じゃあ俺はセンゴクのヤギにやるよ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			決闘は3分に含まれるのか教えろ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			俺ヒグマに渡すよ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			含まれないことを教える
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			じゃあ俺Y凪に渡すよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			俺勇者に渡す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			わりい　俺　死んだｗ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			決闘したい奴は秘匿で教えろ<br>
+			コインを3枚消費する
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			先ほど言った通りY凪にお手紙渡す<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			赤ちゃんに渡す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			平和にいきてェな
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			赤ちゃんに決闘を申し込む
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			争いはよくねェよなァ…
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			　- GMへの交渉(秘匿欄)で3枚コインを使うことで、好きな1人を選んでそいつが誰にお手紙を渡したかターン最後に公開できることを教える<br>
+			　- 決闘で好きな数賭けて奪いあう<br>
+			　- 単純に裏切られないよう相手に貢ぐ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			争いを！やめてください！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90= プレイボーイ出演 <br>
+			<span class="diceroll">DiceBot : (1D100&gt;0) ＞ 84 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			これもできるけどややこしいから深く考えないでくれ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			ヤギを殺す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			みんな互いに渡し合えば争いはねェ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			Y凪にお手紙を渡す<br>
+			来い
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			やめろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			決闘させろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			ヤギを殺す
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			へ～！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			ヒグマに渡す事を教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			ヤギを殺したら勇者を殺す
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=99 泣きわめく <br>
+			<span class="diceroll">DiceBot : (1D100&lt;=99) ＞ 48 ＞ 成功</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			やめましょうよ……！！命が勿体ない……！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			三分たった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			怖いだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			おぎャァアアアア～～～～～！！！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			うるせェ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			手紙はヤギに渡す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			よーしよし
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			では整理する
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			まず決闘だが
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			このBGMだと緊迫感ないんすがね…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヤギvs手紙（強い）と<br>
+			赤ちゃんvsヤギが成立したことを教える
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			こわい
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			俺大人気だろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			たし蟹
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			ヤギハードワークだろ
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			早く殺させろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			申し込んだヤギと手紙はそれぞれ3コイン消費することを教える
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			はい
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ お手紙(強い) ] コイン : 5 → 2
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ヤギHP１だもんなァ…
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ センゴクのヤギ ] コイン : 5 → 2
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			まずはヤギvs手紙（強い）だと思ってんすがね…
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			DEXは同値だな、ルフィ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			先行は1d100ダイスで決める
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			ccb わかった
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			わかった
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			おわア～っ…
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			1d100 <br>
+			<span class="diceroll">DiceBot : (1D100) ＞ 43</span>
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			1d100 <br>
+			<span class="diceroll">DiceBot : (1D100) ＞ 19</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			お手紙の攻撃から
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			ヤギなのに遅すぎでしょ
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			投函でヤギをポストに押し込む
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			言うほどヤギに早いイメージあるか教えろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			1d100&lt;=90 投函 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=90) ＞ 57 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヤギは守るかどうするか教えてくれ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			そもそもどんな攻撃だこれ…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			守らなきゃ死にそうだな……ルフィ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			体をポストの口から無理やり内部にねじ込む
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			押し込もうとしてくるお手紙そのまま食えば勝ち濃厚だろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			コワ～
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			防御技能持ってねェや…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			&gt;手紙を食べる 99<br>
+			メタで確定
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			火の中に飛び込む虫と一緒
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ　一応振ってくれ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			お手紙とヤギでは勝負にならないの濃厚か
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			IQ2800000
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			1d100&lt;=99 手紙を食べる <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 75 ＞ 成功</span>
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			やめろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			こっちで振るな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			1d100&lt;=99 手紙を食べる <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 93 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			お手紙（強い）はヤギに食われて消えた
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			おわア～っ！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			こわい
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			こわい
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			お前が俺に！勝てるわけねえだろうがあ！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			お手紙の手紙をアクタージュしたい
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			アクタージュするってなんだよ…
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			次はヤギvs赤ちゃんだな
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			ピンポイントでメタられてるの悲しいだろ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			次は毒塗って来るといい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			またダイスで先行決めてくれ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			その前に敗北者のお手紙からなにかもらっていい？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			じゃあお手紙とコインと命と技能をすべてもらう
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヤギはもう一度投票権を得た
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			無法者だろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			コインもいいよ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ センゴクのヤギ ] コイン : 2 → 4
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			技能もいいよ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			いいんだ…
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			ヤギ怖い…
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			今の内に秘匿でもう一回の渡し先決めてくれ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			お手紙は赤ちゃんに渡す
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>system</b>
+			[ センゴクのヤギ ] お手紙 : 1 → 2
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			よし済んだ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヤギもう一個持ってるな？
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			うん
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			食べる
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			じゃあ次はじめる
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			かかってこいや
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ヤギのHP1なのに殺せそうにないのこわい助けて
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			先行を決めてくれ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 57</span>
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 5</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヤギ何するか教えろ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			赤ちゃんを投函して赤ちゃんポストにしてそのまま殺す
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			こわい
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			こわい
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			でもいいよ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			1d100&lt;=99 投函 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 12 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			振ってくれ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			赤ちゃんどうするか教えろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			俺ァSAN値が減りそうだ！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			食べる
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			なにを
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			投函してくるやぎを
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			これもうコリーダコロシアムだろ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			振ってくれ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			意義あり
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=99 食べる <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 40 ＞ 成功</span>
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			赤ちゃんは流動食しか食べられない
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！！
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			赤ちゃんはなんでも口に入れるぞ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			赤ちゃん歯は生えてるか？
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			IQ28000000
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			コモドドラゴン食べられたしなぁ…
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			ハイハイできるくらいには成長した
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			ハイハイできる時期は生後八か月から1歳まで
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			シャンカーに頭脳戦か肉弾戦か選ばせたらこうなるの確定
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			今気づいたすまない…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			どう考えてもヤギを食べるのは無理だと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			じゃあ1d100で10出たら運よく噛み切れることにする
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			二フラムで消滅しないかなァ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			赤ちゃんが人間の赤ちゃんでない可能性を教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			理論武装さらに濃厚に
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			10以下
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 8</span>
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p5">
+			<b>お手紙(強い)</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			俺と勇者で2vs1でヤギ討伐するようにター坊に頼んだら通るかな
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			赤ちゃんは力いっぱいヤギを噛みちぎった<br>
+			ヤギに1d6のダメージ
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			1d6 <br>
+			<span class="diceroll">Cthulhu : (1D6) ＞ 6</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			死んだｗ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ センゴクのヤギ ] HP : 1 → 0
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			何だこの赤ちゃん!!死神の息子か何かか...!!?
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			と思ったら死んだｗ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			真面目な赤ちゃんだな…せいぜい強くなれ…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			でも2vs1は使えたら使ってみたいの確定
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			では全ての決闘を終え、次はお手紙の結果を教える
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			そうだね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			まずお手紙を一つも貰えなかった敗北者は
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			噛みきったから成長していい？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			1d100&lt;=99 成長する <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 68 ＞ 成功</span>
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			なんだこの成長…魔物かなんかか…！？
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			お前人間じゃないな？
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			赤ちゃんだから人間じゃないでしょ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			貰えなかったのは、<br>
+			ヤギと<br>
+			お手紙（強い）<br>
+			であることを教える
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>赤ちゃん</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			どのみち死んでるから関係ないの確定
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			でももう死んでるから死者はいないと思ってんすがね…
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			そして一番お手紙をもらったのは
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			2通で赤ちゃん
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いやこどもか
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			こどもはコイン5枚を与える<br>
+			好きに使ってくれ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ こども ] コイン : 5 → 10
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			では残り4人、2ターン目を開始する
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			スキル名後で書き換えてもいい？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			今から3分を教える
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			赤ちゃん殺ろう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>こども</b>
+			今度は勇者に手紙を渡す<br>
+			来い
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			勇者とタッグ組んで赤ちゃんと戦えない？
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			手紙はまたお互いで交換でいい？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			じゃヒグマに渡そうかな
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			まずは一緒にター坊に聞く　来い
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			うん
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			とりあえず勇者がどうするかで変わるけどいいよ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			お手紙はもちろん勇者に
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			勇者次第だって
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			またヒグマに渡す
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			俺はこどもにやるよ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			こどもごめんな
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			平和にいこうぜ平和に
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>こども</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			ヒグマと一緒に子供攻撃する
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			とりあえず勇者にお手紙渡したことを教える
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			ありがとう
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p7">
+			<b>勇者</b>
+			手紙はヒグマに渡す
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			Y凪にお手紙を渡す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			勇者とY凪がお手紙貰えないことになるから何とかしようぜ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			悲しいなぁ…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			決まったら教えてくれ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			勇者とY凪はどっちか俺じゃない奴に渡してやれ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			3分たったことを教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			これで平和だ　かんぱ～～～～～～い（（（🍺）））
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			こどもに渡してヒグマに戦闘仕掛けたい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			まず決闘だが、ヒグマ＆勇者 vs こどもであることを教える
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			野郎共戦闘だァ～～～～～～～～！！！！！！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			共闘という形にできる？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			戦わなければ生き残れない！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			もうこれいじめだろ、、、
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマと勇者は3コイン消費してくれ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			こどもの
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(シャンカー,匿名さん)</div>
+		<p class="player p4">
+			<b>system</b>
+			[ ヒグマ ] コイン : 5 → 2
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			一人ずつやるのか教えろ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 勇者 ] コイン : 5 → 2
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(匿名さん,匿名さん)</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			協力プレイしたい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			しかしここでY凪が乱入した！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			こども＆Y凪になったことを教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			上等じゃねェか
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			いいじゃねェか
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			Y凪も3コイン消費してくれ
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			スキルを泣きわめくから殴るにしていいか教えろ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ Y凪 ] コイン : 5 → 2
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			こども何歳だお前ェ！！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			こどもだから暴力の悪さを知らないの濃厚に
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった<br>
+			変えていいよ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			成長速度が人じゃないから年齢とか意味ないと思うんすがね…
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			大人の怖さを教えてやる
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			では決闘を始める
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			まずはY凪、行動してくれ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			演技してヒグマを行動不能にしたい
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			どうやって行動不能にするのか教えろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			演技して見とれさせる
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった　振ってくれ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90= 演技 <br>
+			<span class="diceroll">Cthulhu : (1D100&gt;0) ＞ 58 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			Y凪はAV女優の色気でヒグマをメロメロにした
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			ヒグマなに見惚れてんだァ！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマは1ターン行動不能
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			演技を肴に宴していい？
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			こどもに見せられないの濃厚に
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ccb&lt;=90　宴 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=90) ＞ 37 ＞ 成功</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			裸の女が服を来て演技してやがる！野郎共宴だァ～～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマはY凪を舐めるように眺めながら酒を飲んだ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			グビッ！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			Y凪に精神的苦痛<br>
+			1d2ダメージ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d2 <br>
+			<span class="diceroll">Cthulhu : (1D2) ＞ 1</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			HP少ないから痛い
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ Y凪 ] HP : 5 → 4
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			次はこどもか勇者だがどっちが早いか決めてくれ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 96</span>
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 56</span>
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			なんだこのこども…
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			はやはや
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			勇者を思いっきり殴る
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d100&lt;=99 殴る <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 16 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			瞬足を履いたこどもは勇者に殴りかかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			勇者はどうするか教えろ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			かえんぎりで応戦していい？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			1d100&lt;=70 かえんぎり <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=70) ＞ 35 ＞ 成功</span>
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			ちょっと待ったこどもにすることじゃないだろ…
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			先に仕掛けてきたのお前だろ
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			決闘仕掛けてきたのお前だろ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			知らねェ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			あっちがバチバチに戦ってるのにAV女優で宴してる俺情けないだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			勇者は全力でこどもに斬りかかった<br>
+			こどものお手紙は燃え、1d6ダメージ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d6 <br>
+			<span class="diceroll">Cthulhu : (1D6) ＞ 1</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ こども ] お手紙 : 1 → 0
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ こども ] お手紙 : 1 → 0
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ こども ] HP : 8 → 7
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			やっぱ人じゃねェだろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			次にAV女優呼ばわりしたらウソップを殺す
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマは宴を楽しんでいる<br>
+			行動不能
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			AV女優で宴だァ～～～～～！！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			2ターン目<br>
+			Y凪行動してくれ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			勇者に向かってコモドドラゴンを放ち食い殺す
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90= コモドドラゴンを放て <br>
+			<span class="diceroll">Cthulhu : (1D100&gt;0) ＞ 59 ＞ 成功</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			勇者なんとか迎撃してくれェ～～～～！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			勇者はコモドドラゴンをどうするか教えろ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			二フラムで消滅させていい？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			1d100&lt;=70 二フラム <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=70) ＞ 21 ＞ 成功</span>
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			二フラム卑怯すぎるでしょ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			コモドドラゴンは消え去った！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			　プレイヤーには使わない事にする
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			次はこどもの番なのを教える
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			勇者を殴る
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			俺に恨みでもあんのか！？
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			こわい
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d100&lt;=99 殴る <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 15 ＞ 成功</span>
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			とりあえず戦力を半減させるの濃厚に
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			勇者はコモドドラゴンの相手をしていて動けず、もろに殴られた
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			痛いだろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			1d6ダメージ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			1d6 <br>
+			<span class="diceroll">Cthulhu : (1D6) ＞ 5</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			ほんとに痛いのやめろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			勇者は死んだ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 勇者 ] HP : 5 → 0
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			悲しいだろ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマは宴を続けるかどうするか教えろ
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			手紙もらっていいか教えろ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			勇者を殺された悲しみで覇王化していい？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			こども怖い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			1d100で50以下で手紙ゲット
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			覇王化いいよ
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 80</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ccb&lt;=90　覇王化 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=90) ＞ 49 ＞ 成功</span>
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			手紙は勇者とともに消え去った
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			もう許さねェぞお前らァァアアアア！！！！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			手紙って消えるんだ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマは覇王化した<br>
+			ただし覇王化に1ターン使ったので<br>
+			次はY凪の行動なのを教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			なんか覇王化のボーナスない？
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			HP10もあるのにボーナスされるときつい
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			それはそう
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			じゃあ攻撃通ればダメージ+1
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			仲間殺されて黙ったままにはいかねェよなァ？
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			Y凪はどうする？
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			アクタージュでヒグマの手紙盗みたい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ 勇者 ] お手紙 : 1 → 0
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90= アクタージュ <br>
+			<span class="diceroll">Cthulhu : (1D100&gt;0) ＞ 2 ＞ 成功</span>
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマは防ぐ間もなくお手紙を盗まれた！
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ Y凪 ] お手紙 : 1 → 2
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			AV女優のテクは格が違う
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ヒグマ ] お手紙 : 1 → 0
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			こどもの番だ　どうするか教えろ
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			成長したらなにかボーナスもらえる？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ＨＰ全快とダメージ+1あげる
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			わかった
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			殴る
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d100&lt;=99 殴る <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 20 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマは防ぐかどうするか教えろ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			山賊たる者の拳でラッシュ比べする
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ccb&lt;=90　山賊たる者の拳 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=90) ＞ 85 ＞ 成功</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			山賊山賊山賊山賊山賊山賊山賊山賊山賊山賊山賊山賊山賊山賊
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			こどもこどもこどもこどもこどもこどもこどもこどもこどもこどもこどもこども
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ラッシュ比べ<br>
+			1d100で低い値の方が勝ちなのを教える
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 65</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 82</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			おわァァアアア～～～～～～！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>こども</b>
+			🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマはこどもに勝てなかった
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			1d6ダメージ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			バカな……！なんてガキだ……！！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			1d6 <br>
+			<span class="diceroll">Cthulhu : (1D6) ＞ 1</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			+1？
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			あんまり食らわなかったw🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			ヒグマは格が違う
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			いやこどものままだから0
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+		<p class="player p4">
+			<b>system</b>
+			[ ヒグマ ] HP : 10 → 9
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ヒグマにカスダメのパンチで撲殺された勇者可哀想だろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			ヒグマは殴られたがかすり傷程度だ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			つうこんだったんでしょ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			次殴ったらウソップを殺す
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			股間で確定
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			まだ元気なヒグマのターンだ<br>
+			どうする？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			うーん
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ター坊殴っていい？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			！？
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			なんか仕切っててムカついたから
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			こわい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			デスゲーム主催者を殴ったらどうなるか分かってると思ってんすがね？
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			山賊で確定
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			解放かな
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			目の前にいるのは&quot;山賊&quot;だぜ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			なら1d100で勝負する　来い<br>
+			低い方が勝ちだ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			ター坊殺るなら援護したい
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			俺も
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			こんなバカげたゲームは終わらせるに限るよ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			共闘熱いだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			お前ら……！！(ｼﾞｰﾝ
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			全員八つ裂きにするんすがね…
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			死んだヤギやお手紙や勇者の為にもね
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			成長する<br>
+			来い
+		</p>
+		<p class="player p10">
+			<b>こども</b>
+			1d100&lt;=99 成長する <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 29 ＞ 成功</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			そいつら死んだのだいたいこどものせいだろ
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！！！！！！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			三人は1d30の合計値でいいよ<br>
+			おれは1d100で勝つと思ってんすがね…
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			…お前に教える
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			お前だったのか………！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			お頭だろうが関係ないんすがね<br>
+			かかってこい
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			そりゃ化け物だわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			1d100 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 49</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			………海賊と……山賊が……<br>
+			手を組んだら………
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			最<br>
+			強<br>
+			だ<br>
+			ろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d30 私から行くよ <br>
+			<span class="diceroll">Cthulhu : (1D30) ＞ 9</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			1d30 <br>
+			<span class="diceroll">Cthulhu : (1D30) ＞ 23</span>
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			最<br>
+			強<br>
+			だ<br>
+			ろ
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ここでクリティカル出すのがシャンカーだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p11">
+			<b>シャンクス</b>
+			1d30 <br>
+			<span class="diceroll">Cthulhu : (1D30) ＞ 27</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			よくやった！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			これ低い方が勝ちでいいんすがね？
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			はい
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			はい
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			じゃあ全員失せろ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			おわァァアアア～～～～～～！！！
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			死んだw🌈
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			私だけもう一度ダイス降らせろ
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			そのとき、怒れるラッキールウが戦場にあらわれました
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			墓がでかい
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			もう宴していい？
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			ター坊…もう許さねえぞおおおお！！！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			あんた気は確かか！？
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			ラッキールウはみんなをいじめたター坊に最後の勝負をいどみます。
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			なんだ！？(^^)なんだ！？(^^)
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			カッコいい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			1d100 ラッキールウHP <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 54</span>
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			ルウ、ター坊殺せ
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			1d100 ラッキールウ行動値 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 92</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			世界観違うと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			メチャクチャだ…噂以上
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			出身同じだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			ラッキールウの先制です
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			怒れるラッキールウはター坊を叩き潰そうとしました
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			1d100&lt;=100 たたきつぶし <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=100) ＞ 98 ＞ 成功</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ファンブルじゃねェか
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			さらにラッキールウはター坊をふみつけました
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ファンブルだァ～～～！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			1d100&lt;=100 ふみつけ <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=100) ＞ 29 ＞ 成功</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			！！！
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			最後にラッキールウはター坊に鉛の弾をぶち込みました！！！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>勇者</b>
+			ルウは格が違う
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			1d100&lt;=100 銃撃 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=100) ＞ 76 ＞ 成功</span>
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			……
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			ダメージ
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			3d999 <br>
+			<span class="diceroll">Cthulhu : (3D999) ＞ 1791[864,688,239] ＞ 1791</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ター坊<br>
+			ぐ<br>
+			ち<br>
+			ゃ<br>
+			ぐ<br>
+			ち<br>
+			ゃ
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			ター坊は死にました
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			よくやった！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			㌧㌧
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			野郎ども…宴だァ～！！！！！！！
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			宴だァ～～！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			宴だ～～～～～～～
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			宴だァ～～～～～～～！！！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			宴参加していい？
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			宴だァ～！
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			勇者を生き返らせるぞ<br>
+			来い
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			いいよ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			死者を生き返らせる宴を発動
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ccb&lt;=90　宴 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=90) ＞ 100 ＞ 致命的失敗</span>
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			宴だァ～～～～～～～～～！！！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			お前ら死んでろ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			🌈
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			勇者の葬式で宴だァ～！！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1D100&gt;90 アクタージュで生き返らせる <br>
+			<span class="diceroll">Cthulhu : (1D100&gt;90) ＞ 13 ＞ 失敗</span>
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			ムチャクチャだ...噂以上...！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			🌈
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			人は死ぬぞ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			教会で復活する　来い
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			🌈
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			じゃあまだまだ成長する
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			1d100&lt;=99 成長する <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 40 ＞ 成功</span>
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			1d100&lt;=99 成長する <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 37 ＞ 成功</span>
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			1d100&lt;=99 成長する <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=99) ＞ 6 ＞ 成功</span>
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>noname</b>
+			どこまで成長するんだァ～～～!!?
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>勇者</b>
+			こわい
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			酒はまだ飲める年じゃないのを教える
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ジュースでも飲め
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			わかった
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			うわ！ありがとう！
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			～HAPPY　END～
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			うん　まあ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			宴だァ～～～～～～～～～～～～～～！！！！！
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			宴だァ～！！！！！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			宴だ～～～～～～～～～～～～
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			宴だァ～～～～～！！！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			宴だァ〜〜〜〜！！！
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			宴メェ～～～！！！！！！！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			お疲れシャン
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			お疲れシャン
+		</p>
+		<p class="player p12">
+			<b>怒れるラッキールウ</b>
+			お゛疲゛れ゛シ゛ャ゛ン゛
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			シャンクスになるの雑すぎたの濃厚に
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			お疲れシャン
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			お疲れ様ー
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ccb<br>
+			お疲れ様です　楽しさ<br>
+			 <br>
+			<span class="diceroll">Cthulhu : (1D100) ＞ 90</span>
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			またね～～～!!!
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			楽しすぎだァ～～
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			GMPLルウお疲れ様だァ～！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			またやってほしい事を教える
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">雑談</div>
+		<p class="player p11">
+			<b>シャンクス</b>
+			地獄の果てまで
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			ゾッ！！！！！？？？！！？！
+		</p>
+		<p class="player p0">
+			<b>noname</b>
+			感動のエンドで確定
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			感動ってなんだよ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			音楽でそれっぽくなる事を教える
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ライアーゲームみたいなの想像してたけど結局コロシアムでダメだったことを教える
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			これお手紙をライフとかにすればそのままシャンロワできそうなんすがね…
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			決闘システムはもっと練ればさらに面白くなる事濃厚に
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			お手紙を首輪にした方がいいと思う
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			コインの使い道も増やして欲しいんすがね…
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			騙し合いよりも殺し合いに行きたがるの<br>
+			シャンカー血の気がありすぎて怖いだろ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			コインは賄賂に使えたはずだけど誰か使った？
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			どのみち最後の一人になるまでゲーム続くんだから殺し合いになるの確定
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			…←意味深な無言
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			決闘以外に誰もコイン使わないの悲しいだろ
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>宴のラッキールウ</b>
+			シャンカーに賄賂渡してもそのまま踏み倒すだけだろ
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			リアルマネーじゃないからなァ……
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			1d100&gt;90= プレイボーイ出演 <br>
+			<span class="diceroll">Cthulhu : (1D100&gt;0) ＞ 39 ＞ 成功</span>
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			結局お手紙重視濃厚に
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			コインでお手紙追加でもらえるとかあったらいいかもなァ…
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			ヒグマがター坊
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			プレイボーイを肴に宴
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			ccb&lt;=90　宴 <br>
+			<span class="diceroll">Cthulhu : (1D100&lt;=90) ＞ 33 ＞ 成功</span>
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			初期配布を手紙やコインじゃなくて酸素カプセルにすれば酸素を奪い合うバトロワできそう
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			宴だァ～～～～～～！！
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			宴だァ〜〜〜！！！
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			宴だァ～！！！
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			宴だァ～～！
+		</p>
+		<p class="player p3">
+			<b>Y凪</b>
+			ヒグマがター坊殴り出さなかったら残った手紙をコモドドラゴンに食わせてたことを教える
+		</p>
+		<p class="player p13">
+			<b>宴のラッキールウ</b>
+			宴だァ～～！！！
+		</p>
+		<p class="player p8">
+			<b>ヒグマ</b>
+			何言ってんだお前ェ！！
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			ごく個人的に成長スキルは練ってみたいなァ…
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			コモドドラゴンってなんだよ…
+		</p>
+		<p class="player p13">
+			<b>宴のラッキールウ</b>
+			タフに出てくるトカゲ
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			なにっ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			タフのなんだ…
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			なんだぁっ
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			そういえばログ作った？
+		</p>
+		<p class="player p1">
+			<b>ター坊</b>
+			ログの取り方教えてくれ(^^)
+		</p>
+		<p class="player p11">
+			<b>シャンクス</b>
+			歯車マークを教える
+		</p>
+		<p class="player p9">
+			<b>センゴクのヤギ</b>
+			右上の歯車から全ログ出力を教える
+		</p>
+		<p class="player p7">
+			<b>勇者</b>
+			俺もわからないと教える
+		</p>
+	</div>
+</body>
+</html>
