@@ -1,0 +1,8665 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>チャットログ</title>
+	<style>
+		html {
+			font-size: 14px;
+		}
+		body {
+			-webkit-text-size-adjust: 100%;
+			background-color: #ffffff;
+		}
+		h1 {
+			font-size: 20px;
+			margin: 1rem 1rem 0;
+			color: #000000;
+		}
+		.tab {
+			border: 1px solid #999;
+			margin: 2rem 1rem 1rem;
+			line-height: 1.5;
+			position: relative;
+		}
+		.tabtitle {
+			border: 1px solid transparent;
+			border-color: inherit;
+			background-color: inherit;
+			position: absolute;
+			top: -.8rem;
+			left: 1rem;
+			min-width: 7rem;
+			padding: 0 .5rem;
+			text-align: center;
+			font-size: 1rem;
+			z-index: 9999;
+			line-height: 1.4rem;
+		}
+		.player {
+			margin: 0;
+			padding: 0 .5rem;
+			padding-left: 10.5rem;
+			border-bottom: 1px dotted transparent;
+			border-color: inherit;
+			position: relative;
+		}
+		.player:last-child {
+			border-bottom: 0;
+		}
+		.player b {
+			display: block;
+			height: 100%;
+			width: 9rem;
+			padding: 0 .5rem;
+			border-right: 1px solid transparent;
+			border-color: inherit;
+			position: absolute;
+			top: 0;
+			left: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		.tabtitle + .player {
+			padding-top: .7rem;
+		}
+		.tabtitle + .player b {
+			padding-top: .7rem;
+			height: calc(100% - .7rem);
+		}
+		.diceroll {
+			padding: 0 .5em;
+			color: #ffffff;
+		}
+
+		/* [情報] タブ */
+		.t0 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [雑談] タブ */
+		.t1 {
+			background-color: #cccccc;
+			border-color: #999999;
+			color: #000000;
+			font-size: .8rem;
+		}
+
+		/* [メイン] タブ */
+		.t2 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ステ] タブ */
+		.t3 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(UV,無意識)] タブ */
+		.t4 {
+			background-color: #999999;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(UV,匿名さん)] タブ */
+		.t5 {
+			background-color: #999999;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(UV,尾崎)] タブ */
+		.t6 {
+			background-color: #999999;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(UV,オーロラ)] タブ */
+		.t7 {
+			background-color: #999999;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(UV,🦁)] タブ */
+		.t8 {
+			background-color: #999999;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [ろぐようざつだん] タブ */
+		.t9 {
+			background-color: #ffffff;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* [秘匿(匿名さん,🦁)] タブ */
+		.t10 {
+			background-color: #999999;
+			border-color: #999999;
+			color: #000000;
+		}
+
+		/* 発言者：GM */
+		.p0 { color: #888888; }
+		.p0 .diceroll { background-color: #888888; }
+
+		/* 発言者：noname */
+		.p1 { color: #888888; }
+		.p1 .diceroll { background-color: #888888; }
+
+		/* 発言者：UV */
+		.p2 { color: #222222; }
+		.p2 .diceroll { background-color: #222222; }
+
+		/* 発言者：元仮 */
+		.p3 { color: #888888; }
+		.p3 .diceroll { background-color: #888888; }
+
+		/* 発言者：コンピュータ */
+		.p4 { color: #222222; }
+		.p4 .diceroll { background-color: #222222; }
+
+		/* 発言者：尾崎将司 */
+		.p5 { color: #888888; }
+		.p5 .diceroll { background-color: #888888; }
+
+		/* 発言者：尾崎将司 */
+		.p6 { color: #9e9e9e; }
+		.p6 .diceroll { background-color: #9e9e9e; }
+
+		/* 発言者：尾崎将司 */
+		.p7 { color: #e91e63; }
+		.p7 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：バンシィ */
+		.p8 { color: #222222; }
+		.p8 .diceroll { background-color: #222222; }
+
+		/* 発言者：バンシィ */
+		.p9 { color: #795548; }
+		.p9 .diceroll { background-color: #795548; }
+
+		/* 発言者：オーロラ */
+		.p10 { color: #888888; }
+		.p10 .diceroll { background-color: #888888; }
+
+		/* 発言者：オーロラ */
+		.p11 { color: #03a9f4; }
+		.p11 .diceroll { background-color: #03a9f4; }
+
+		/* 発言者：オーロラ */
+		.p12 { color: #ffeb3b; }
+		.p12 .diceroll { background-color: #ffeb3b; }
+
+		/* 発言者：UV */
+		.p13 { color: #03a9f4; }
+		.p13 .diceroll { background-color: #03a9f4; }
+
+		/* 発言者：ジャンボ尾崎 */
+		.p14 { color: #888888; }
+		.p14 .diceroll { background-color: #888888; }
+
+		/* 発言者：失せろ銃付き監視カメラ */
+		.p15 { color: #888888; }
+		.p15 .diceroll { background-color: #888888; }
+
+		/* 発言者：system */
+		.p16 { color: #888888; }
+		.p16 .diceroll { background-color: #888888; }
+
+		/* 発言者：シャンクス-R */
+		.p17 { color: #f44336; }
+		.p17 .diceroll { background-color: #f44336; }
+
+		/* 発言者：尾崎 */
+		.p18 { color: #888888; }
+		.p18 .diceroll { background-color: #888888; }
+
+		/* 発言者： [雑談]</span>
+      <span>バンシィ */
+		.p19 { color: #888888; }
+		.p19 .diceroll { background-color: #888888; }
+
+		/* 発言者：尾崎 */
+		.p20 { color: #e91e63; }
+		.p20 .diceroll { background-color: #e91e63; }
+
+		/* 発言者：UV */
+		.p21 { color: #888888; }
+		.p21 .diceroll { background-color: #888888; }
+
+		/* 発言者：シャンクス-R */
+		.p22 { color: #888888; }
+		.p22 .diceroll { background-color: #888888; }
+
+		/* 発言者：シャンクス-R02 */
+		.p23 { color: #f44336; }
+		.p23 .diceroll { background-color: #f44336; }
+
+		/* 発言者：シャンクス-V */
+		.p24 { color: #3f51b5; }
+		.p24 .diceroll { background-color: #3f51b5; }
+
+		/* 発言者：シャンクス */
+		.p25 { color: #f44336; }
+		.p25 .diceroll { background-color: #f44336; }
+
+		/* 発言者：シャウロン-B */
+		.p26 { color: #3f51b5; }
+		.p26 .diceroll { background-color: #3f51b5; }
+
+		/* 発言者：ノーランド */
+		.p27 { color: #888888; }
+		.p27 .diceroll { background-color: #888888; }
+
+		/* 発言者：ノーランド */
+		.p28 { color: #3f51b5; }
+		.p28 .diceroll { background-color: #3f51b5; }
+
+		/* 発言者：ジャンボ尾崎 */
+		.p29 { color: #607d8b; }
+		.p29 .diceroll { background-color: #607d8b; }
+	</style>
+</head>
+<body>
+	<h1>チャットログ</h1>
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>GM</b>
+			シャンクスパラノイアTRPG(失せろスタイル) Ver.1.41.はじめに<br>
+			<br>
+			<br>
+			<br>
+			　パラノイアTRPG(ZAPスタイル)のルールを適当に簡略化してシャンクナイズしたテキストであることを教える<br>
+			　あまりバランスを考えずに作ったから不便なところがあったらルルブを買うなり調べるなりして各自修正することを…勧める<br>
+			　TRPGが何かやロールプレイが何かについてはシャンクスTRPGでまとめてるシャンカーがいたからそっちを読みに行く　来い<br>
+			<br>
+			<br>
+			<br>
+			・世界観<br>
+			<br>
+			　アルファコンプレックスというコンピュータに支配された都市が舞台なディストピアな作品である<br>
+			　このコンピュータは、市民は全て幸福で完璧だが、共産主義者により侵略されているという妄想に取りつかれ狂っていることを教える<br>
+			　そんな世界でプレイヤーはトラブルシュータ―としてコンピュータに奉仕し、反逆者を処刑することになることを教える<br>
+			　ただしプレイヤーは全員ミュータントであり、秘密結社に所属している反逆者なのを教える<br>
+			<br>
+			<br>
+			<br>
+			・本作の大まかな流れ<br>
+			<br>
+			　１.召集を受けてブリーフィングルームに集合する<br>
+			<br>
+			　２.ブリーフィングオフィサーからミッションを通達される　ここでメンバーの役職を決める<br>
+			<br>
+			　３.秘密結社の上司から結社ミッションを通達される<br>
+			<br>
+			　４.ミッションをこなす　ただし結社ミッションが最優先<br>
+			<br>
+			　５.デブリーフィングで反省会　ミッションが成功すれば褒賞が与えられ、失敗すれば戦犯を処刑する<br>
+			<br>
+			　６.秘密結社の上司に結社ミッションの報告<br>
+			<br>
+			　これらの間に反逆者を見つけ次第処刑する<br>
+			<br>
+			　最終的に生き残り結社ミッションを達成することが目的となることを教える<br>
+			<br>
+			<br>
+			<br>
+			・クリアランスについて<br>
+			<br>
+			　アルファコンプレックスは完全なる階級社会であることを教える<br>
+			　階級は上から<br>
+			<br>
+			　紫外(ウルトラバイオレット：ＵＶ)　イム様(ＧＭ)<br>
+			　紫(バイオレット：Ｖ)　　　　　　  天竜人<br>
+			　藍(インディゴ：Ｉ)　　　　　　　  世界政府<br>
+			　青(ブルー：Ｂ)　　　　　　　　　  王族<br>
+			　緑(グリーン：Ｇ)　　　　　　　　  貴族<br>
+			　黄(イエロー：Ｙ)　　　　　　　　  海兵<br>
+			　橙(オレンジ：Ｏ)　　　　　　　　  市民<br>
+			　赤(レッド：Ｒ)　　　　　　　　　  海賊<br>
+			　赤外(インフラレッド：ＩＲ)　　　　奴隷<br>
+			<br>
+			　となっていることを教える<br>
+			　階級が下の者には何をしても問題にならないが、上の者に逆らうのは反逆行為になることを教える<br>
+			　また、プレイヤーは赤(海賊)であることを教える<br>
+			　ちなみに紫外は白、赤外は黒になっていることを教える<br>
+			<br>
+			<br>
+			<br>
+			・反逆行為について<br>
+			<br>
+			　以下のことは反逆行為にあたり、判明するとＰＣやＮＰＣによって処刑されることを教える<br>
+			<br>
+			　・コンピュータに反抗する意思を示す<br>
+			　・コンピュータに危害を加える<br>
+			　・共産主義者である<br>
+			　・認められたもの以外の秘密結社のメンバーである<br>
+			　・幸福でない<br>
+			　・完璧でない<br>
+			　・ミュータント能力などの超常的な力を持っている<br>
+			　・クリアランス上位者に反抗する<br>
+			　・クリアランスに違反する情報を持っている<br>
+			　・クリアランスに違反した施設や物を使う(この世界では道や建物に許可されたクリアランスの色がついている)<br>
+			　・旧世界についての知識を持っている<br>
+			　・違法な武器や物品を持っている<br>
+			　・働こうとしない<br>
+			　・誤った理由で他人を処刑する<br>
+			　・その他犯罪行為<br>
+			<br>
+			　処刑の際は「失せろ！失せろ！失せろ！」と言ってレーザー銃で処刑することを教える<br>
+			　また、罪はクローンには引き継がれないのを教える<br>
+			<br>
+			<br>
+			<br>
+			・クローンについて<br>
+			<br>
+			　このゲームでは処刑や事故によってすぐに死ぬため、５体のクローンが用意されていることを教える<br>
+			　オリジナル＋クローン５体が全て死亡するとゲームオーバーになる<br>
+			<br>
+			　死亡するとクローンが送られてくる 送られるタイミングはＧＭの采配に任せる<br>
+			　クローンが送られてくる場所は、基本的に最もＰＣが多い場所になるのを教える<br>
+			　ただしブリーフィングルームへの移動中などでは、どこに送られるかはＧＭの采配による<br>
+			<br>
+			　また、クローンが送られてきた際、前の体が持っていた秘密結社などからの支給品は引き継がれるが、それ以外のものは引き継がれない<br>
+			<br>
+			<br>
+			<br>
+			・メンバーの役職について<br>
+			<br>
+			　ブリーフィングでミッションを言い渡された後、メンバーの役職を決めることがある<br>
+			　その際よく出てくる役職を教える<br>
+			<br>
+			　・リーダー<br>
+			　　メンバー全員を統率する役職なことを教える<br>
+			　　リーダーの命令に背くことは反逆にあたるが、ミッション失敗の責任を被らされやすい<br>
+			<br>
+			　・記録係<br>
+			　　ミッションの様子を記録する役職なことを教える<br>
+			　　いろいろな証拠を残すのに使える<br>
+			<br>
+			　・忠誠係<br>
+			　　メンバーの忠誠度を測る役職なことを教える<br>
+			　　反逆的な兆候を見せたメンバーを記録し、デブリーフィングで報告する<br>
+			<br>
+			　・清潔係<br>
+			　　清潔管理キットを与えられる役職なことを教える<br>
+			　　清潔管理キットは、肌を１ミクロン～３０ｃｍのうち好きな値を抉り取り、清潔度を測る機械なことを教える<br>
+			<br>
+			　・装備係<br>
+			　　ミッション中、１回だけメンバーの装備チェックを行える役職なことを教える<br>
+			　　このとき、与えられた装備品が壊れていたり、与えられてない装備品を持っている人は反逆者である<br>
+			<br>
+			　・幸福係<br>
+			　　幸福薬を与えられる役職なことを教える<br>
+			　　幸福薬は、打たれると幸福になり、しばらくの間なんでも指示に従うようになる薬なことを教える<br>
+			<br>
+			<br>
+			<br>
+			・秘匿会話について<br>
+			<br>
+			　このゲームではＧＭと自分しか見れない秘匿会話という機能を使うことを教える<br>
+			　ＧＭに秘密結社と技能を伝えるとき、結社ミッションを伝えられるとき、他の人に内緒で行動するとき、単独行動するときなどに利用することを教える<br>
+			　間違えてメインのチャットで話すといろいろな情報が漏れて不利になるので気を付けてくれ(^^)<br>
+			2.シナリオメイキング　全員で取り掛かるミッションを用意する<br>
+			　各ＰＣが秘密結社から与えられる結社ミッションを用意する<br>
+			<br>
+			　以上<br>
+			3.キャラクターメイキング<br>
+			<br>
+			<br>
+			<br>
+			 <br>
+			・能力値<br>
+			<br>
+			　ＰＣの能力値は、基本的には以下のようになるのを教える<br>
+			<br>
+			　　筋力（戦闘時などに補正として使う）　２ｄ１０<br>
+			<br>
+			　　敏捷性（行動順や回避などに使う）　２ｄ１０<br>
+			<br>
+			　　器用さ（技能以外のＲＰをダイス判定でしたいときに使う）　２ｄ１０<br>
+			<br>
+			　　ＨＰ（0になったら🌈）　１ｄ３＋３<br>
+			<br>
+			<br>
+			<br>
+			・秘密結社<br>
+			<br>
+			　上記のステータスは他のＰＬにも公開するが、秘密結社はＧＭだけに伝えることを教える<br>
+			　<br>
+			　秘密結社は組織ごとに目的が違い、達成しなければならないミッションや貰える補正が異なることを教える<br>
+			<br>
+			<br>
+			　以下の中から１つ選んでくれ(^^)<br>
+			　<br>
+			　　・ペガパンクの研究所(コープ・メタリカ)<br>
+			　　　機械が好きで全員サイボーグな秘密結社なことを教える<br>
+			　　　ただしコンピュータを崇拝しているのではなく、能力を取り込んで支配者に成り代ろうとしている<br>
+			　　　結社ミッションとしては、コンピュータのデータや機械類を盗むことなどが依頼されることを教える<br>
+			　　　違法改造など機械工作系の技能に＋２の補正が乗る<br>
+			<br>
+			　　・ニューカマーランド(プロ・テック)<br>
+			　　　常に新しい刺激やテクノロジーを求めている秘密結社なことを教える<br>
+			　　　結社ミッションとしては、テクノロジーの奪取などが依頼されることを教える<br>
+			　　　違法改造など機械工作系の技能に＋１の補正、他の参加者にニューカマーランドの構成員がいた場合その人と秘匿会話ができる<br>
+			<br>
+			　　・百獣海賊団(イルミナティ)<br>
+			　　　力が全てだと考えている秘密結社なことを教える<br>
+			　　　結社ミッションとしては、施設の破壊や上位クリアランスの暗殺などが依頼されることを教える<br>
+			　　　武器や部下などが与えられる<br>
+			<br>
+			　　・革命軍(ユマニスト)<br>
+			　　　市民を狂ったコンピュータから解放することを目的とする秘密結社なことを教える<br>
+			　　　結社ミッションとしては、無実の市民を助けることなどを依頼されることを教える<br>
+			　　　持っている技能に加えて、ハッキングという技能が貰える(技能ポイントは１０ポイント　この技能には追加でポイントを配分できない)<br>
+			<br>
+			　　・赤髪海賊団(反ミュータント)<br>
+			　　　コンピュータのためにミュータントを殺しまわる秘密結社なことを教える<br>
+			　　　結社ミッションとしては、ミュータントの殺害などを依頼されることを教える<br>
+			　　　コンピュータに認められてるのでデブリーフィングで有利になる<br>
+			<br>
+			　　・オハラ(ロマンテクス)<br>
+			　　　旧世界の文化や歴史を信奉する秘密結社なことを教える<br>
+			　　　結社ミッションとしては、旧世界の文化の資料の回収などを依頼されることを教える<br>
+			　　　持っている技能に加えて、旧世界文化という技能が貰える(技能ポイントは１０ポイント　この技能には追加でポイントを配分できない)<br>
+			<br>
+			　　・海軍(ＦＣＣＣＰ)<br>
+			　　　コンピュータに奉仕する秘密結社なことを教える<br>
+			　　　結社ミッションは、ブリーフィングオフィサーから与えられるミッションそのものなことを教える<br>
+			　　　コンピュータに認められてるのでデブリーフィングで有利になる<br>
+			<br>
+			　　・黒ひげ海賊団(デス・レパード)<br>
+			　　　全てを破壊しようとする秘密結社なことを教える<br>
+			　　　結社ミッションとしては、破壊を依頼されることを教える<br>
+			　　　破壊工作のための武器が与えられる<br>
+			<br>
+			　　・ジェルマ６６(サイオン)<br>
+			　　　ミュータント能力の開発などを目的としている秘密結社なことを教える<br>
+			　　　結社ミッションとしては、ミュータント能力に関する調査や能力の使用などが依頼されることを教える<br>
+			　　　持っている技能に加えて、下記のミュータント能力一覧から１つ技能が貰える(技能ポイントは１０ポイント　この技能には追加でポイントを配分できない)<br>
+			<br>
+			　　・スリラーバーク(ミスティック)<br>
+			　　　ミュータント能力を信奉している秘密結社なことを教える<br>
+			　　　結社ミッションとしては、ミュータント能力の調査や文献の奪取などが依頼されることを教える<br>
+			　　　超常的な技能どれか１つに＋２の補正、他の参加者にスリラーバークの構成員がいた場合その人と秘匿会話ができる<br>
+			<br>
+			　　・グラン・テゾーロ(フリー・エンタープライズ)<br>
+			　　　金のためならなんでもする秘密結社なことを教える<br>
+			　　　結社ミッションとしては、物品の入手や他の秘密結社の支援などを依頼されることを教える<br>
+			　　　初期の所持金が500ベリーになる<br>
+			<br>
+			　　・ター坊国家(共産主義者)<br>
+			　　　共産主義のもとコンピュータに反抗している秘密結社なことを教える<br>
+			　　　結社ミッションとしては、同志を増やしたり施設の破壊などを依頼されることを教える<br>
+			　　　持っている技能に加えて、プロパガンダという技能が貰える(技能ポイントは１０ポイント　この技能には追加でポイントを配分できない)・技能<br>
+			<br>
+			　技能もＧＭだけに伝えることを教える<br>
+			<br>
+			　技能はルールブックに載っているものでも捏造したものでも何でもいいことを教える<br>
+			　ただし特定の秘密結社の構成員しか使えない技能があるからそれは取らないでくれ(^^)<br>
+			<br>
+			　６０ポイントの技能ポイントを与えるのでこれを割り振ってくれ(^^)<br>
+			　１つの技能に割り当てられるのは２～１４までなことを教える<br>
+			<br>
+			　技能は普通の人でも行えるものと超常的なものの２種類あることを教える<br>
+			　普通の人でも行えるものは使っても処刑対象にならないが、超常的なものは前述のとおり発覚したら処刑対象になるので注意して使ってくれ(^^)<br>
+			　２つの分類はＧＭの裁量に託す<br>
+			<br>
+			<br>
+			　公式の技能の中からいくつか教える<br>
+			<br>
+			　　・隠密<br>
+			　　　隠れて行動することができる技能なことを教える<br>
+			<br>
+			　　・靴を舐める<br>
+			　　　靴を舐めることで交渉を有利に進める技能なことを教える<br>
+			<br>
+			　　・言いくるめ<br>
+			　　　相手を言いくるめることができる技能なことを教える<br>
+			<br>
+			　　・偽造<br>
+			　　　書類などを偽造できる技能なことを教える<br>
+			<br>
+			　　・読心<br>
+			　　　相手の発言が嘘かどうかわかる技能なことを教える<br>
+			<br>
+			　　・手先の早業<br>
+			　　　他人から物を盗んだり、逆に物を滑り込ませたりできる技能なことを教える<br>
+			<br>
+			　　・化学<br>
+			　　　薬品や爆発物などを作ったり分析できる技能なことを教える<br>
+			<br>
+			　　・医学<br>
+			　　　治療をしたり死体の死因を調べたりできる技能なことを教える<br>
+			<br>
+			　　・機械操作メンテ<br>
+			　　　機械の操作や修理ができる技能なことを教える<br>
+			　　　改造はできないが、この技能で修理することは反逆にはあたらない<br>
+			　　　ただし違法な操作は反逆行為なので注意してくれ(^^)<br>
+			<br>
+			　　・違法改造<br>
+			　　　機械を改造できる技能なことを教える<br>
+			　　　改造は反逆行為なので注意して使ってくれ(^^)<br>
+			<br>
+			　　・施設知識<br>
+			　　　普通の市民が知らない、下水道やダクトなどの抜け道を知れる技能なことを教える<br>
+			　　　ただしクリアランス違反に引っかかることや、抜け道を使ったことで汚れることがあるので注意してくれ(^^)<br>
+			<br>
+			　　・ハッキング<br>
+			　　　コンピュータへの侵入や改竄ができる技能なことを教える<br>
+			　　　ただし革命軍の構成員しか取れない<br>
+			　　　ハッキングは反逆行為なので注意して使ってくれ(^^)<br>
+			<br>
+			　　・旧世界文化<br>
+			　　　旧世界の知識を得られる技能なことを教える<br>
+			　　　ただしオハラの構成員しか取れない<br>
+			　　　旧世界の文化を知っているのは反逆行為なので注意して使ってくれ(^^)<br>
+			<br>
+			　　・プロパガンダ<br>
+			　　　聞いた者を共産主義者にする技能なことを教える<br>
+			　　　ただしター坊国家の構成員とプロパガンダの効果で共産主義に変えられた人しか取れない<br>
+			　　　またプロパガンダの効果は次のクローンには引き継がれない<br>
+			　　　共産主義は反逆行為なので注意して使ってくれ(^^)<br>
+			<br>
+			<br>
+			<br>
+			　また前述のとおりＰＣは全員ミュータントなので最低１つは超常的な技能を取ってもらう<br>
+			　悪魔の実や覇気、六式などがこれにあたることを教える<br>
+			　思いつかない人は以下にパラノイアで用意されているミュータント能力を教えるからこちらから選んでくれ(^^)　<br>
+			<br>
+			　　・アドレナリンコントロール/火事場の馬鹿力<br>
+			　　　しばらくの間身体能力が劇的に上昇する能力であることを教える<br>
+			<br>
+			　　・チャーム/魅了<br>
+			　　　他人を魅了して自分の思い通りに行動させる能力であることを教える<br>
+			<br>
+			　　・ディープ・プローブ/閾下侵入<br>
+			　　　接触した相手の深層意識に入り情報を引き出すことができる能力であることを教える<br>
+			<br>
+			　　・エレクトロショック/電撃<br>
+			　　　電気ショックを与えたり電気ショックに耐えることができる能力であることを教える<br>
+			<br>
+			　　・エンパシー/感情共有<br>
+			　　　相手の感情や思考を読み取ったり操作したりできる能力であることを教える<br>
+			<br>
+			　　・エナジーフィールド/力場<br>
+			　　　バリアを張れる能力であることを教える<br>
+			<br>
+			　　・ハイパーセンス/超感覚<br>
+			　　　五感を大幅に強化できる能力であることを教える<br>
+			<br>
+			　　・レビテーション/浮遊<br>
+			　　　空中に浮かべる能力であることを教える<br>
+			<br>
+			　　・マシン・エンパシー/機械感応<br>
+			　　　マシンの考えを読み取り操作できる能力であることを教える<br>
+			<br>
+			　　・マター・イーター/悪食<br>
+			　　　なんでも食べることができる能力であることを教える<br>
+			　　　四次元ポケット的な使い方もできる<br>
+			<br>
+			　　・メンタルブラスト/精神破壊<br>
+			　　　周囲の生物の精神に攻撃できる能力であることを教える<br>
+			<br>
+			　　・ポリモーフィズム/形態変化<br>
+			　　　外見を任意の物に変えることができる能力であることを教える<br>
+			<br>
+			　　・プレコグニション/予知能力<br>
+			　　　予知をすることができる能力であることを教える<br>
+			<br>
+			　　・パイロキネシス/物体発火<br>
+			　　　火を発生させることができる能力であることを教える<br>
+			<br>
+			　　・テレキネシス/念動力<br>
+			　　　物を持ち上げたり動かしたりして操作できる能力であることを教える<br>
+			<br>
+			　　・テレポーテーション/瞬間移動<br>
+			　　　瞬間移動ができる能力であることを教える・持ち物<br>
+			<br>
+			　処刑用のレーザー銃、ミッション通達後の配給、秘密結社から渡されたもの以外には持ち物はない<br>
+			　変なものを持っていた場合、反逆行為になることを教える<br>
+			<br>
+			　また、所持金として最初に300ベリーが貰えることを教える<br>
+			　これは賄賂などで使うが、賄賂そのものは犯罪であり反逆行為にあたるので、それとなく渡すことを…勧める<br>
+			4.ダイスロール<br>
+			<br>
+			<br>
+			<br>
+			　基本的にプレイ中は２ｄ１０で振ることを教える<br>
+			　２がクリティカルで出たら良いことが起こるのを教える<br>
+			　２０がファンブルで出たら大体爆死するのを教える<br>
+			<br>
+			<br>
+			<br>
+			・技能<br>
+			<br>
+			　２ｄ１０で振り設定していた技能ポイント以下の値だったら成功なことを教える<br>
+			　その場の状況により補正がかかることもあるのを教える<br>
+			5.戦闘ルール<br>
+			<br>
+			<br>
+			<br>
+			　本作は基本的に即死するので戦闘になることは少ないことを教える　そのため戦闘のルールは適当である<br>
+			　戦闘になった際は、技能を使って相手を倒そう<br>
+			　ただし、ここでもミュータント能力などの超常的な技能を持っていることが発覚したら、戦闘後に他のＰＬなどに処刑されるので気を付けてくれ(^^)<br>
+			　技能やＳＴＲなどによる補正については、場面によってＫＰの裁量に任せる程度で細かく気にする必要はない<br>
+			<br>
+			<br>
+			<br>
+			・行動順<br>
+			<br>
+			　その戦闘シーンにいるＰＣと敵の中から素早さが高い順に行動ができることを教える<br>
+			　ただし、ダメージを負っていると素早さが下がって行動順が下がることがある<br>
+			<br>
+			　全員が行動し終えるまでを１ターンとして数える<br>
+			<br>
+			<br>
+			<br>
+			・攻撃<br>
+			<br>
+			　まずはどのような攻撃をするのか宣言しよう<br>
+			　この時に技能なり器用さなりを振って成功すれば攻撃成功である<br>
+			<br>
+			　特殊な技能を使わなければレーザー銃を回避できる人はいないので、攻撃は命中する<br>
+			<br>
+			<br>
+			<br>
+			・ダメージ<br>
+			<br>
+			　状況に応じてＧＭが適当に決めよう<br>
+			　１～２ダメージで四肢欠損ぐらいを目安にすることを…勧める<br>
+			<br>
+			<br>
+			<br>
+			・体力が０になった場合<br>
+			<br>
+			　体力が０になった場合は即座に死ぬ<br>
+			　クローンが残っていれば戦闘終了後に送られてくる<br>
+			<br>
+			<br>
+			 <br>
+			<br>
+			<br>
+			<br>
+			最後に<br>
+			<br>
+			　シャンパラノイアTRPGのルールは以上だァ～！<br>
+			　たぶん不備があるので必要を感じ次第公式のルルブを読んでくれ(^^)<br>
+			　あと技能とか秘密結社の部分は更新する可能性があることを教える<br>
+			<br>
+			<br>
+			（以上）<br>
+			<br>
+			 <br>
+			更新情報<br>
+			1.4　革命軍、オハラ、ジェルマ６６、ター坊国家のナーフ<br>
+			1.3　秘密結社にスリラーバーク、ニューカマーランドを追加　技能に医学、機械操作メンテ、施設知識を追加
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			！<br>
+			！
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p2">
+			<b>UV</b>
+			UVは忘れやすいのでクローン復活が遅かったら言え<br>
+			PLは300ベリーを所持している<br>
+			初心シャンなので処理落ちや不手際は許してくれ(^^)<br>
+			<br>
+			複数人を巻き込むワープは禁止<br>
+			それ以下の無法度でやってくれ(^^)<br>
+			24時には終わると思う
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			やりますよ　来い
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			！！<br>
+			シャンパラ欲しがり坊は来たのか教えろ<br>
+			見てないけど多分神我狩行った<br>
+			悲しいだろ<br>
+			1d100　悲しさ (1D100) ＞ 4<br>
+			ぜ<br>
+			ん<br>
+			ぜ<br>
+			ん<br>
+			！<br>
+			！<br>
+			ちょっと待て<br>
+			さっきの仮おれだけどシャンクマンにしたやつ誰だよ…<br>
+			まあいいや<br>
+			シャンクマンはシャンクマンにしたやつにあげる
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			あ、つまんない二番煎じはやめて下さいね<br>
+			前回のは一回だけだから面白いようなものなので
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			それはそう<br>
+			厳しいな<br>
+			300ベリー持ってるの久々に聞いた
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			見てる分には楽しいでしょうけど勝手に変えられた参加者のことを考えなさいや！！！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			それはそう
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			9時20分までに3人以上集まらなかったら発狂して解散します
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			わかった
+		</p>
+		<p class="player p3">
+			<b>元仮</b>
+			おれはドラえもんやる気ないからドラえもんに変えた奴は責任を持ってドラえもんをしてくれ（^^）
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			なにならやる気出る？<br>
+			何もするなっつってんだろうがァ！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			久しぶりのシャンパラだしやるかー
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			いきなり無法度高そうなのが来たな<br>
+			こいつ体制側じゃないか？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			やあ市民コンピュータ様だよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			PCがUV階級でやれるルルブがあるらしくて気になってるよ<br>
+			コンピュータ様だよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			へ〜！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			choice 無 悪 蛸 大 石 平 (choice 無 悪 蛸 大 石 平) ＞ 大
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			わーいアンもどちゃんの見た目貰っちゃったよ<br>
+			コンピュータ様だよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			立ち絵変えられたら引っ込めてチャットに立ち絵だけ反映されるやつにしていいですよ
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			でもこの子が叩かれてるとこ見たくないから戻すよ<br>
+			コンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p5">
+			<b>尾崎将司</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 11[2,9] ＞ 11<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 7[1,6] ＞ 7<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 3[2,1] ＞ 3
+		</p>
+		<p class="player p6">
+			<b>尾崎将司</b>
+			1d3+3 (1D3+3) ＞ 3[3]+3 ＞ 6
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステ</div>
+		<p class="player p6">
+			<b>尾崎将司</b>
+			筋力 11<br>
+			敏捷 7<br>
+			器用 3<br>
+			HP 6
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			尾崎将司…？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ワンポイント　レッスン
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ジャンボ尾崎の本名初めて見た
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			いろいろな　あれこれをぬきにすると<br>
+			アンもどちゃん割と好きなんだけど　いろいろな　あれこれのせいでゲボカスとしか言えないの　かなしいよ<br>
+			コンピュータ様だよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			悲しいだろ<br>
+			ゲボカス共は気にしなくてもいいと思ってんすがね…
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ジャンボ尾崎<br>
+			ワンポイントレッスン　14<br>
+			HAL研究所開発のゴルフゲーム。元MSX用ソフトの『ホール・イン・ワン』をベースとしている。 <br>
+			有名プロゴルファーであるジャンボ尾崎が監修しており、ストロークモードではジャンボ尾崎がプレイヤーにアドバイスをくれる。 <br>
+			いいぞ。　20<br>
+			2d&lt;=10でいいぞ。　しっぱいしたら　だめだぞ。<br>
+			じゃまなので　えーい　2<br>
+			じゃまなのでかったぞ。<br>
+			なんどもお。　2<br>
+			なんどもおなじこと。<br>
+			やくきいてくれなくちゃ　あどは　2<br>
+			やく　を　つかおう。<br>
+			00000000000000000 20 M<br>
+			2d10&lt;=10で　0を　つかおう。<br>
+			だいすに　つかったら　くりてぃかるをこえる　さんじになるのが　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>バンシィ</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 11[2,9] ＞ 11<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 18[8,10] ＞ 18<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 14[5,9] ＞ 14
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			バンシィ初めて見た
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p8">
+			<b>バンシィ</b>
+			1d3+3 (1D3+3) ＞ 1[1]+3 ＞ 4
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ユニコーンとフェネクスなら何回か見たよ　コンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p0">
+			<b>GM</b>
+			そうていする　むほうを　こえています
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			むぅ…アンもどちゃんは好きなんだけど私にやれる自信はないからやめてほしいよ　コンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p0">
+			<b>GM</b>
+			00000000000は　2d10&lt;=10で　かくていせいこうですか？
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステ</div>
+		<p class="player p8">
+			<b>バンシィ</b>
+			筋力 11<br>
+			敏捷 18<br>
+			器用 14<br>
+			HP 4
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			じゃあ誰がいい？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			000は　じぶんに　つかうのは　だめだぞ。　とか？<br>
+			そのかわり　ほかの2をけして　じゃまなので　えーい　を6にするぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			お前
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			そうだなぁ…
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			おれ<br>
+			あなた
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			000 のこうかは　そうだぞ。　でも　20がでたら　しぬんだ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかりました　とおしましょう<br>
+			2d10&lt;=10もむずかしいですからね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			あの鐘を鳴らすのは？
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。<br>
+			けっしゃ　は　ごるふぁー<br>
+			みっしょんないように　ほーるいんわん　が　ついかされるから　みっしょんをたっせいできれば　いいんじゃないかな。<br>
+			<br>
+			けっしゃとくてんは　みっしょんないように　ほーるいんわんがついかされるぞ。　これは　たっせいできなくてもおこられるのは　おれだけだ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			？？？？？？？？？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			おれ<br>
+			貴様
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ジャンボ尾崎　かいていばん<br>
+			ワンポイントレッスン　14<br>
+			HAL研究所開発のゴルフゲーム。元MSX用ソフトの『ホール・イン・ワン』をベースとしている。 <br>
+			有名プロゴルファーであるジャンボ尾崎が監修しており、ストロークモードではジャンボ尾崎がプレイヤーにアドバイスをくれる。 <br>
+			いいぞ。　20<br>
+			2d&lt;=10でいいぞ。　しっぱいしたら　だめだぞ。<br>
+			じゃまなので　えーい　6<br>
+			じゃまなのでかったぞ。<br>
+			00000000000000000 20 M<br>
+			2d10&lt;=10で　0を　つかおう。<br>
+			だいすに　つかったら　くりてぃかるをこえる　さんじになるのが　いいんじゃないかな。<br>
+			じぶんにつかうのは　だめだぞ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ〜！
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			なんか　ごえいにんむなら　ごえいにんむと　ほーるいんわんを　してくれ！　にみっしょんがかわるんじゃないかな。<br>
+			うわ　ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			救世主なんだよボクは　コンピュータ様だよ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			そう言えば今回って隠密は器用で代用できるのか教えてくれ（^^）
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			代用可能だとダイス振りで14のポイント差がつきそうで避けたいですね...<br>
+			先人に習い自分の手の届く範囲だけ代用可にしましよう　手先の早業とか
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p0">
+			<b>GM</b>
+			器用は手の届く範囲のみ隠密に代用可能<br>
+			(手先の早業とか)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			あと今3人？4人？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			コンピュータ様はコンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NT-D　10　パッシブ　NTやミュータントを感知したり判定で自分がゾロ目を出すとNT-Dが発動してなんか強くなる<br>
+			MS14　飛んだり跳ねたり<br>
+			しゃべるな14　しゃべらせない<br>
+			ビームマグナム+リボルビング・ランチャー　14　攻撃系<br>
+			NT　8　ｷｭﾋﾟｰﾝ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			なんどもおな。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ﾉｿﾉｿ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			M技能はどうされますか？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p3">
+			<b>元仮</b>
+			いるけど別のキャラで参加する予定だから阿部さんにしたやつは責任をもって阿部さんやってくれ（^^）
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			やべ　器用隠密ダメなの見てなかった…MSの手先って大きい？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			んああああああ4にんいるうれしいだろうれしいだろうれしいだろうれしいだろうれしいだろ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			風呂出た後でも埋まってなかったら参加する
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			Mはどうしよう　しゃべるなかな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			コンピュータ様はコンピュータ様だよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			技能が届き次第出航するので乱入してもいいよ〜〜！！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			器用と組み合わせられそうなのは...ビームマグナムと行動によってはMS、あとNTくらいでしょうか<br>
+			あとガンダム未履修なのでNT-Dがふわふわしてて上手く反映できないかも知れません...
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			複製用を盤面ステータス表示から消したから、コピーした後は下の方にある「盤面キャラクター一覧に表示しない」のチェックを外してくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			うわ！あり！<br>
+			NT-Dはフワフワでいいよ～～～～～～～～
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			荒らしの一種かと思いました！<br>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NT-D　10　パッシブ　NTやミュータントを感知したり判定で自分がゾロ目を出すとNT-Dが発動してなんか強くなる<br>
+			MS　14　飛んだり跳ねたり<br>
+			しゃべるなM　14　しゃべらせない<br>
+			ビームマグナム+リボルビング・ランチャー　14　攻撃系<br>
+			NT　8　ｷｭﾋﾟｰﾝ<br>
+			<br>
+			更新版・皇
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			BGM02 つかっても　いいかな？<br>
+			わんぽいんとれっすんのときに　ながすだけだけど
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			おすきなように　いいよ〜！
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			うわ！ありがとうございます！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			コンピュータ 60<br>
+			コンピュータ様はコンピュータ様だよ<br>
+			コンピュータ様だからアルファコンプレックスに偏在するよ<br>
+			筋力も敏捷もクソもないよ<br>
+			コンピュータ様だから都市の管理下にある全ての機械を動かせるし、どんな市民よりもえらいよ<br>
+			監視カメラが目だよ<br>
+			だけどコンピュータ様だから違法改造とかに弱いよ<br>
+			反逆者達の管理下にあるものは動かせないし、元々管理下にある物も違法改造とかで簡単に乗っ取られちゃうよ　か弱い存在だよ<br>
+			本体はセントラルタワーの頂上にいるよ　これが壊れると死ぬし違法改造などで簡単に作り替えられちゃうよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			&gt;複数人を巻き込むワープは禁止<br>
+			&gt;それ以下の無法度でやってくれ(^^)<br>
+			......
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p10">
+			<b>オーロラ</b>
+			x3 2d10 #1<br>
+			(2D10) ＞ 17[10,7] ＞ 17<br>
+			<br>
+			#2<br>
+			(2D10) ＞ 14[6,8] ＞ 14<br>
+			<br>
+			#3<br>
+			(2D10) ＞ 11[2,9] ＞ 11
+		</p>
+		<p class="player p11">
+			<b>オーロラ</b>
+			1d3+3 (1D3+3) ＞ 2[2]+3 ＞ 5
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			ちょっと待っててください...
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			うーん　ようせいは　いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			しまい忘れてアイコンなしでダイス振ったりなぜか文字色が青色になったりして恥ずかしいわ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ちょっといいですか<br>
+			謝る事が...
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			&gt;複数人を巻き込むワープは禁止<br>
+			&gt;それ以下の無法度でやってくれ(^^)<br>
+			先に技能を送ってくれた方には申し訳ないのですが、この文はなしでお願いします<br>
+			自由な無法度で大丈夫です
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			コンピュータ様は大概のことを許すよ<br>
+			…………（意味深に無言）
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ<br>
+			きっと何か大変なことが起きたのね
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ゾッ
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			多分8割以上私のせいだよ<br>
+			ごめんね　コンピュータ様だよ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			なんで(^^)！？なんで(^^)！？<br>
+			怖いシャアアアアアアアアアアアアン
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p0">
+			<b>GM</b>
+			というわけで000も自由に使ってもらって大丈夫ですし、今から変更しても大丈夫です
+		</p>
+	</div>
+
+	<div class="tab t4">
+		<div class="tabtitle">秘匿(UV,無意識)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			無法が上限なしになったので色々変更してもらって大丈夫です...
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			MSと攻撃系をひとまとめにして何か追加するか…♠
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			結社は輝きの妖精<br>
+			自分が残機の数一位なら一番輝いているってことで任務達成よ<br>
+			捏造がだめなら赤髪にするわ<br>
+			<br>
+			〇風の氏族長オーロラ　20　M技能<br>
+			パッシブとして言ったことが全部自分にとっては本当のことになる。つまり読心系が無効。<br>
+			事象改編とかではないけど2d10&lt;=14で判定したら自己バフぐらいには使えても良いわよね？<br>
+			〇風の報せ　14　M技能<br>
+			風に乗った噂から情報を入手できたり秘密裡に通信できたりする。<br>
+			〇違法改造　14<br>
+			〇隠密　12　
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NT-D　10　パッシブ　NTやミュータントを感知したり判定で自分がゾロ目を出すとNT-Dが発動してなんか強くなる<br>
+			MS　14　飛んだり跳ねたり+攻撃系<br>
+			しゃべるなM　14　しゃべらせない<br>
+			偽造　10<br>
+			NT　12　ｷｭﾋﾟｰﾝ<br>
+			<br>
+			更新版・皇・皇
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ〜！<br>
+			無法度上限なしになりましたが隠密は持ったままで大丈夫ですか？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			いいよ〜！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			うわあり！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			違法改造のおかげでいざとなったらどうにでもなりそうだから大丈夫よ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			わかりました<br>
+			元仮さんでしたか？
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			ええそうよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			ありがとうございます！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			全員から技能が届きました<br>
+			もうすぐ出航します
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			どうやら私が待たせてしまってたようね<br>
+			申し訳ないわ…
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			いやnoname多すぎだろ　ステルスか？
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			昨今は観戦も難しいですから...
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			ﾁｶﾞｳﾖｰ
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステ</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			筋力　17<br>
+			敏捷　14<br>
+			器用　11<br>
+			HP　5
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			今のところ観戦したいだけなのを教える
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			荒らされた時の予備です<br>
+			https://ccfolia.com/rooms/jI4EPGyfm
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p0">
+			<b>GM</b>
+			荒らされた時の予備です<br>
+			https://ccfolia.com/rooms/jI4EPGyfm
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p0">
+			<b>GM</b>
+			荒らされた時の予備です<br>
+			https://ccfolia.com/rooms/jI4EPGyfm
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			荒らされた時の予備です<br>
+			https://ccfolia.com/rooms/jI4EPGyfm
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			nonameで野次馬やってるだけでステルスを疑われるこの環境は異常だな
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ<br>
+			ありがとうね
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			それはそう
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			教えろ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			教えましょう
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			教える
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			コンピュータ様だよ　教えるよ
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			出航だァ〜〜〜！！！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			初手で全員に　000000をつかうぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			コンピュータと言えばね<br>
+			最近流行りのAIのべりすとってあるじゃない
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			AIシャンで使われている奴ね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			出航だァ～～～～～～～～～！！！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			そうそう<br>
+			ありゃいいもんだね
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			あれね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			出航よォ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった<br>
+			全員の初手がすごいことになる感じですね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			私はあれを使ってシャンクス関連の怪文書を無数にと割とガチな官能小説を二本くらい書いたよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			出港だよ　コンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			Mつうちは　いいぞ。<br>
+			そのかわり　それに　いいぞ。　をべっとふるけど
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			シャンクス関連のガチな官能小説を二つもなんてすごいわね…
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			…どう答えればいいんだよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			さあ　しゅっこうだ。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			お前たちはアルファコンプレックスの一画にある酒場に集まっていることを教える
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			なんどもおな。　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			お酒グビッ！<br>
+			幸福だ～～～～～～
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			うえからよにん　ふるぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			いやぁガチな官能小説の方はシャンクスとは関係ないよ？<br>
+			割と使えるものが出てきて驚いたけど
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			×4 2d10&lt;=10
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			今日も幸福で完璧な一日で楽しいわ<br>
+			みんなもそう思うわよね？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			x4 2d10&lt;=10 #1<br>
+			(2D10&lt;=10) ＞ 12[7,5] ＞ 12 ＞ 失敗<br>
+			<br>
+			#2<br>
+			(2D10&lt;=10) ＞ 11[9,2] ＞ 11 ＞ 失敗<br>
+			<br>
+			#3<br>
+			(2D10&lt;=10) ＞ 9[2,7] ＞ 9 ＞ 成功<br>
+			<br>
+			#4<br>
+			(2D10&lt;=10) ＞ 18[10,8] ＞ 18 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			見せて♥️
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			じぶん　だけ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			首を縦に振る
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			うーん　つまらん<br>
+			00とくてんで　このくろーんだけ　mはいいぞにならないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			へい市民、幸福は義務だよ<br>
+			（モニターから）
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			嫌です……
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			モニターからかーやっぱりかー
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			じゃあもう一回ふれ
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 11[4,7] ＞ 11 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			そこにスピーカーからミッションアラートが流れてくる
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			お<br>
+			わ<br>
+			り<br>
+			だ
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			おっと　0が　はつどうね。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			官能小説はともかくとしてシャンクス関連の怪文書はどんな感じの作ったのかは私は気になるわね
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			ああ...<br>
+			どうなるんだ？<br>
+			000がmじゃなくなったのか？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			AIのべりすとをシャンパラに使えないかなァ…
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			名前変え変え
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			まあシャンクス関連の怪文書に関してはAIシャンのスレに投げたものだよ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			どういうこと？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ﾋﾟｺﾋﾟｺ
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			「トラブルシューターは至急セントラルタワーにあるブリーフィングルームに集合せよ。制限時間は20分」<br>
+			セントラルタワーの場所は知りません
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			では技能どうぞ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			とりあえず　じしょうをあやつった　ちなみにmだ<br>
+			でも　べつにいいことになった　とかそんなかんじじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			完璧な市民なら来れるとしんじているよ
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			モニターごしのコンピューターに聞いてみよう<br>
+			ってこいつホントにコンピューター様かよ…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			なぜかスモやんが異様なくらい強かったりして頭おかしくなるよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			なーに？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			こんがらがってきた<br>
+			このクローンだけ00がmじゃなくなって今は他の奴らには影響はないんだな？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			うーん　こんぴゅーたを　うたがうのは　だめだぞ。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			セントラルタワーの場所を教えろ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			メインから離れることはできるかしら？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			尾崎がなんかした気がしましたがなにももんだいはありません
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p13">
+			<b>UV</b>
+			隠密でいいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			完璧な市民なら　この都市の中心である　タワーの場所を忘れるはずがないよ<br>
+			笑えないジョークは　やめようね
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			やっぱりか
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=12　隠密　 (2D10&lt;=12) ＞ 12[4,8] ＞ 12 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			離れました
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ワンポイントレッスンするぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			どうぞ<br>
+			これどういう技能？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　器用隠密 (2D10&lt;=14) ＞ 7[2,5] ＞ 7 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			じゃあ風の報せでセントラルタワーの場所を入手するわ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=12　NT (2D10&lt;=12) ＞ 13[5,8] ＞ 13 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p13">
+			<b>UV</b>
+			振っていいよ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			２d１０＜＝１４　風の報せ (2D10&lt;=14) ＞ 11[7,4] ＞ 11 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			場所が知りたかったけどダメみたい…
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p13">
+			<b>UV</b>
+			コンピュータの言う通り中央にある事がわかりました
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p13">
+			<b>UV</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			とりあえず町の中心に飛んでいくぞ　来い
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ワンポイントレッスンをしてアドバイスを送る
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 17[9,8] ＞ 17 ＞ 失敗<br>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			バンシィが飛び立とうとしましたが失敗しました
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			じょうほうけいぎのうだぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			2d10&lt;=14  (2D10&lt;=14) ＞ 11[2,9] ＞ 11 ＞ 成功<br>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			なるほどね…それじゃあ中心に向かうわ<br>
+			交通手段はあるかしら？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			重力の井戸に囚われちまった…
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			コンピュータの言う通り中央にセントラルタワーがある事がわかりました
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ばしょやつうこうしゅだんを　わたしてもらおうか...
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p13">
+			<b>UV</b>
+			音速バス　1秒<br>
+			シャン幹線　10分<br>
+			セントラルタワーへの直通道路　5分<br>
+			普通の道路　30分<br>
+			これです
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			あ　ほんとうにちゅうしんが　ばしょなんだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			どのぐらい強かったのか気になるわね…
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			音速バス　1秒<br>
+			シャン幹線　10分<br>
+			セントラルタワーへの直通道路　5分<br>
+			普通の道路　30分<br>
+			これです
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			1d100 つよさ (1D100) ＞ 31
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。<br>
+			めいんで　ながしても　いいかな？<br>
+			たぶんこれからもそうするぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			チケット偽造してセントラルタワー行のバスに乗るか
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=10　偽造 (2D10&lt;=10) ＞ 13[8,5] ＞ 13 ＞ 失敗<br>
+			おわァアアア～～～～～～～～～！！！！！
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			なるほどね<br>
+			それじゃあ音速バスを優雅で安全な音速馬車に違法改造するわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			バンシィが何かを偽造しようとしましたが失敗した
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			あ<br>
+			ん<br>
+			ま<br>
+			り
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2ｄ10＜＝14　違法改造 (2D10&lt;=14) ＞ 11[2,9] ＞ 11 ＞ 成功
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			...隠密振ってないな？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p14">
+			<b>ジャンボ尾崎</b>
+			ちゅうおうに　せんとらるたわーがあるぞ。<br>
+			いどうしゅだんは　このちょうしだ。<br>
+			音速バス　1秒<br>
+			シャン幹線　10分<br>
+			セントラルタワーへの直通道路　5分<br>
+			普通の道路　30分
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			バンシィ失敗続きで悲しいだろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			うわあり！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			そうね<br>
+			でもバスが馬車になっただけよ<br>
+			何も問題ないわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			おやおや市民バンシィ　いまなにしようとしてたのかな？
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			直通道路を行くぞ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p15">
+			<b>失せろ銃付き監視カメラ</b>
+			いや何怪しい事やってんだ失せろ失せろ失せろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			びんしょう　18なら　のせて　ほしいな。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			コンピューターに喋るなつかう<br>
+			2d10&lt;=14　喋るな (2D10&lt;=14) ＞ 6[5,1] ＞ 6 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった　直通道路でいきますか？
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			大人しく死んだほうがいいかしら？<br>
+			それとも対抗できる？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			市民バンシィに反逆スターをつけておくよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			コックピットを開けて乗せるぞ
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p13">
+			<b>UV</b>
+			死んでくれ(^^)どうせ残機0なんて滅多にならないだろうし...
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ オーロラ ] 残機 : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			🌈
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			コンピュータはバンシィの謎に力で喋れなくなりました<br>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			さっきから気に障るコンピューターだ…
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p13">
+			<b>UV</b>
+			どう言う効果？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			いつものノリでいったらだめだったわね<br>
+			結構厳しいから注意した方がいいわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			では直通道路を通った2人は...
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			道路にでも入ったらしゃべるようにしておいて
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p15">
+			<b>失せろ銃付き監視カメラ</b>
+			なに赤が青色の道路走ってんだ失せろ失せろ失せろ
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			死にました
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。　ふっていいかな。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			こんな感じで殺されたのよ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			おわァアアア～～～～～～～～～！！！！！
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			2d10&lt;=10 いいぞ。 (2D10&lt;=10) ＞ 14[5,9] ＞ 14 ＞ 失敗<br>
+			だめだぞ。
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 残機 : 6 → 5<br>
+			[ 尾崎将司 ] 残機 : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			🌈<br>
+			では全員セントラルタワー前で復活しました<br>
+			クローンで戻って来い
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			色を訪ねなければ生えてこないと思ってただろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			新パラノイアに出てくるシステムだよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			あとコンピュータも喋れるようになりました
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			前任の私は反逆者だったみたいだけれど今回の私は完璧で幸福よ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			これまであなたは自分の反逆ポイントを知ることができませんでした。しかし慈愛溢れるザ・コンピューターは情報公開に踏み切りました。キャラクターの忠誠評価は0個から5個までの反逆スターのマークでプレイヤーキャラクターの眼球内《イン＝アイ》ディスプレイに常時表示されます。反逆スターが1個も無ければ善良な市民です。5個になれば処刑すべき反逆者です。過ちによって反逆的行為をおこなったキャラクターは、反逆スターを与えられたことを知り反省できます。そしてすばらしいことにトラブルシューター（そしてイントセックのスパイや、ごろつき《グーン》たち）は各市民の忠誠評価をいつでも知ることができ、もっとすばらしいことに5個の反逆スターを持つ処刑すべき反逆者は全市民が知ることができるのです。反逆者に死を！<br>
+			（新パラノイアの公式サイトから引用）
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			外壁が真っ黒なセントラルタワーに着いた。中に入る？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			気をつけようね
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			しゃべれるように　なたよ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ワンポイントレッスンで　このなかのいろをきくぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			バンシィに反逆スターが付きました
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			玄関の色は何色かしら？
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			黄色です
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			星だ～～～～～
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			聞かなくても黄色とわかるよ<br>
+			色くらいは聞かれたら言う
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			黄色は面倒だな
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 反逆スター : 0 → 1
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			とりあえず　ぜんいんに　000を　えーい
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			外壁は黒いからバリバリ壊しながら入っていこう<br>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 18[8,10] ＞ 18 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			新パラノイアを　よろしくね
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			赤や黒色の扉とか窓は無いのかしらね？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			🌈
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			x4 2d10&lt;=10 #1<br>
+			(2D10&lt;=10) ＞ 8[2,6] ＞ 8 ＞ 成功<br>
+			<br>
+			#2<br>
+			(2D10&lt;=10) ＞ 8[5,3] ＞ 8 ＞ 成功<br>
+			<br>
+			#3<br>
+			(2D10&lt;=10) ＞ 16[10,6] ＞ 16 ＞ 失敗<br>
+			<br>
+			#4<br>
+			(2D10&lt;=10) ＞ 13[8,5] ＞ 13 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			パラノイアと何が違うのか教えろ
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			周りを見渡しますか？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			mなので　いいぞを　ふるぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			（新というほど　あたらしくはない）
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 14[9,5] ＞ 14 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			見渡してみるわ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			だめだぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			オレも見る
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			🌈
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			まぁ　おきみやげで　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			尾崎がなにかをしました　Mです
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいんじゃないかな。
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			おやおや
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			では周りに黒のペンキを持ったレッドがいます
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			市民尾崎これはどういうことかな？
+		</p>
+		<p class="player p17">
+			<b>シャンクス-R</b>
+			忙しいシャン...
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			000000000000000
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			黒ペンキだ～～～～～～～<br>
+			それくれ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			新パラノイア（正式名称リブーテッド）は翻訳関連の色々が違ったり世界観が旧版とかなり違うよ<br>
+			たとえば反逆者が一目でわかったりするよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			そうね<br>
+			欲しいわ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>シャンクス-R</b>
+			欲しいなら、それ相応の態度があるだろう？
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			なぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			さっき忙しいって言ったな？幸福じゃないだろ<br>
+			失せろ失せろ失せろ&gt;&gt;シャンクス
+		</p>
+		<p class="player p17">
+			<b>シャンクス-R</b>
+			おわァアアアア〜〜っ！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ごまかせるかも　ワンポイントレッスンで　しゃんくすに　えんじょをするめりっとをとくのが　いいんじゃないかな。<br>
+			あっ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			あっ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			あら<br>
+			なんだか知らないけど死んじゃったわね<br>
+			幸福じゃなかったから仕方ないわ
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			うむうむ
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ シャンクス-R ] 残機 : 1 → 0
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			0000000
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			しかたないよ
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			黒ペンキがドロップしました
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			くろを　つかおう。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			頼んだ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			バンシィの方が早かった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			お願いするわ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			ではセントラルタワーの床が全て黒になりました
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			いいぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			入ります？
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			はいるぞ。　せんとうもとってこのちょうしだ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			入るわよ
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ゆるすよ…
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ﾉｿﾉｿ
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			では受付、階段、エレベーターがあります
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			ちょくつうとか　だいよんのせんたくしは　ないかな？<br>
+			ワンポイントレッスンを　ふってみるぞ。
+		</p>
+		<p class="player p13">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			まずは色を見るぞ　来い
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 12[7,5] ＞ 12 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			そうね
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ﾋﾟﾎﾟﾎﾟﾎﾟﾎﾟ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p13">
+			<b>UV</b>
+			V専用直通エレベーター、メンテナンス専用頂上行きエレベーターがあります
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p13">
+			<b>UV</b>
+			受付　赤<br>
+			エレベーター　黄色<br>
+			階段黒です
+		</p>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			エレベーターは黄色かァ…
+		</p>
+		<p class="player p14">
+			<b>ジャンボ尾崎</b>
+			V専用直通エレベーター、<br>
+			メンテナンス専用頂上行きエレベーターがあるぞ。
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			自分以上のクリアランスのことは　やめようね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p7">
+			<b>尾崎将司</b>
+			へ～
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			それはそうね<br>
+			受付でブリーフィングルームがどこにあるか聞きましょう
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			頼んだだろ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NTで行くべき階を調べる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			もしもし受付の方<br>
+			ブリーフィングルームはどこにあるのかしら？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　器用隠密 (2D10&lt;=14) ＞ 16[8,8] ＞ 16 ＞ 失敗<br>
+			2d10&lt;=12　NT (2D10&lt;=12) ＞ 5[3,2] ＞ 5 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>シャンクス-R</b>
+			s2d10&lt;=14 (2D10&lt;=14) ＞ 16[7,9] ＞ 16 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p13">
+			<b>UV</b>
+			わかった<br>
+			20階にブリーフィングルームがあるとわかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>シャンクス-R</b>
+			教えると思ったか...？失せろ
+		</p>
+		<p class="player p1">
+			<b>noname</b>
+			<p style="color:#888888;"><br>
+			      <span> [雑談]
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			別人でしたか...背景諸々荒らしと空白は
+		</p>
+		<p class="player p14">
+			<b>ジャンボ尾崎</b>
+			あらすのは　だめだぞ。
+		</p>
+		<p class="player p10">
+			<b>オーロラ</b>
+			当たり前よ！！！！！<br>
+			荒らしが二人もいるかもしれないなんてこわいわね…
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			荒らすことで手に入るものなんて　富・名声・力くらいしかおもいつかないよ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			そして私はスマホなので前の部屋からサルベージできない　悲しい
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NT-D　10　パッシブ　NTやミュータントを感知したり判定で自分がゾロ目を出すとNT-Dが発動してなんか強くなる<br>
+			MS　14　飛んだり跳ねたり+攻撃系<br>
+			しゃべるなM　14　しゃべらせない<br>
+			偽造　10<br>
+			NT　12　ｷｭﾋﾟｰﾝ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p14">
+			<b>ジャンボ尾崎</b>
+			ジャンボ尾崎<br>
+			ワンポイントレッスン　14<br>
+			HAL研究所開発のゴルフゲーム。元MSX用ソフトの『ホール・イン・ワン』をベースとしている。 <br>
+			有名プロゴルファーであるジャンボ尾崎が監修しており、ストロークモードではジャンボ尾崎がプレイヤーにアドバイスをくれる。 <br>
+			いいぞ。　20<br>
+			2d&lt;=10でいいぞ。　しっぱいしたら　だめだぞ。<br>
+			じゃまなので　えーい　2<br>
+			じゃまなのでかったぞ。<br>
+			なんどもお。　2<br>
+			なんどもおなじこと。<br>
+			やくきいてくれなくちゃ　あどは　2<br>
+			やく　を　つかおう。<br>
+			00000000000000000 20 M<br>
+			2d10&lt;=10で　0を　つかおう。<br>
+			だいすに　つかったら　くりてぃかるをこえる　さんじになるのが　いいんじゃないかな。<br>
+			<br>
+			けっしゃ　は　ごるふぁー<br>
+			みっしょんないように　ほーるいんわん　が　ついかされるから　みっしょんをたっせいできれば　いいんじゃないかな。<br>
+			<br>
+			けっしゃとくてんは　みっしょんないように　ほーるいんわんがついかされるぞ。　これは　たっせいできなくてもおこられるのは　おれだけだ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			開通　皇
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p0">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			とりあえず再び結社と技能送っておくわ<br>
+			<br>
+			結社は輝きの妖精<br>
+			自分が残機の数一位なら一番輝いているってことで任務達成よ<br>
+			捏造がだめなら赤髪にするわ<br>
+			<br>
+			〇風の氏族長オーロラ　20　M技能<br>
+			パッシブとして言ったことが全部自分にとっては本当のことになる。つまり読心系が無効。<br>
+			事象改編とかではないけど2d10&lt;=14で判定したら自己バフぐらいには使えても良いわよね？<br>
+			〇風の報せ　14　M技能<br>
+			風に乗った噂から情報を入手できたり秘密裡に通信できたりする。<br>
+			〇違法改造　14<br>
+			〇隠密　12　
+		</p>
+	</div>
+
+	<div class="tab t3">
+		<div class="tabtitle">ステ</div>
+		<p class="player p14">
+			<b>ジャンボ尾崎</b>
+			尾崎将司 - 今日 20:59<br>
+			筋力 11<br>
+			敏捷 7<br>
+			器用 3<br>
+			HP 6<br>
+			<br>
+			バンシィ - 今日 21:07<br>
+			筋力 11<br>
+			敏捷 18<br>
+			器用 14<br>
+			HP 4<br>
+			<br>
+			オーロラ - 今日 21:39<br>
+			筋力　17<br>
+			敏捷　14<br>
+			器用　11<br>
+			HP　5
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			うわ！ステあり！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p0">
+			<b>GM</b>
+			うわ！ありかとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			ちょっと諸々準備します
+		</p>
+		<p class="player p18">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ
+		</p>
+		<p class="player p18">
+			<b>尾崎</b>
+			メインはっても　いいかな？<br>
+			それとも　ろぐでだしたほうが　いいかな。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p0">
+			<b>GM</b>
+			予備卓<br>
+			https://ccfolia.com/rooms/O6IzNilEm
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			予備卓<br>
+			https://ccfolia.com/rooms/O6IzNilEm
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p0">
+			<b>GM</b>
+			予備卓<br>
+			https://ccfolia.com/rooms/O6IzNilEm
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			！！メイン貼って処理落ちとか大丈夫ならお願いします！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			予備卓<br>
+			https://ccfolia.com/rooms/O6IzNilEm
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			まだ予備が必要なのか
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			今貼った予備卓はスレに貼った卓使いまわしたアホンダラUVなので必要になりました<br>
+			笑ってくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">ろぐようざつだん</div>
+		<p class="player p19">
+			<b> [雑談]</span>
+      <span>バンシィ</b>
+			(^^)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			(^^)
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			コンピュータさんいますか？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			いるよ〜
+		</p>
+		<p class="player p18">
+			<b>尾崎</b>
+			こうはんもそのちょうしだ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			技能セット持っておられますか？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			うーん<br>
+			もってないなぁ…
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			うぐっ...参加者の技能セットコピーも忘れた私は恥だ！　大体は覚えていますが思いつく限りでいいので適当に書いといて下さい(^^)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 反逆スター : 0 → 1
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			反逆スターってなんだろうな…
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			ロックスターのお友達かなんかかしら？
+		</p>
+	</div>
+
+	<div class="tab t9">
+		<div class="tabtitle">ろぐようざつだん</div>
+		<p class="player p0">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ほぼコンピュータのイメージそのものだったはずだよ<br>
+			大体のものを動かせる<br>
+			反逆者のものは動かせない<br>
+			違法改造にめっぽう弱い<br>
+			セントラルタワー頂上に本体がある
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			新パラのシステムだよ〜
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p0">
+			<b>GM</b>
+			うわ！ありがとう！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			へ～
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			へ～！
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			再出航よろしいですか？
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			いいわよ
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			いいよ～～～～～
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p21">
+			<b>UV</b>
+			再出航だァ〜〜〜！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			これまであなたは自分の反逆ポイントを知ることができませんでした。しかし慈愛溢れるザ・コンピューターは情報公開に踏み切りました。キャラクターの忠誠評価は0個から5個までの反逆スターのマークでプレイヤーキャラクターの眼球内《イン＝アイ》ディスプレイに常時表示されます。反逆スターが1個も無ければ善良な市民です。5個になれば処刑すべき反逆者です。過ちによって反逆的行為をおこなったキャラクターは、反逆スターを与えられたことを知り反省できます。そしてすばらしいことにトラブルシューター（そしてイントセックのスパイや、ごろつき《グーン》たち）は各市民の忠誠評価をいつでも知ることができ、もっとすばらしいことに5個の反逆スターを持つ処刑すべき反逆者は全市民が知ることができるのです。反逆者に死を！<br>
+			（反逆スターについて、公式サイトから引用）
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			出港だよ　コンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p0">
+			<b>GM</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			再出航だァ～～～～～～～～～！！！！！
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			しゅっこうだ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			再出航よォ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ふ～ん
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			では受付に話しかけて断られたところからですね
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			たしか20階だったな
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			隠密は失敗でNTが成功でしたね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			あくしずの　もとねたなんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			そうです
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！<br>
+			かしこい
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			なるほど…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p22">
+			<b>シャンクス-R</b>
+			失せろォォォォ！！！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p1">
+			<b>noname</b>
+			こっちでやってんのかなって思って覗いたら本当にこっちでやってた
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			1d280 IQ (1D280) ＞ 38
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			ちょっと聞いたぐらいでそんなに怒鳴るほどイライラしているなんて幸福じゃなさそうね<br>
+			失せなさい失せなさい失せなさい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			すんげぇ～～～
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p17">
+			<b>シャンクス-R</b>
+			おわァアアアア〜〜〜っ！！！
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ シャンクス-R ] 残機 : 1 → 0
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			新たなシャンクスが戻ります
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			器用隠密でゾロ目ったからすごく早く階段上がって２０階に行く
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p23">
+			<b>シャンクス-R02</b>
+			お前に教える
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			うわ！ありがとう！<br>
+			前任者とは大違いで幸福で完璧ね
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			振らなくていいよ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=18　一応敏捷 (2D10&lt;=18) ＞ 6[5,1] ＞ 6 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p23">
+			<b>シャンクス-R02</b>
+			20階にブリーフィングルームがあるよ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			🌈振っちゃった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィはすごい速さで階段を登っていきました
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			はやいねー
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NT-D　皇
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			まあ私もあれぐらいの速さで登れるから問題ないわね多分
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			というわけで敏捷で階段登ってもいいかしら？
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=14　敏捷 (2D10&lt;=14) ＞ 12[5,7] ＞ 12 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			着いたらブリーフィングルームの扉の色教えろ
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			そしてブリーフィングルームの前に着きました<br>
+			色は赤です
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			0を　つかおう。<br>
+			まわりには　だれがいるかな？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！<br>
+			入るぞ　来い
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			オーロラも続くようにすごい速さで階段を駆け上りました
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			s2d10&lt;=14 (2D10&lt;=14) ＞ 13[7,6] ＞ 13 ＞ 成功<br>
+			無事に中に着きました<br>
+			もう少し待ってて下さいね
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			そしてブリーフィングルームの前に着きました<br>
+			色は赤です
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			だ<br>
+			れ<br>
+			も
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			はーい
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。<br>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 8[2,6] ＞ 8 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			次のダイスがすごいことになります
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			オーロラが扉の前に居る気配がします
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			色が赤なら問題ないわね<br>
+			それじゃあ入るわ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			あとオーロラとコンピュータの00ダイス効果忘れてた　本当にすまん
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			中にバンシィがいます
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。　べつにあとでもいいし　なしにしてもいいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			もう少し待ってて下さいね
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			たわーの　1 から　19かいが　じゃまなので　えーい
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			「市民オーロラ、バンシィがブリーフィングルームに到着！」
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			だるまおとしにするぞ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			どれで振る？
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			じゃまなので　えーい 2
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			入ってきました
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			へ～！扉ごと討とうかと思ったけど着いたならいいか
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=2 (2D10&lt;=2) ＞ 10[8,2] ＞ 10 ＞ 失敗<br>
+			00000
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			0で成功ですね
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			たわーの　1〜19かいが　ふっとんだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			こわい
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			何かしら!?(^^)何かしら!?(^^)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			ちょくせる(動詞)。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			ブリーフィングルームが20階から落ちます<br>
+			このままだと衝撃でオーロラとバンシィの2人は死にます
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			飛ぶぞ～～～～
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			私も妖精なんだから飛んだっていいわよね
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　MSは格が違う (2D10&lt;=14) ＞ 6[1,5] ＞ 6 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=14　風の氏族長オーロラ (2D10&lt;=14) ＞ 12[2,10] ＞ 12 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			2人とも空を飛んで無事です
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいんじゃないかな。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			何でか知らないけど空を飛んで助かったわ<br>
+			それにしてもこの爆発は何なのかしら？
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			なぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			スラスターを吹かせて着地する音
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			はいったほうが　いいんじゃないかな。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			では全員ブリーフィングルームに揃ったと言う事でいいですか？
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			いいわよ
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ﾋﾟﾎﾟﾎﾟﾎﾟﾎﾟ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			うゆ...きたか<br>
+			お前達にはミッションを言い渡す
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			聞いてやろう
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			こんぴゅーたは　ばんめんには　ださないのかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			Vになんて口聞いてんだ失せろ失せろ失せろ<br>
+			&gt;バンシィ、尾崎
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			おわァアアア～～～～～～～～～！！！！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。していいかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			悲しいけれど仕方ないわね<br>
+			それでV様ミッションというのはなんでしょうか？
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 残機 : 5 → 4
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=10 いいぞ。 (2D10&lt;=10) ＞ 11[9,2] ＞ 11 ＞ 失敗
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			しかたないね。
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			だめだぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			あっやべ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p16">
+			<b>system</b>
+			[ 尾崎 ] 残機 : 6 → 4
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			厳しいなァ
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			私は何も間違えない
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			ざんきは　さっきのを　ひきついで　いまふたつへったぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			すぐにクローンが送られてきます
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ﾋｮｺ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>UV</b>
+			もうちょっと優しくした方がいいかなァ...でもなァ...パラノイアだもんなァ...
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			油断してただろ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			そこらへんはUVの匙加減でいいんじゃないかしら？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			では改めてミッションを言い渡す<br>
+			今日、ローグタワー屋上で反逆者の処刑が行われる...はずだった
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			はい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			しかしその者は濡れ衣だった事が判明した。だが今から処刑を中止できない。<br>
+			コンピューター様が間違えるわけない、そうだろう？
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			なんぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			へ～！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			それはそうですね
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			そうだぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			その通りです
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			なのでお前達には処刑対象のすり替えをしてもらう。元反逆者も保護するから連れて来い。<br>
+			処刑時間までは180分だ<br>
+			今回のミッションは処刑場の看守には伝えていない...なるべく見つからないようにしてくれ(^^)
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかりました
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかりました
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			それと屋上にはゴルフ場が併設されてるので<br>
+			ほーるいんわんを　してくれ！<br>
+			以上
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			えー
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			なにか質問は？
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			すり替えという事ですが…元反逆者と誰をすり替えればいいのでしょうか？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			濡れ衣だったって　マ？
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			人死が起きても大丈夫ですか？
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			すり替えるやつは適当に拾ってこい
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			ろーぐたわーには　おくってもらえるのかな
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			コンピュータ様！？いやこれは...担当者が...
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			そう…ふーん…
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			人死は起きて構わない<br>
+			ただし元処刑対象は生きて連れて帰れ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかったでございます
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			ローグタワーへは自分たちで行け
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ちょうどいいし　担当者に　すり替えて　処刑させれば　一石二鳥　なんじゃないかな。
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			！！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！？
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			そ...その通りですね！<br>
+			担当者もローグタワーの屋上にいるらしいので、途中で攫ってすり替えればいいでしょう！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかったございます
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			コンピューターが完全に場を操っているけれど…本当にPCなのかしらこれ？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			らしいよ　市民　よろしくね
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかりました
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			どっちでも　いいんじゃないかな。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			なんでコンピュータがトラブルシューターにいるんだろうなァ...
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			GMのミズゴロウとかではないから安心してね　コンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			隠密してコンピューターをビームマグナムで撃ってみる
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			これ以上質問はございませんね？<br>
+			では係を決めてもらいます
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			係ですか
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　器用隠密 (2D10&lt;=14) ＞ 7[4,3] ＞ 7 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			リーダー：リーダーバッチ(緑相当の権限) <br>
+			装備：強化型失せろ銃　(上位クリアランス殺害可能)<br>
+			記録：高性能記録カメラ<br>
+			幸福：幸福薬×3 <br>
+			忠誠：忠誠記録シート<br>
+			清潔：清潔管理キット
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 10[6,4] ＞ 10 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			好きなのを選んでください
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			ブリーフィングルームのモニターが破壊されました
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			私は幸福をやりたいわね…
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			記録くれさい
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			こうふくが　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			なぜか今まで話していたブリーフィングルームのモニターが破壊されました
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			やっぱりか～～～どうしようもないな～～～～～～
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			コンピュータは<br>
+			な<br>
+			に<br>
+			も
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			りーだーでも　いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			うわ！譲ってくれてありがとう！<br>
+			それじゃあ尾崎にリーダーをやってもらいましょう
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			&gt;[メイン] ジャンボ尾崎 : V専用直通エレベーター、<br>
+			メンテナンス専用頂上行きエレベーターがあるぞ<br>
+			.......
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			何だ！？(^^)何だ！？(^^)
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			……ふーん
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			となるともうブリーフィングルームでは喋れないのか…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			よろしく頼むリーダー
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			1こ　こうふくやく　くれ！<br>
+			むりならばなにも
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			適当にスピーカーとかから話せばいいんじゃない？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			コンピュータ様は...どうされますか？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			むぅ…<br>
+			とりあえずこの部屋に監視カメラとかある？
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			あるよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			私はなんでもいいよ<br>
+			市民の意思を尊重する　親愛なる友人だよ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			何が起こったか映ってないかな…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			こわいな～こわいな～
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			見えないですね...隠密でも使ったんでしょうか
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			ならせいけつで　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			なんか対抗振る？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			では清潔でよろしいでしょうか？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			2d10&lt;=14でいいかな？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			あ、うん
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			なにがおきてるのかわから　ないよ！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			全員決まったみたいで安心ね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			リーダー：リーダーバッチ(緑相当の権限) 尾崎 <br>
+			記録：高性能記録カメラ　バンシィ<br>
+			幸福：幸福薬×3  オーロラ<br>
+			清潔：清潔管理キット　コンピュータ<br>
+			ではこれでいいですか？
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			はい
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			いいですよ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			カメラを回し始める音
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			ところで結社どうする？
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 12[5,7] ＞ 12 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>UV</b>
+			ちょっと待ってね...
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			いいよ〜！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			1d12 (1D12) ＞ 9
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			秘匿で何か動いている気がするけど<br>
+			ローディング中ね多分
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ジェルマ６６(サイオン)
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィがビームマグナムを撃って破壊しました
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ニタ研で確定
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			なにもしない？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			なぞ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			ジェルマだとミュータント能力が10振りで一つ貰えるけど何にする？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			反逆スター増やしとくか…
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			ついでに結社どうするか決めてね
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			エナジーフィールド/力場<br>
+			　　　バリアを張れる能力であることを教える<br>
+			もーらい
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 反逆スター : 1 → 2
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p2">
+			<b>UV</b>
+			再開します
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			決まりましたね　ではミッション開始だァ〜〜！！
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			それじゃあ行きましょうか
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			行くぞ～～～～～ローグタワ～～～～～
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			その前にトラブルシューターたちは別々のシャンクスに呼ばれます<br>
+			結社ミッション配布です
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			シャンクス沢山いた！？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			結社は海軍以外ありえないんじゃないのかい？コンピュータだし
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			やはり　複数人いる
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			なんどもお。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			今日だけで３人ぐらい見かけている気がするわ
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			アルファコンプレックスの市民はみんなクローンだから複数人いてもおかしくないよ<br>
+			すばらしいね
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			そうか…
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			ジェルマのお前は他PLのミュータント能力を2つ暴いて来い　NTだけじゃ難しいだろうが頼んだぞ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			素晴らしいことね
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			なんどもおなじのがでるのは　わかるけど　おなじのが　どうじにでるのは　ばぐなんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			1d100　難しさ (1D100) ＞ 75
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			捏造結社、輝きの妖精だな<br>
+			頑張って死なないようにしてくれ(^^)
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ム<br>
+			ズ<br>
+			ム<br>
+			ズ
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			頑張るわ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			かんりしゃが　かんぺきじゃないぞ。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			けっしゃは　ごるふぁー　<br>
+			ほーるいんわんを　ねらおう
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。　そういえば　0は　どうなったのかな。<br>
+			りせっとなら　かいまく　４にんにふるぞ。<br>
+			むりならばじぶんにいちど。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			なんだと
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			コ...コンピュータ様！？<br>
+			海軍ならミッションの遂行を頼みました
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			うんそうだね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			黙れ私は何も間違えない
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			そもそも　こんぴゅーたせいぎょ　なんですか？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			じゃあもう一度全員に頼みます<br>
+			忘れてすまん(Thanks.)
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			頑張れ尾崎！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			x4 2d10&lt;=10 #1<br>
+			(2D10&lt;=10) ＞ 10[2,8] ＞ 10 ＞ 成功<br>
+			<br>
+			#2<br>
+			(2D10&lt;=10) ＞ 14[9,5] ＞ 14 ＞ 失敗<br>
+			<br>
+			#3<br>
+			(2D10&lt;=10) ＞ 16[8,8] ＞ 16 ＞ 失敗<br>
+			<br>
+			#4<br>
+			(2D10&lt;=10) ＞ 4[1,3] ＞ 4 ＞ 成功<br>
+			ぼくと　おーろらに　0だぞ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			そしていいぞ。でぼくのMはこれからべつにいいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 11[1,10] ＞ 11 ＞ 失敗<br>
+			0を　つかったな！
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった　これから0振った後にわざわざいいぞ。使わなくて良くなったよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			全員に配りました<br>
+			1階でミッション再開です
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			うーん　テンポてきにも　いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかった
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			オーロラにビームマグナム発射！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			なんかやったとか　つうちじたいは　やってもいいぞ。　やらないほうがらくならそのちょうしだ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			尾崎がオーロラと自分になんかしました　もんだいはありません
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　器用隠密<br>
+			2d10&lt;=14　MS
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			🌈
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			問題ないならいいと思うわ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			へ～！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　器用隠密 (2D10&lt;=14) ＞ 19[9,10] ＞ 19 ＞ 失敗<br>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 3[2,1] ＞ 3 ＞ 成功<br>
+			まあいいでしょう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			そっかー
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィがオーロラにビームマグナムを撃ちました
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			風の報せでコンピューターの残機についての情報知りたいけど大丈夫かしら？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			ちなみに残機ってある？
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			敏捷でかわしていいかしら？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			なぞ。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			どっちもいいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			手が滑った
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=14　敏捷 (2D10&lt;=14) ＞ 10[9,1] ＞ 10 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			オーロラは素早い動きでこれを躱す！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			なにかミュータント能力使ってないかよく見るぞ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			手が滑ったならしょうがないわね<br>
+			次から気を付けて頂戴
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			敏捷で避けられた
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=12　隠密 (2D10&lt;=12) ＞ 8[7,1] ＞ 8 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			うーん　すりかえるからといって　はんぎゃくしゃじゃないひとは　ころしたくないぞ。<br>
+			ぼくは　さっきのぬれぎぬをかぶせてしまった　たんとうしゃを　さがそうかな。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=14　風の報せ (2D10&lt;=14) ＞ 16[10,6] ＞ 16 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			そうだね
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			🌈<br>
+			分からなかったけど周りにも見つからなかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			そうだーっ！その意見に私も賛成だーっ！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			そうしましょう
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			ワンポイントレッスンで　しっぱいしたたんとうしゃと　それをめいじたひとをさがすぞ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ないよ<br>
+			コンピュータだから滅多なことでは死なないけど死んだら死ぬよ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			このミッション思ったより面倒だな？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			とりあえずバンシィは危険だからスターもう一個溜めとくか…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			みんなは　こうつうしゅだんや　けいびやじゅんびをととのえてみるのが　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 10[2,8] ＞ 10 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			24時に終わるように...がんばります
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			仕方ない　メンテナンス用エレベーターに乗ってコンピューター様に会いに行こう
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			なるほどね…とりあえず私は交通手段を探してみるわ
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 反逆スター : 2 → 3
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			溜まる反逆スター
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			おわァアアア～～～～～～～～～！！！！！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			コンピューターならミュータント能力に心当たりがあるかもしれない
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p26">
+			<b>シャウロン-B</b>
+			担当者は私────違いますか？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			エレベーター乗ります？
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			まだ一つは余裕あるな
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			めいじたのはだれなのかな。　もういっかいふる？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			浮いて乗る
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			移動用カタパルト　1秒　赤<br>
+			シャン幹線　10分　黒<br>
+			車　20分<br>
+			徒歩　180分<br>
+			こんな感じです
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 2[1,1] ＞ 2 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			！！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			クリだ～～～～～～～<br>
+			ﾋﾞｷﾋﾞｷ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			よーし　監視カメラを使って大体の位置の目処をつけるぞー
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p26">
+			<b>シャウロン-B</b>
+			どちらも私で居場所はローグタワー屋上───違いますか？
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィが...コンピュータ直通エレベーターに乗ってきた！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			シャン幹線がちょっと気になるし乗ってみたいわ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			エレベーターに乗ると屋上に着いてコンピュータの前にきたよ<br>
+			秘匿いいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			そういえば
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			うわあああああああ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィがメンテナンス専用屋上行きエレベーター乗ってどっかいった
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			いかんやばい
+		</p>
+		<p class="player p14">
+			<b>ジャンボ尾崎</b>
+			たんとうしゃはシャウロン-B <br>
+			めいじたのもこいつで　いばしょはローグタワーおくじょうだ。
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			撃たれたくなかったら教えてほしいことがある<br>
+			お前と残り二人のM能力を教えろ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ｺｿｺｿ秘匿
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			へ～！<br>
+			流石リーダーね
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いいよッ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			うーん　ホールインワンがしたいぞ。
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			む…むぅ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			シャン幹線に乗る？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ガシャンガシャン
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			乗るわよ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			のるまえに　00000をつかおう。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			シャン幹線…こわい
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			おーろらとぼくとこんぴゅーたーにふるぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			はいでは
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			市民……私がミュータントであると仮定しているのは置いておいて<br>
+			それはつまり他二人がミュータントであることを君は知っているわけだ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			みてないけど　シャンかするんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			シャン幹線に乗った尾崎とオーロラの症状は首が太くなり、髪が赤くなるステップまで進んでいた。下半身から白いちっちが吹き出る。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			x3 2d10&lt;=10 #1<br>
+			(2D10&lt;=10) ＞ 10[8,2] ＞ 10 ＞ 成功<br>
+			<br>
+			#2<br>
+			(2D10&lt;=10) ＞ 2[1,1] ＞ 2 ＞ 成功<br>
+			<br>
+			#3<br>
+			(2D10&lt;=10) ＞ 7[4,3] ＞ 7 ＞ 成功<br>
+			！
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			！！！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			...と思ったが
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			コンピューターは　クリティカルで２かいぶんとか・・・？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			……だから殺そうとしただろ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			尾崎による謎の力で全市民のシャン化が解除され、シャン幹線は安全な乗り物になった
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			IQ280
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			見聞色・皇だったわね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			なるほどね……
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			尾崎すんげぇ～～～
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			むにかしたぞ。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			あ、ダイス振る時にしか効果ない？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			まず私はミュータントではないよ<br>
+			このアルファコンプレックスの管理者にして君たちの親愛なる隣人にすぎない<br>
+			文字通りのコンピュータだ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			たしかにこうかをそのまま0にしてもよかったかもしれないわほー
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			助かったわ<br>
+			シャンクスみたいなおぞましい生き物になるなんて考えただけでぞっとするもの
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			それはそれでいいんじゃないかな。<br>
+			クリティカルのないようはしらん　ありでもなしでもかってにしていいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			シャンクスを何だと思ってるんだ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかった(マジかよ)　
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			では2人はローグタワーに着きました<br>
+			入ります？
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			そりゃそうなんじゃないかな。　そういえばこうふくやく　くれ！　できればひとつ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			それと彼らの能力について私は知らない<br>
+			何より、完璧な市民であるはずの彼らがミュータントだったなど信じたくもない……
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			むりならばなにも<br>
+			はいるぞ。
+		</p>
+	</div>
+
+	<div class="tab t0">
+		<div class="tabtitle">情報</div>
+		<p class="player p2">
+			<b>UV</b>
+			リーダー：リーダーバッチ(緑相当の権限) 尾崎 <br>
+			記録：高性能記録カメラ　バンシィ<br>
+			幸福：幸福薬×3  オーロラ<br>
+			清潔：清潔管理キット　コンピュータ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			私っぽく言うなら首が太くていつも不機嫌な左腕がない四皇とおだてられている海のゴミよ<br>
+			まあ本当はかっこいいと思っているけどね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			けっ！知らないのか！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			……さて
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			そして
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			コンピューターにビームマグナムを放て！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			ほんものはかっこ　いいぞ。<br>
+			にんげんへいきは　だめだぞ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 5[1,4] ＞ 5 ＞ 成功
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			この部屋を封鎖する
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			幸福薬欲しいならあげるわ<br>
+			入るわよ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ん？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			同時にビームマグナムが飛んできました
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			部屋が封鎖されました
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			こわい
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			バリアとか張れるかな？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			床は...
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			振ってくれ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			うわ！　ありがとう！
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			s2d10&lt;=13 (2D10&lt;=13) ＞ 10[8,2] ＞ 10 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 15[6,9] ＞ 15 ＞ 失敗<br>
+			！！！<br>
+			まずいまずいまずい
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			....防げない！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			というか白いちっちが噴き出るとかうゆシャン要素があったから厳密にはあれはシャンクスではないと思うわ
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			ついくせで　かくにんせずにはいっちゃうぞ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			ビームマグナムが直撃しました
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			黒です
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			あたったか
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			管理者を脅しつけるような市民を生きて帰すわけには行くまい
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			...この時の処理はそちらに任せていい？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			え〜！？<br>
+			どういうこと？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			部屋が……封鎖されている！？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			なにも
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			黒なら問題ないわよね<br>
+			で、屋上へのルートはどんなものがあるのかしら？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			このまま当たったら直撃死だけど大丈夫？<br>
+			残機とかないし...
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			うーん……<br>
+			HP6を持ってるってことでいい？
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ コンピュータ ] HP : 6 → 5
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			部屋壊して外に出るか
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			s1d5 (1D5) ＞ 3<br>
+			3ダメージです
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			そういえば　とべるんだから　とべばよかったんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			そういうことだ<br>
+			もはやここに踏み込まれた以上君を消すかわたしが消えるか<br>
+			それしかないということさ
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			HP減っただけかよ堅
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p16">
+			<b>system</b>
+			[ コンピュータ ] HP : 5 → 3
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			屋上へは<br>
+			エスカレーターと階段がありますが人でごった返してます
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ビームマグナムは直撃したはず！？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			反撃だ　周りのレーザービットからレーザーを撃たせてもらう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			あらそうだったかしら？<br>
+			まああなたが飛べるって言うんなら飛べるんでしょうね
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			マズい逃げるぞ
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			振ってくれ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			フフフ……都市の中核が一撃で沈んでは格好がつくまい！！！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 11[5,6] ＞ 11 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 5[4,1] ＞ 5 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			タワーほうかいのときに　かぜをつかって　とんでいたよね？　まぁいいや
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			その前に部屋のレーザービットからレーザーが飛んできます
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			【カーネイジ】
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			バケモノが！歪んだコンピューターめ<br>
+			壁を壊そうとする
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			NO future
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			フワーッ　を　くれ！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			エナジーフィールド/力場<br>
+			　　　バリアを張れる能力であることを教える！<br>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 13[4,9] ＞ 13 ＞ 失敗<br>
+			おわァアアア～～～～～～～～～！！！！！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ<br>
+			出来るかわからないけどなんとかやってみましょう
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			逃してはこの完璧な都市の面子が丸潰れというものだ！！！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			直撃しました
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 残機 : 4 → 3
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			レーザーが……多すぎる！！！
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			死んでいい？<br>
+			死んでた🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			し　しんでる
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			可能性の獅子よ、お前の末路は
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			どこで復活したい？
+		</p>
+	</div>
+
+	<div class="tab t10">
+		<div class="tabtitle">秘匿(匿名さん,🦁)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			No futureだ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ちくしょおおおおおおおおおおおお
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			違法改造で床を超強力なファンにして屋上に飛んでもいいかしら？
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			よっし！よっし！死んだ！
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=12　隠密 (2D10&lt;=12) ＞ 15[5,10] ＞ 15 ＞ 失敗<br>
+			2d10&lt;=14　違法改造 (2D10&lt;=14) ＞ 13[9,4] ＞ 13 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			メインに行くか
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			見てないけど多分裏で壮絶な戦いがあった
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			危なかった…多分これ耐えられた上で反撃されてたら死んでたぞ…一撃で半分削られたし…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィのクローンがローグタワー一階に送られます
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			……死んだ！
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			オーロラが床を違法改造し、超強力なファンにしました
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ドシン
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			はねとかでとんだんじゃなかったのか。わるいことをしたな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			違法改造？<br>
+			何の事かしらこれは合法よ
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=10 いいぞ。 (2D10&lt;=10) ＞ 11[1,10] ＞ 11 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			s2d10&lt;=10 (2D10&lt;=10) ＞ 8[4,4] ＞ 8 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			このいいぞ<br>
+			失敗しているとこしか見たことないわね
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞをてきとうになげちゃった　きにしないでくれ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			そうだね
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			まさかこのビルドで死の危険を感じるとは思わなかったよ　コンピュータ様だよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			オーロラの作ったファンは超強力で、客や備え付け失せろ銃を全員吹っ飛ばしました
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			クソ危なっかしい奴だな…<br>
+			あいつがこれ以上私への反逆を目論む前にミッションを終わらせなければ…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			強い<br>
+			風に乗って上まで舞い上がるぞ～～～～
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			フワーッ！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			監視カメラで大体の目処をつけるよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			行きましょう
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			では屋上につきます...
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			濡れ衣野郎は誰だ～～～～～～
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			大量の観客と処刑台の上で待っているノーランドが見えます
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			いやそんな場合じゃねえ<br>
+			大量のボットを動員して濡れ衣野郎を直接押さえる
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			とりあえずよにんに　00000をつかおう。<br>
+			せいこうしたら　やくきいてくれなくちゃ　でこうふくやくさんぷを　ねらうぞ。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 16[8,8] ＞ 16 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			これを助けるのか
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			私は完璧じゃなかった…？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			なるほどこれは冤罪だわ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			x4 2d10&lt;=10 #1<br>
+			(2D10&lt;=10) ＞ 10[5,5] ＞ 10 ＞ 成功<br>
+			<br>
+			#2<br>
+			(2D10&lt;=10) ＞ 12[4,8] ＞ 12 ＞ 失敗<br>
+			<br>
+			#3<br>
+			(2D10&lt;=10) ＞ 10[9,1] ＞ 10 ＞ 成功<br>
+			<br>
+			#4<br>
+			(2D10&lt;=10) ＞ 5[3,2] ＞ 5 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			周りからビットが飛んできましたが故障して落ちました
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ビット！？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			こんぴゅーたーいがいには00なので<br>
+			いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			あとゴルフ場も併設されてます
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=2 では やく (2D10&lt;=2) ＞ 7[2,5] ＞ 7 ＞ 失敗<br>
+			うーん　0せいこうは　いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			なんなのかよくわからないけどそれどころじゃなさそうね
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった　PL以外？
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			処刑台を蹴って崩すぞ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			そうだね。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=14　MS (2D10&lt;=14) ＞ 15[9,6] ＞ 15 ＞ 失敗<br>
+			ダメダメ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			こわ　いいぞ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			尾崎が幸福薬をばら撒きました<br>
+			観客と処刑人がふらふらになってます
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			よくやったわ！
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			うーん　こうふくは　いいぞ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィがこけました
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ガッシャーン
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いまのうちに　しゃうろんを　さがそう。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			そうね<br>
+			私は目がいいから多分見つけられると思うわ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			任せた
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			というわけで自己暗示で私の眼をよくして見つけてもいいかしら？
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=12　隠密 (2D10&lt;=12) ＞ 14[9,5] ＞ 14 ＞ 失敗<br>
+			2d10&lt;=14　風の氏族長オーロラ (2D10&lt;=14) ＞ 5[2,3] ＞ 5 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			うぁ　待ってくれバンシィの0忘れてた
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NTでノーランドをこっちに引っ張ってやる
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。　つぎのだいすでつかえば　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			2d10&lt;=10　NT (2D10&lt;=10) ＞ 14[4,10] ＞ 14 ＞ 失敗
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			こっちはほうこくがなくてもきにしないから　そのちょうしだ。
+		</p>
+	</div>
+
+	<div class="tab t8">
+		<div class="tabtitle">秘匿(UV,🦁)</div>
+		<p class="player p2">
+			<b>UV</b>
+			...謎の力で成功！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！？<br>
+			コックピットに入りなさい……安全だから…
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			オーロラがすごい視力でシャウロンを見つけます
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			さて　しゃうろんはみつけてくれるらしいから　ひまつぶしに　000で　なんどもおをねらってもいいかな。<br>
+			せいこうしたら　こうふくなみんなに　なんどもオナをさせるぞ。　もちろんしゃうろんも
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			見つけたわあそこよ！
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			バンシィがノーランドを引きつけてコックピットに入れました
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p26">
+			<b>シャウロン-B</b>
+			何かが起こっている────違いますか？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 16[6,10] ＞ 16 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			こいつは任せろ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			うーん　しっぱいは　だめだぞ。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			今のどさくさに紛れて風の噂でコンピューターの残機の情報入手してもいいかしら？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			お願いするわ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			2d10&lt;=12　隠密 (2D10&lt;=12) ＞ 8[1,7] ＞ 8 ＞ 成功<br>
+			2d10&lt;=14　風の報せ (2D10&lt;=14) ＞ 6[2,4] ＞ 6 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいことかんがえた　しゃうろんをふっとばして　ほーるいんわんで　しょけいすれば　みっしょんもたっせいできて　いいんじゃないかな。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			？？？？？？<br>
+			任せた
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p2">
+			<b>UV</b>
+			残機はありません<br>
+			ですがHPが0になると故障します
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			なるほど一石二鳥ね
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			まかせられちゃった<br>
+			00000からえーいかな。
+		</p>
+	</div>
+
+	<div class="tab t7">
+		<div class="tabtitle">秘匿(UV,オーロラ)</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			へ～！<br>
+			残機がないなら別に気にしなくていいわね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			ねらうぞ。
+		</p>
+		<p class="player p27">
+			<b>ノーランド</b>
+			君たちは一体...？
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 13[4,9] ＞ 13 ＞ 失敗<br>
+			やっぱりずるいだいすは　みんなのためにつかうときじゃないと　だめみたいだね。
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			よーし<br>
+			風とか操作してほーるいんわん　しやすく　するぞ。
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			🌈
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			きんりょくはんていで　くれ！
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			わかった<br>
+			ふらなくていいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			ミッションを受けたREDです
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いややっぱ振ってくれ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			V様からの指令であなたを助けに来ました
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			いいよ
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			2d10&lt;=13 (2D10&lt;=13) ＞ 13[10,3] ＞ 13 ＞ 成功<br>
+			11だった🌈
+		</p>
+	</div>
+
+	<div class="tab t5">
+		<div class="tabtitle">秘匿(UV,匿名さん)</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			2d10&lt;=14 (2D10&lt;=14) ＞ 12[8,4] ＞ 12 ＞ 成功
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p28">
+			<b>ノーランド</b>
+			なるほど...ありがとう！私は約束を果たすまで死ぬわけにはいかないんだ！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ﾋﾟｺﾋﾟｺ
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			...
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			ぎのうも　きんりょくもしっぱいしちゃ　ほーるいんわんのしようがないよ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			尾崎がシャウロンをほーるいんわんしようとするが、少し外れて...<br>
+			しかしなぜか風がいい感じに作用して入りました
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			！<br>
+			いいぞ。
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			見事決めたわね
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			よくやった！
+		</p>
+		<p class="player p26">
+			<b>シャウロン-B</b>
+			おわァアアアア〜〜〜っ！！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			みんなもう　やることはないのかな。<br>
+			きょうりょくがほしいなら　いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			私は特にないわね<br>
+			ありがとう
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			まあいいでしょう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			そして全員光に包まれます
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			！？
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！！！
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			気がつくとブリーフィングルームに戻っていました
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			戻ったか...全員
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			はい　ただいま戻りました
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ﾋﾟﾎﾟﾎﾟﾎﾟﾎﾟ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			戻った　教える　ございます
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			うーん　みっしょんたっせいは　いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			私は市民が幸福ならそれでいいよ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			そしてバンシィのコックピットにいるそいつが濡れ衣を着せられた奴だな...よくやった！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。<br>
+			ばぐってなければ　なおいいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			反逆者を処刑するだけの簡単な仕事すらろくにやれない前任者はホールインワンしておいた…良かったな
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			ありがたいお言葉です
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			死ななくてよかったなノーランド
+		</p>
+		<p class="player p28">
+			<b>ノーランド</b>
+			本当に...ありがとう！
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			では全員...コンピュータ様を除いてイエローへの昇進を打診しておく...よかったな
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			うわ！ありがとうございます！
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ﾋﾟﾎﾟ ﾋﾟﾎﾟ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			うわあり！
+		</p>
+		<p class="player p24">
+			<b>シャンクス-V</b>
+			以上、解散だァ〜〜〜！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			きがじゃまなのでかったぞ(樹熱)
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			それじゃあ帰りましょうか
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			はい
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			ようがないよ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			では結社任務の結果発表に移る
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			ゴルフ場作るための伐採じゃなかったのね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			！
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			！
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			まずオーロラから
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			私ね
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			結社は輝きの妖精...捏造結社だな
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			そうね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			みんなのみっしょんが　わからないわほー
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			来たか　捏造
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			自分の残機の数を1番多いようにすると言う任務だが...
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			私もよくわからないわね<br>
+			尾崎は多分ホールインワンが結社任務かしら？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			自分だけは5、コンピュータ様の残機はなし、ということで達成だ！よくやった！お前は誇りだ！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			今後も輝き続けられそうでよかったわ<br>
+			ありがとうございます
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			残機+3にしておく...よかったな
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			うわ！ますます輝き続けられそう<br>
+			ありがとうございます
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ オーロラ ] 残機 : 5 → 8
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			では次、尾崎だな
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			ぼーるはつよめに。
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			結社はごるふぁー...これも捏造結社だ
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			やはり…か
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			任務通りミッションに追加されたほーるいんわんを達成だ！よくやった！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			下手したら全員捏造かもしれないわね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			なるほどね
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			ばんしぃがきろくをほしがったのは　なんだったのかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			シャウロンをボールにするとは思わなかったが...達成したので残機+3だ　今後も頑張ってくれ
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ 尾崎 ] 残機 : 4 → 7
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			おはらいがいで　つかうばめんみたことないわほー
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			000000000000
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			では次、コンピュータ様
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			はーい
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			カメラのフラッシュ機能を違法改造して目くらましにするとか？<br>
+			私にはそんな使い方しか思い浮かばないわね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			結社は海軍でしたね
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			海軍だったのね<br>
+			まあコンピュータだから当然と言えば当然だと思うけれど
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			処刑のすり替えは成功しました！よくやった！貴方は誇りだ！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			まぁ　そりゃそうか・・・
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			うん<br>
+			というか海軍の元のFCCCPはコンピュータの設立した結社だから所属結社というよりなんというか…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			それはそう
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			まあね　完璧だからね
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			では残機を...残機ねぇや<br>
+			CPU最新のにしときますね
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ありがてえ
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			では最後、バンシィだな
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			はい
+		</p>
+		<p class="player p25">
+			<b>シャンクス</b>
+			所属結社はジェルマ66<br>
+			任務は他PLのミュータント能力を2つ以上暴く事だったな
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			CPUが新調されたおかげで三画面以上映像を開いても重くならなくなったよ<br>
+			うわだからかァ〜
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			うーん　さぶでぃすぷれいは　いいぞ。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			だからカメラが必要だったのね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			そういうこと
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			ほむ
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			どうだ？できたか？
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			わかんねーカメラに写ってればいいけどそれっぽいし場面もなかったしなー
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			尾崎がその口調やっても可愛くないわね
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			(ｵｻﾞﾌｧｻｧｯ)
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			えぇ…
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			あの時のアレはジェルマだったからか
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			途中謎の力でダイスが成功になったのがあったな？<br>
+			あれ尾崎のMだ<br>
+			お前の持ってるカメラに映ってるなら...まぁいいんじゃねェかなァ...
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			なに！？<br>
+			まあ一つ分かっただけでも御の字か
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			そういうこと
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			そうだな、だか失敗は失敗なので...<br>
+			2d10&lt;=10 (2D10&lt;=10) ＞ 11[8,3] ＞ 11 ＞ 失敗
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			Mだけどまぁだいじょうぶなことになった　ってつうちがでてたから　しってたあつかいでもいいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p25">
+			<b>シャンクス</b>
+			失せろ失せろ失せろ&gt;バンシィ
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			おわァアアア～～～～～～～～～！！！！！
+		</p>
+		<p class="player p16">
+			<b>system</b>
+			[ バンシィ ] 残機 : 3 → 2
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			では結社報告も完了したので...<br>
+			宴だァ〜〜〜！！！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			宴だァ～～～～～～～～～！！！！！
+		</p>
+		<p class="player p20">
+			<b>尾崎</b>
+			うたげだぁ～～～～～～！！！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			宴だァ〜〜〜〜〜〜！！！！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			宴よォ～～～！！！
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p20">
+			<b>尾崎</b>
+			🌈
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			技能貼ってくれ(^^)
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			結社は輝きの妖精<br>
+			自分が残機一位なら一番輝いているってことで任務達成よ<br>
+			捏造がだめなら赤髪にするわ<br>
+			<br>
+			〇風の氏族長オーロラ　20　M技能<br>
+			パッシブとして言ったことが全部自分にとっては本当のことになる。つまり読心系が無効。<br>
+			事象改編とかではないけど2d10&lt;=14で判定したら自己バフぐらいには使えても良いわよね？<br>
+			〇風の報せ　14　M技能<br>
+			風に乗った噂から情報を入手できたり秘密裡に通信できたりする。<br>
+			〇違法改造　14<br>
+			〇隠密　12　
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			NT-D　10　パッシブ　NTやミュータントを感知したり判定で自分がゾロ目を出すとNT-Dが発動してなんか強くなる<br>
+			MS　14　飛んだり跳ねたり+攻撃系<br>
+			しゃべるなM　14　しゃべらせない<br>
+			偽造　10<br>
+			NT　12　ｷｭﾋﾟｰﾝ<br>
+			<br>
+			エナジーフィールド　結社特典
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			ジャンボ尾崎<br>
+			ワンポイントレッスン　14<br>
+			HAL研究所開発のゴルフゲーム。元MSX用ソフトの『ホール・イン・ワン』をベースとしている。 <br>
+			有名プロゴルファーであるジャンボ尾崎が監修しており、ストロークモードではジャンボ尾崎がプレイヤーにアドバイスをくれる。 <br>
+			いいぞ。　20<br>
+			2d&lt;=10でいいぞ。　しっぱいしたら　だめだぞ。<br>
+			じゃまなので　えーい　2<br>
+			じゃまなのでかったぞ。<br>
+			なんどもお。　2<br>
+			なんどもおなじこと。<br>
+			やくきいてくれなくちゃ　あどは　2<br>
+			やく　を　つかおう。<br>
+			00000000000000000 20 M<br>
+			2d10&lt;=10で　0を　つかおう。<br>
+			だいすに　つかったら　くりてぃかるをこえる　さんじになるのが　いいんじゃないかな。<br>
+			<br>
+			けっしゃ　は　ごるふぁー<br>
+			みっしょんないように　ほーるいんわん　が　ついかされるから　みっしょんをたっせいできれば　いいんじゃないかな。<br>
+			<br>
+			けっしゃとくてんは　みっしょんないように　ほーるいんわんがついかされるぞ。　これは　たっせいできなくてもおこられるのは　おれだけだ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			コンピュータ...技能セット控えてなくてごめんなァ...！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			コンピュータ 60<br>
+			コンピュータ様はコンピュータ様だよ<br>
+			コンピュータ様だからアルファコンプレックスのいろんな機械を動かせるしどんな市民よりもえらいよ<br>
+			監視カメラの映像とか丸わかりだよ<br>
+			でも違法改造には弱いよ<br>
+			コンピュータ様だから改造されたものは動かせないし反逆者の管理下にあるものは動かせないよ<br>
+			本体はセントラルタワーの頂上にあってこれが壊されると死ぬよ<br>
+			それ以外ではどうやっても死なないよ<br>
+			残機なんてものはないよ　コンピュータ様だから
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			そろったか
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			へ〜
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			なんかBGMが流れているっぽいけど聞こえないの私だけかしら？
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			さいよみこみが　いいんじゃないかな。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p2">
+			<b>UV</b>
+			無法度は複数での空間移動以下にしてくれと書いてあったのにこれが届いたのだ...何故かな...
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			0000が　どのくらいえいきょうがあったのか　わからな　いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p12">
+			<b>オーロラ</b>
+			再読み込みしたら聞こえたわ<br>
+			ありがとうね
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			無法度は測りにくいからなァ
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			でも、めいかくにさがそうとすれば　はかいできるていどではあるんじゃないかな。
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			複数での空間移動ではないからいいと思ったんじゃないかしら？
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			実際　周囲のカメラとかモニタとかスピーカーとか機銃とか全部壊されると　何もできなくなるよ
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			オーロラの作ったファンが強くなって隠密失敗を相殺したり、バンシィがノーランド確保するのに役立ったなァ... 忘れてごめーん！
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			みてないけどさすけとかなら　いつもどおり　たんちして　みつけて　はかいしての　3ぎのうでおわりそうだ。<br>
+			やっぱりかくれてるけど　さすけのぎのうもおかしいんじゃないかな。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			それはそう
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			やけに厳しいと思ったらコンピュータの技能のせいだったのね
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			アンジェラ未満とか書いたら分かり易いだろうけど...ネームドになるからあんまりPCの名前使いたくない...
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			いいぞ。<br>
+			はんえいがめんどうなぎのうは　しょしんしゃGMにもってくるのは　だめだぞ。
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			実際一回バンシィが乗り込んできてぶっ壊されかけたから…
+		</p>
+	</div>
+
+	<div class="tab t1">
+		<div class="tabtitle">雑談</div>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p9">
+			<b>バンシィ</b>
+			残機あると思って釣り合わないな～と思ったけど残機ないなら仕方ないな
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			もし残機あったりしたら何としてでも壊さないといけなくなってたから残機無くて助かったわ
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			実際反撃を耐えられてもう一発撃たれたらそれで退場してたと思う
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			そこらへん上手い感じに釣り合いとれてたなァ...
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			2d10&lt;=10 いいぞ。 (2D10&lt;=10) ＞ 7[1,6] ＞ 7 ＞ 成功
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			！
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			成功だ～～～～～
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			とにかく荒らされても参加してくれて...ありがとう！お前達は誇りだ！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			うわ！ありがとう！<br>
+			お前もだ！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			こちらこそ　無茶振りに答えてくれて…ありがとう！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			GMもよくやってくれたわ<br>
+			荒らされて大変だっただろうけど最後までやってくれてありがとうね
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			いいぞ。<br>
+			これからもそのちょうしだ。
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			ウッ...ウッ...ウァッ...！<br>
+			もっと色々考えてやっていくぞォ！<br>
+			では楽しかった！<br>
+			ログとるぞォ！
+		</p>
+		<p class="player p12">
+			<b>オーロラ</b>
+			わかったわ<br>
+			またね～～～！！！！
+		</p>
+		<p class="player p2">
+			<b>UV</b>
+			またね〜〜！！
+		</p>
+		<p class="player p9">
+			<b>バンシィ</b>
+			またね～～～～～～～～～！！
+		</p>
+		<p class="player p4">
+			<b>コンピュータ</b>
+			ちなみに死ねば後がない状態で繰り広げられたバンシィとの死闘はログをご覧ください<br>
+			またね〜〜〜〜〜〜！！！
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p2">
+			<b>UV</b>
+			すまんクス<br>
+			ちょっといいシャン？
+		</p>
+	</div>
+
+	<div class="tab t2">
+		<div class="tabtitle">メイン</div>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			またね〜〜〜(
+		</p>
+	</div>
+
+	<div class="tab t6">
+		<div class="tabtitle">秘匿(UV,尾崎)</div>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			いいぞ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			荒らしの出た前卓をログ滑りしてもらうことって出来ますか？<br>
+			そうしたらスマホでログとれるかなって...
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			なるほど
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			面倒だったらいいんですが
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			もしかしたら　くうはくおおいから　ぱそこんでのへんしゅうがないと　よみこみにくいかもしれないかな。<br>
+			とりあえず　すべるだけ　すべらせるぞ。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			うわ！ありがとうございます！
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			もしpcかんきょうがあったら　めもちょうでひらいて　&lt;br&gt;&lt;br&gt;&lt;br&gt; を　ちかんでくうはくにかえるのがいいんじゃないかな。
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			なるほど　分かりました<br>
+			わざわざすみません！ご参加ありがとうございました！
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			できたぞ。<br>
+			とりあえず　とってみ
+		</p>
+		<p class="player p0">
+			<b>GM</b>
+			28MBある...<br>
+			ですが取れました！編集してログ出したいと思います！<br>
+			本当にありがとうございます！
+		</p>
+		<p class="player p29">
+			<b>ジャンボ尾崎</b>
+			いいぞ。
+		</p>
+	</div>
+</body>
+</html>
