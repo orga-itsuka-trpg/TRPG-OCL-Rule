@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 200px;
+            --user-items-height: 400px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-メインミッション表" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メインミッション表" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メインミッション表</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-ジョンガリ.a" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ジョンガリ.a" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ジョンガリ.a</span>
+                </label>
+                <label for="user-GM(神)" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM(神)" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM(神)</span>
+                </label>
+                <label for="user-アカギ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アカギ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アカギ</span>
+                </label>
+                <label for="user-　" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-　" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">　</span>
+                </label>
+                <label for="user-琴葉茜" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-琴葉茜" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">琴葉茜</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            パラノイア虚無<br>お前はディストピア都市「アルファコンプレックス」のトラブルシューターだ<br>都市を支配するコンピュータから課されるミッションを遂行せよ<br>同時に自身が所属する秘密結社サイオンからの指令も果たすのだ<br>①ステータスを振る<br>靴を舐める・違法改造・M技能の3項目にそれぞれ4〜14点、合計30点になるように割り振る<br>靴を舐めるは対人の判定に使える<br>違法改造は対機械の判定に使える<br>M技能はどちらにでも使えるが失敗すると処刑され残機-1<br>またステータス「残機」を3に設定する<br>②ミッションアラート<br>ある日、幸福で完璧に過ごしていると上司に呼び出される<br>2d10<=対人または対機械でブリーフィングルームへ向かう<br>失敗したら遅刻してしまい処刑され残機-1<br>なおM技能で失敗しても重ねて処刑されない<br>③メインミッション<br>いざミッションへ向かう<br>別記の表を参照して1d6で障害を確認し、対応するダイスで判定を行う<br>この時は非M技能ならば失敗しても死なない<br>これを2回行う<br>④デブリーフィング<br>当然のごとくミッションは失敗する<br>デブリーフィングでチームメイトに責任をなすりつけろ<br>メインミッション判定2回中1回だけ成功していたら2d10<=10で判定<br>2回成功したら判定不要で成功扱い<br>2回失敗したら判定不要で失敗扱い<br>失敗したら上司に処刑され残機-1<br>⑤結社ミッション<br>デブリーフィング終了後はサイオンからの任務を達成できたか確認だ<br>メインミッション判定2回の出目の平均値を計算（端数は切り上げ）し、2d10<=平均で判定<br>成功したら任務成功<br>失敗したら上司に処刑され残機-1<br>⑥集計<br>⑤まですべて終了した後に残機が1以上だった場合は勝利者　宴だァ〜！<br>出目の平均値に-をつけてイニシアチブに書き込む<br>一番平均値が低かったやつがパラノイア王だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メインミッション表 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メインミッション表</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            1:オレンジ様に聞き込みだ　2d10<=対人<br>2:ポッドを修理だ　2d10<=対機械<br>3:グリーン様、頼み事が… 2d10<=対人-2<br>4:監視カメラ映像を検索だ　2d10<=対機械-2<br>5:バイオレット様に反逆行為を見られた！　2d10<=対人-4<br>6:コンピュータ様のメンテナンスだって！？ 2d10<=対機械-4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ZAPZAPZAP真宵ちゃん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM ] 靴を舐める : 0 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM ] 違法改造 : 0 → 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM ] M技能 : 0 → 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            今日も幸福で完璧な1日ですね…<br>…むっ！これはミッションアラート！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14 違法改造でポッドを安全にして向かいます (2D10<=14) ＞ 5[4,1] ＞ 5 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            無事到着しましたね<br>…ふむふむはあはあ　ミッションの方承りました！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            6:コンピュータ様のメンテナンスだって！？ 2d10<=対機械-4<br><br>うぐっ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14-4 い、違法改造で… (2D10<=10) ＞ 12[4,8] ＞ 12 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ち、違うんです市民ナデコちゃん<br>これは何かの間違いで…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            もうやめてくださいェ…！なんでこんな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14-4 違法改造 (2D10<=10) ＞ 11[2,9] ＞ 11 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            …さて、デブリーフィングですが…<br>当然のごとく全責任を着せられてしまいましたね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜〜っ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM ] 残機 : 3 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            …さて、結社ミッション判定です<br>今回出目は12と11だったので切り上げで平均は12！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=12 (2D10<=12) ＞ 12[2,10] ＞ 12 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            こちらはなんとか成功！<br>宴です〜〜〜！！はっはー！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            …一瞬ヌルゲーじゃんと思いましたが対人ミッションに当たらなかったことは相当幸運だった気がしてきましたね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            いや靴を舐めるで失敗しても即処刑はされないからヌルゲーですね<br>刹那でバランス崩れちゃった　まあいいかこんな試合
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            Mは信用できない<br>技能は一般で支える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来ましたか　ジョンガリ・A
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            まずはアラートが鳴ったので向かうとしよう<br>盲目なので介助を頼むぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=13 (2D10<=13) ＞ 11[10,1] ＞ 11 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            ではミッションだな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            x2 1d6 だるいのでにどふろう #1<br>(1D6) ＞ 1<br><br>#2<br>(1D6) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            1:オレンジ様に聞き込みだ　2d10<=対人<br>2:ポッドを修理だ　2d10<=対機械<br>まぁ一般的な任務か
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            x2 2d10<=13<br>我が心の支えを妨害する任務には決着をつけなくてはならないっ #1<br>(2D10<=13) ＞ 3[1,2] ＞ 3 ＞ 成功<br><br>#2<br>(2D10<=13) ＞ 11[6,5] ＞ 11 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            さて...デブリーフィングは難なく突破<br>後は空条を倒した報告を行おう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=7<br>11+3=14/2=7だな (2D10<=7) ＞ 6[5,1] ＞ 6 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            格が違います
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これは夢の中の一流スナイパー
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            空条徐倫も含め処刑したッ<br>復讐完了
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョンガリ.a">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ジョンガリ.a
+                        </p>
+                        <p class="message-content-text">
+                            11+3+11+6=31/4=7.7〜くらいか<br>...基本残機一機でも残っていればいいならそこまで技能成功値気にしなくていいな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM(神) ] M技能 : 4 → 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まずい幻夢コーポレーションのGMが来ました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            ゲームマスターである私に呼び出しとは！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            M技能だァ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14 (2D10<=14) ＞ 8[4,4] ＞ 8 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            Mゥ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…狂気の沙汰ほど面白い…M技能ほど面白い…ククク…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            （ガシャットでワープ）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…神とネタが被った…面白い…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来ましたか…狂人たち
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            神にとってミッションなどたやすい物だァ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            x2　1d6　まとめて #1<br>(1D6) ＞ 5<br><br>#2<br>(1D6) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            3:グリーン様、頼み事が… 2d10<=対人-2<br>5:バイオレット様に反逆行為を見られた！　2d10<=対人-4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            衛生省のバイオレット様！？ちょっと…待ってくれ！やめてくれ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14-4　M技能 (2D10<=10) ＞ 14[7,7] ＞ 14 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おしい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM(神) ] 残機 : 3 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            ﾊﾟｯﾊﾟﾗﾊﾟｯﾊﾟｯﾊﾟｰ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            まだ残機があるゥ！次はグリーン様だァ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14-2　M技能だァ！ (2D10<=12) ＞ 13[3,10] ＞ 13 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM(神) ] 残機 : 2 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            ﾊﾟｯﾊﾟﾗﾊﾟｯﾊﾟｯﾊﾟｰ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            デブリーフィングだが…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ア…アア…クロト様…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            2回失敗したら判定不要で失敗扱い<br>失敗したら上司に処刑され残機-1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            私は神だ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            私の夢は…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM(神)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            GM(神)
+                        </p>
+                        <p class="message-content-text">
+                            不滅だァアアアアアア！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            神は死んだ。スイーツ（笑）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM(神) ] 残機 : 1 → 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            GAME　OVER
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ウッ…！ウッ…！ウァッ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…M技能特化を倍プッシュだ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アカギ ] M技能 : 14 → 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アカギ ] 違法改造 : 8 → 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アカギ ] 靴を舐める : 8 → 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…面白い……上の呼び出しは面白い…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14 M技能 (2D10<=14) ＞ 13[4,9] ＞ 13 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ぎ<br>り<br>ぎ<br>り
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…テレポーテーションはシャンパラにおける三種の神器……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…面白い…狂気のメインミッションほど面白い…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            x2 1d6 #1<br>(1D6) ＞ 3<br><br>#2<br>(1D6) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            3:グリーン様、頼み事が… 2d10<=対人-2<br>6:コンピュータ様のメンテナンスだって！？ 2d10<=対機械-4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…面白い…狂気の沙汰ほど面白い…！<br>コンピュータのメンテナンス…ククク…やってやろうじゃないか……！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=12 (2D10<=12) ＞ 13[8,5] ＞ 13 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            うぐっ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            その時、アカギに電流走る（物理）───
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アカギ ] 残機 : 3 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            命を倍プッシュだ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=10 (2D10<=10) ＞ 11[2,9] ＞ 11 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜〜っ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…ククククク……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アカギ ] 残機 : 2 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            >2回失敗したら判定不要で失敗扱い<br>>失敗したら上司に処刑され残機-1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アカギ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            アカギ
+                        </p>
+                        <p class="message-content-text">
+                            ククク…ハメ技じゃないか…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アカギ ] 残機 : 1 → 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            30分に集計ですね…市民アララギ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 琴葉茜 ] 靴を舐める : 0 → 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 琴葉茜 ] 違法改造 : 0 → 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 琴葉茜 ] M技能 : 0 → 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            大変やもうすぐ集計になる！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14　靴舐め (2D10<=14) ＞ 12[8,4] ＞ 12 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            ミッション確認や！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            x2　1d6 #1<br>(1D6) ＞ 4<br><br>#2<br>(1D6) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            4:監視カメラ映像を検索だ　2d10<=対機械-2<br>6:コンピュータ様のメンテナンスだって！？ 2d10<=対機械-4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            ことごとく苦手！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=10-2 (2D10<=8) ＞ 8[2,6] ＞ 8 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=10-4　メンテや！ (2D10<=6) ＞ 16[6,10] ＞ 16 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            これはひどい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            まあいいでしょう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            葵！葵がやったんです！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おっと検索は成功ですね…市民カンバル
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=10 (2D10<=10) ＞ 14[4,10] ＞ 14 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア～～っ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 琴葉茜 ] 残機 : 3 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            c(14+16+8+12)/4 c((14+16+8+12)/4) ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            平均12！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では集計です<br>2位タイの私と茜を越え…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ジョンガリ・Aがパラノイア王です<br>宴だァ〜〜！はっはー！🍺
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-琴葉茜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            琴葉茜
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            あとクロト神とアカギのチャレンジャー精神も讃えたいです<br>ルルブアップデートするならM技能の強化は必須ですね…市民ハネカワ
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>

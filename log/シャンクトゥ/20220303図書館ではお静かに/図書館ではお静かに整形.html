@@ -1,0 +1,3339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 200px;
+            --user-items-height: 250px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-ステータス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ステータス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ステータス</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GMアイシャ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GMアイシャ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GMアイシャ</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-かりっど" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-かりっど" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">かりっど</span>
+                </label>
+                <label for="user-サスケ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-サスケ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">サスケ</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            推奨人数：１人以上<br>推定プレイ時間：約15分〜30分(ロールプレイ重視のテストプレイでは1時間弱かかりましたが、謎解きメインではもっと縮めることができると思われます。)<br>推奨技能：図書館、目星
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ▽大まかなあらすじ<br>貴方は目が覚めると小さな図書館のような場所に閉じ込められていた。ここから脱出して、元の日常に戻ろう。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            このシナリオ制限時間有った🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            制限時間二時間
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            二時間以内に脱出しないと……(意味深な無言)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            面白い…コマを置かせてもらう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            だから課金する必要があるんですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            IQ280
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            真面目だな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かりっど">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かりっど
+                        </p>
+                        <p class="message-content-text">
+                            x5 3d6 #1<br>(3D6) ＞ 15[3,6,6] ＞ 15<br><br>#2<br>(3D6) ＞ 17[6,5,6] ＞ 17<br><br>#3<br>(3D6) ＞ 7[1,3,3] ＞ 7<br><br>#4<br>(3D6) ＞ 7[1,4,2] ＞ 7<br><br>#5<br>(3D6) ＞ 15[5,5,5] ＞ 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-かりっど">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かりっど
+                        </p>
+                        <p class="message-content-text">
+                            そして脳死でコマ置いたけどキャラ決まらない<br>悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            違う図書館に侵食されてる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            図書館違いだろアホンダラ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            まあいいでしょう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ご飯食べてくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-かりっど">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かりっど
+                        </p>
+                        <p class="message-content-text">
+                            もうこれでいいか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            サスケェ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ステータス user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            STR15<br>CON17<br>DEX7<br>POW7幸運SAN35<br>INT15 アイデア75<br>写輪眼 95 目星とかなんかその辺<br>輪廻眼 95 図書館とか生物学とか<br>聞き耳 90<br>精神分析 80<br>忍術 90
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            戻ったのを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            来たか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来てたか…サスケェ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            一応技能が通れば出航準備は整った事になる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            技能もいいよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            サスケは他の参加シャンをもう少し待つ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            20:15くらいまで待って来なさそうなら行った方がいいかもしれねェ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そのくらいまで待つ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            うわ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            そろそろ時間か…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そうだね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            やるか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            準備できたか教えて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            オシエル
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            出航だァ〜〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            出航だァ〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ▽導入<br>ある日の夜、探索者たちはふとした読書欲求に駆られ、なにか本を読み出すでしょう。それは小説だったり詩集だったり。<br>それらを読み終わったあと、探索者たちは眠気に襲われ、そのまま寝落ちするでしょう。<br>次に目を覚ますと、探索者達は、壁いっぱいに収められ、ぎっしりと本が詰め込まれた本棚の部屋にいることに気づきます。この不可解な現象に見舞われた探索者たちはSANチェック、0/1。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            SANc後にタイマーやるから好きなだけRPいいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=35 振りたくねぇ〜 (1D100<=35) ＞ 89 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ サスケ ] SAN : 35 → 34
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ……ここは？<br>確か自分は外とは言え本を読んでいたはずなのだが…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            周りを見渡せば本棚ばかり<br>四方八方本棚とはこれまた悪趣味な部屋だと悪態を吐きつつも驚愕故にか眼を開ける
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            情報も出すね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            床は明るい色のフローリングです。天井からはアンティークなランタンが飾られています。窓はなく閉塞感を抱く空間。<br>また、北、南、西、東に合計4つの大きな本棚があります。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ……窓は無し<br>パッと見扉もないのであればオレを連れて行く場合それ相応の手段が必要となるはずなのだが…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            まあ、いい<br>天井に眼を向けランタンを確認する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【天井】<br>淡い暖色の光がガラスから漏れ出すランタンが天井から吊り下げられています。その近くに、紙がテープで貼られています。内容は｢図書館ではお静かに｣
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それだけ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            『図書館ではお静かに…』か
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            成る程、マナーの一環である
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            事実本を読むスペースで周りが騒々としていれば鬱陶しいだろう<br>オレもおそらくそう思う
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ならこの部屋は図書館のつもりか？<br>だとするなら悪趣味極まりないな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            まずは北<br>北の本棚に向かう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            図書館か目星が出来るな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=95 目星 (1D100<=95) ＞ 35 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【北の本棚】<br>目星または図書館→本棚の中でいくつか、目に付いた本があります。『図書館でのマナー』『沈黙は金』など。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ……成る程
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            この空間内では音を発するのは厳禁か？<br>ここまで強調されているのであればそう考えるのは自然だろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            次に東の本棚を確認する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            技能も同じ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=95 (1D100<=95) ＞ 24 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【東の本棚】<br>目星または図書館→ある本が目にとまります。『過ちによる悪夢』『1度の失敗は足元を救われる』などのタイトルの本。または『艶(ﾂﾔ)なる宴』という詩集が視界に入る。<br>内容は｢短調の調べに乗せて<br>愛や命を歌っているが<br>幸福そうな顔には見えない<br>歌声は月の光に溶け込むばかりだ｣<br>というもの。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後は聞き耳振れる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            一度の失敗は身を滅ぼす<br>それに関してはよく経験した事だ<br>尤も大事なのは…その後だが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=90 聞き耳(ダイス振りたくねぇ〜) (1D100<=90) ＞ 70 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            部屋のどこからか、何か音楽が聞こえてきます。ピアノの音が特徴的な物悲しくも美しい曲です。探索者たちはその少し大きめの音量で流れる、美しい音色にうっとりするでしょう。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            詳しく調べるにはアイディア－20か音楽関係の技能
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=55 無いのでアイデアで行く (1D100<=55) ＞ 45 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ドビュッシーの『月の光』が流れています。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            月の光<br>確かに少し関係がありそうだが……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            次だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            西の本棚に向かって近づく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかったここも同じ技能
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=95 (1D100<=95) ＞ 87 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【西の本棚】<br>目星または図書館→ある本が目にとまります。『大人のロマン:隠し部屋のススメ』その本のページの中に、ピンクの蛍光ペンで強調された一文がありました。『赤とは目立つ色である。人々にとって警告だったり、時には導いてくれたりするものである』
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            写輪眼もそう言われていた<br>戦場で紅い眼を見るのは危険だとな<br>その世代とはオレは無関係なのでこれ以上の思案は避けるが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            最後の本棚に近付く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかったここも同じ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=95 (1D100<=95) ＞ 99 ＞ 致命的失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ソロだとここで詰みかねない気がするのでワンモアトライしたい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ノルマクリア
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice 1ダメージ SAN-1 (choice 1ダメージ SAN-1) ＞ SAN-1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            SAN-1で
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ サスケ ] SAN : 34 → 33
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ……チッ<br>内心舌打ち
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後いいよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=95 輪廻眼で行く (1D100<=95) ＞ 32 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【南の本棚】<br>目星または図書館→1部分だけ出っ張った本棚があります。その中には赤や黄色など色とりどりの背表紙の本が詰め込まれています。しかし、突出した本棚を触ってみても、動かせません。ただ違和感は残ったままです。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            写輪眼で覗いたところでは見えなかったそれは輪廻の瞳にて軽く暴き…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            もう一度赤い本を触ってみる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            西の本棚を見ていた場合→赤い背表紙の本に触れる、または動かすと、次のフロアに進める。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            やはりか<br>赤い本に関する記載がされていたのであれば、それに関するものを調べるのが道理だろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            臆する事なく次のフロアに向かう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【次のフロア】<br>本棚に扮した隠し扉を引き開けると、先程居たところと似たような本棚に囲まれた部屋でした。ダークウッドの床に、部屋の真ん中ではダークウッドの机と椅子があります。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            机の上を目星する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=95 (1D100<=95) ＞ 27 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【机の上】<br>【目星情報】<br>手記のようなものを見つけます。赤い表装のハードカバーの手帳です。内容は｢この部屋は危険だ。四方八方、狂気で溢れている。気がおかしくなりそうだ。私はもう時期この身が灰のように消えていくことだろう。その前にもしも私と同じような状況に置かれている者たちに、助言をしたい。<br>『図書館ではお静かに』と。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            また赤か<br>なんとも奇妙なものだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            いや…ここの表現を借りるならここから脱出に導く為の赤と言ったほうが正しいか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            直接的なヒントを書くとこの手帳ごと消されてしまう可能性がある。だから私は机の下に御札を仕込んだ。それはただの御札だ｣と。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            抜けてた🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            机の下を覗き込む
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            【机の下、目星】<br>御札のような紙切れが机の下に貼り付けられています。それにはこの部屋の地図のようなものがあり、南西の角にスピーカーがあることに探索者は気づきます。<br>探索者たちは、そのスピーカーから先程から聞こえていた曲(または｢月の光｣という曲)が、そこから聞こえてきていることを悟るでしょう。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ………ほう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            南西の角を見る<br>おそらくはスピーカーがあるのだろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            そして……何だったか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            図書館では…お静かにだったか<br>或いは、沈黙は金だったか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            であるならば、静寂に一つの不協和音を加えている貴様は……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            不要なものだろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            輪廻眼でスピーカーを破壊する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            振っていいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=95 (1D100<=95) ＞ 65 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            〇→スピーカーを破壊する<br>貴方がスピーカーを破壊した途端、耳を刺すような騒音が辺りに響きます。その場にしゃがみこみ、探索者たちは耳を塞ぐでしょう。しかしやがてその騒音は消え、その空間には物悲しい沈黙が流れます。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ………！<br>スピーカーを破壊してこのような騒音を奏でるなど聞いていないが……どうやら図星みたいだな？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            沈黙の中、腕を黒衣に隠して破壊した残骸を眺める
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そして、貴方たちは沈黙のうちにいると、声が空から降ってきます。｢沈黙は金。図書館ではお静かに。ご協力、ありがとうございました｣<br>やがて、眩い白い光が探索者達を包み込み、探索者達は意識を手放すでしょう。<br>目が覚めると目が覚めると、そこは見慣れた光景でした。馴染みのあるベッド、または敷布団の上です。手元には、眠る前まで読んでいた本がそのままの状態で置かれていて、今までのことは夢だったのか現実だったのか、探索者達は本を抱えて思うことでしょう。沈黙のうちに、あのピアノの音を思い起こして。<br><br>トゥルーエンド：｢沈黙のうちに｣<br>クリア報酬→SAN値回復1D4、HP回復、クリティカルの報酬<br>曲の名前に気づいた→SAN値回復1D2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ク リ ア
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            マジか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そうだね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            なんか音楽がどうたらで他の空間に行って第二ラウンド的な奴があるかと…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            RPしてもいいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            初心者用のシナリオだしね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            本を見て、少しため息を吐く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            全く、本を読むのには静かな空間であることが望ましいが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            感想を誰にも共有できないというのも嘸かし虚しいものだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ED終わり
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            本棚調べたら<br>【本棚】<br>全ての本棚はどれも、全く見覚えのない言語で書かれた本しかありません。分厚さは様々で広辞苑のようなものから薄い小冊子まであります。まるで地球上のものとは思えない文字ばかりです。<br><br>本の内容を見る→そこには理解し難い文章のような、いや文章とも言えないような黒いインクたちが所狭しとページを侵食している。さらにページを進めると、ある挿絵が貴方の視線を奪うだろう。それは気持ちの悪い触手の生えた塊で、露出している内蔵と目玉が、異常な程に膨れ上がっている姿だった。貴方は足元が覚束無いほどの吐き気を催すだろう。<br>SANチェック、1/1D6。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            やっべえ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜〜！！！🍻🍻
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜〜！！🍻
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            想定時間に終わったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            推定通りだったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            〇→時間経過でタイムアウト<br>貴方たちは、どこからか、聞こえていた曲が頭の中でガンガン鳴り響くのを直に感じます。それはまるで拷問のように、大音量のピアノの音と、耳鳴りがして、探索者たちは思わずその場に座り込んで耳を塞ぐでしょう。<br>そして、探索者たちは目にするはずです。深海を巣食うタコに似た頭部、イカのような触腕(ｼｮｸﾜﾝ)を無数に生やした顔、巨大な鉤爪のある手足。ぬらぬらした鱗に覆われた山のように大きなゴム状の身体、背にはコウモリのような細い翼を持った姿を、影を、こちらをじっと見つめている異形のものを。<br>｢図書館ではお静かに｣<br>そのような声が聞こえた途端、探索者たちは意識を手放します。<br>目が覚めると、そこは見慣れた光景でした。馴染みのあるベッド、または敷布団の上で、探索者たちはばっと起き上がって、先程まで見た悪夢を思い出します。夢であるはずなのに、じんわりと吹き出た汗は、明瞭な恐怖を含んでいました。汗を拭った貴方の頭の中では、あのピアノの音が狂ったような音階で反響することでしょう。<br><br>ノーマルエンド：｢マナー違反｣<br>ニャルラトホテプを見た→神話技能1D3、そしてSANチェック1/1D4<br>クリア報酬→クリティカルの報酬、HPの回復(SAN値回復はなし)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            エンドもこの２つだね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            導線が綺麗に敷かれてからやりやすかったがこれ本棚探索する順番とか考えると少しグダりそうだな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            へ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンクトゥ立ってるだろと思って覗いたら既に終わっててオレは…ビックリした
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            チヨノオーが居たら最後の本棚に魔導書を置いても良かったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ニャル呼び出そうぜ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            最後の本棚はこのSANだと踏んだら下手したら死が見えるんだよなァ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            とか言いそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ニャルはシャンパラ仕様でもねえと勝てない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後スピーカー壊した時に喋ったらニャルが来てノーマルになる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            っぶねええええ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            これはアレだな<br>多分サスケでソロって条件じゃなければ多分やばかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            ソロだと口開ける必要ないもんなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ▽黒幕<br>クトゥルフさんが｢マナーというものを尊ぶ人間の力を見てやろうじゃないか｣という気持ちで探索者たちを放り込んだ。(この辺りは深く考えておりません。各自、自由に補強していただければと思います。)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            クトゥルフだった🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            https://www.pixiv.net/novel/show.php?id=13013949<br>製作者様のページです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            初心者に良さそうだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            後で見る
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            そろそろ食事もあるし失せるか…♠︎<br>久しぶりにシャンクトゥしたが楽しかった！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            良かった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サスケ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4b0082;" class="message-user-text">
+                            サスケ
+                        </p>
+                        <p class="message-content-text">
+                            お疲れシャン<br>またね〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            お疲れシャン！<br>またね〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
