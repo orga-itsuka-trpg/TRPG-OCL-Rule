@@ -1,0 +1,2436 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 150px;
+            --user-items-height: 900px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-シャンクス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャンクス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャンクス</span>
+                </label>
+                <label for="user-トレプシェット" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-トレプシェット" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">トレプシェット</span>
+                </label>
+                <label for="user-アクア" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アクア" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アクア</span>
+                </label>
+                <label for="user-アイシャ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アイシャ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アイシャ</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-ミホーク" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ミホーク" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ミホーク</span>
+                </label>
+                <label for="user-ミルクちゃん" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ミルクちゃん" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ミルクちゃん</span>
+                </label>
+                <label for="user-ジョン万次郎" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ジョン万次郎" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ジョン万次郎</span>
+                </label>
+                <label for="user-ロックスター" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ロックスター" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ロックスター</span>
+                </label>
+                <label for="user-ウォズ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ウォズ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ウォズ</span>
+                </label>
+                <label for="user-死神太郎" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-死神太郎" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">死神太郎</span>
+                </label>
+                <label for="user-ホーキンス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ホーキンス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ホーキンス</span>
+                </label>
+                <label for="user-フランキー" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-フランキー" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">フランキー</span>
+                </label>
+                <label for="user-オリキャラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-オリキャラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">オリキャラ</span>
+                </label>
+                <label for="user-レインボーアートDX" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-レインボーアートDX" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">レインボーアートDX</span>
+                </label>
+                <label for="user-ルフィ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ルフィ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ルフィ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ﻿シャンクスを投げ飛ばすTRPG<br><br><br>１.はじめに<br><br>  このゲームはシャンクスを投げ飛ばすTRPGなことを教える<br>  誰が一番遠くまで飛ばせるかを競ったり、指定された距離を飛ばすことが目標なのを教える<br><br><br>２.キャラクターメイキング<br><br>  STR(筋力)を3d6で決める<br><br><br>３.シャンクスを投げ飛ばす<br><br>  STRによって決められた1d3～1d100のダイスを「シャン！！！」と叫びながら振る<br>  出た目が飛距離(m)になることを教える<br>  また、振ったダイスの最大値が出るとSTRが1成長することを教える<br><br>  STRと相対する飛距離<br>  3～5  1d30<br>  6～9  1d60<br>  10～14  1d100<br>  15～18  1d1000<br><br><br>４.最後に<br><br>  これは「ナンを投げ飛ばすTRPG」のルールをシャンクナイズしたものなのを教える<br>  シャンクトゥルフやシャンパラのシナリオにでも活用してくれ(^^)<br><br><br>以上
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            追加ルール<br>今日は誕生日なので飛距離でゾロ目が出たらもう一度振る<br>その後出た目を飛距離に追加する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            寝たかったけど虚無卓立てるかなーって迷ってたからありがたいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            祝ってくれ(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            おさきにどうぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            シャンクス投げもアクア様に任せなさい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            あらありがとね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 7[5,1,1] ＞ 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            シャン！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d60 (1D60) ＞ 31
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            へ<br>ろ<br>へ<br>ろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスで城を落とすぞ　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 12[6,4,2] ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            1d100 シャーン (1D100) ＞ 100
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            無事パカルの城を落とした<br>良かったな...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            やるか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            その前にトレプシェットはゾロ目出したからもう一回じゃない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            100はゾロ目なのかしら…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            choice ゾロ目　ゾロ目じゃない (choice ゾロ目 ゾロ目じゃない) ＞ ゾロ目じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ではやるか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 11[5,1,5] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 シャン！！ (1D100) ＞ 33
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 シャン！！ (1D100) ＞ 75
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            流石だ　おれの上を行く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アイシャ ] 飛距離 : 108 → 108
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アクア ] 飛距離 : 0 → 31
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ トレプシェット ] 飛距離 : 100 → 100
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミホーク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ミホーク
+                        </p>
+                        <p class="message-content-text">
+                            ヒ<br>マ<br>つ<br>ぶ<br>し
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミホーク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ミホーク
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 11[3,2,6] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミホーク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ミホーク
+                        </p>
+                        <p class="message-content-text">
+                            1d100 シャン (1D100) ＞ 21
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来たか…ミホーク
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ミホーク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ミホーク
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ミホーク ] 飛距離 : 0 → 21
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            これくらいのシャンしか持ち合わせてなかったで確定
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            これが…海賊たる者の遠投だ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 11[2,3,6] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずい自分を投げ始めた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            1d100 シャアアアアアアン！！！ (1D100) ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            四皇降りなさい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ シャンクス ] 飛距離 : 0 → 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-トレプシェット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トレプシェット
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            遠投大会優勝賞品のめしを狙う大人のミルクちゃんなのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 13[1,6,6] ＞ 13
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            1d100 ポメメメ～ン (1D100) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            5にしろくそがあああああああああああああああああああ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ミルクちゃん ] 飛距離 : 0 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョン万次郎">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ジョン万次郎
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 12[4,6,2] ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョン万次郎">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ジョン万次郎
+                        </p>
+                        <p class="message-content-text">
+                            HAPPY BIRTHDAY to
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジョン万次郎">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ジョン万次郎
+                        </p>
+                        <p class="message-content-text">
+                            1d100　SHAAAAAAAAN！！！！ (1D100) ＞ 83
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ジョン万次郎 ] 飛距離 : 0 → 83
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            ええ重要な日らしくて確実に届ける為におれが！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 12[4,6,2] ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            1d100 ロ〜ックスタスタスタスタ！！ (1D100) ＞ 18
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ロックスター ] 飛距離 : 0 → 18
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            祝え！新たな映画が決定してる4皇を！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 14[6,6,2] ＞ 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            1d100　祝え！ (1D100) ＞ 23
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ウォズ ] 飛距離 : 0 → 23
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            序盤の勢いはどこへ行ったんすかね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            そろそろ1d1000のキャラ来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            1d1000　そういえば1d1000で振れたっけ？ (1D1000) ＞ 41
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-死神太郎">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            死神太郎
+                        </p>
+                        <p class="message-content-text">
+                            なんだこの誕生会！？死神の祝いかなんかか…！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-死神太郎">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            死神太郎
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 11[6,4,1] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-死神太郎">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            死神太郎
+                        </p>
+                        <p class="message-content-text">
+                            1d100　シャーン！！ (1D100) ＞ 41
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d1001 (1D1001) ＞ 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            へ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 死神太郎 ] 飛距離 : 0 → 41
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            へ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            まずい死神太郎が41歳になった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            フッフッフフッフッ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ウォズ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ウォズ
+                        </p>
+                        <p class="message-content-text">
+                            フッフッフフッフッ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ホーキンス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ホーキンス
+                        </p>
+                        <p class="message-content-text">
+                            くだらん…投げさせてもらう…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ホーキンス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ホーキンス
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 14[3,6,5] ＞ 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ホーキンス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ホーキンス
+                        </p>
+                        <p class="message-content-text">
+                            1d100 シャン！ (1D100) ＞ 23
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ホーキンス ] 飛距離 : 0 → 23
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フランキー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            フランキー
+                        </p>
+                        <p class="message-content-text">
+                            お前ｪらｧｧ、おﾙﾙｪ様はｧ、船大工のﾌrrrrrﾝｷｰだｧ(棒立ち)<br>なんでもォ、新型コロナウrrrスってのあｧ流行ってるんだってなァ(棒立ち)<br>ま、おrrrrサイボーグだから大丈夫あけどよォお前ェらはそうはいかねェ(棒立ち)<br>いいか、お前ェらァ！こまめに・しっかりと・手洗いをするんだぜｪ↑(棒立ち)<br>おrrrrみてェにｨ、健康でツェェェ身体でいるためにもｫ↑みんなァ、た↑のむぜェ↓！(棒立ち)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フランキー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            フランキー
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 3[1,1,1] ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フランキー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            フランキー
+                        </p>
+                        <p class="message-content-text">
+                            1d30 スーーー↑↑↑purーーー...↓↓↓ (1D30) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ フランキー ] 飛距離 : 0 → 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ヨボヨボすぎて悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            正当なワンピースのキャラに限ってことごとく低いの悲しいだろ<br>お前ら船降りろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-オリキャラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            オリキャラ
+                        </p>
+                        <p class="message-content-text">
+                            オリキャラの"肩"をお前に教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-オリキャラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            オリキャラ
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 11[1,4,6] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-オリキャラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            オリキャラ
+                        </p>
+                        <p class="message-content-text">
+                            1d100　シャン！！ (1D100) ＞ 57
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ オリキャラ ] 飛距離 : 0 → 57
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-オリキャラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            オリキャラ
+                        </p>
+                        <p class="message-content-text">
+                            こ<br>な<br>こ<br>な
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ゾロ目で決めたやつだっけなァ…<br>クソ懐かしいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-オリキャラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            オリキャラ
+                        </p>
+                        <p class="message-content-text">
+                            パーツ何だったかわすれた🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-レインボーアートDX">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            レインボーアートDX
+                        </p>
+                        <p class="message-content-text">
+                            ビッグニューース！あのレインボーアートがシャンクスを投げに帰ってきたんです！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-レインボーアートDX">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            レインボーアートDX
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 10[2,6,2] ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-レインボーアートDX">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            レインボーアートDX
+                        </p>
+                        <p class="message-content-text">
+                            1d100 垂れない跳ねないそして手につかな～い！ (1D100) ＞ 16
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-レインボーアートDX">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            レインボーアートDX
+                        </p>
+                        <p class="message-content-text">
+                            楽しくて面白くてお絵描きが止まらな～い！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            39分に締め切る
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルフィ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ルフィ
+                        </p>
+                        <p class="message-content-text">
+                            祝福王に！！おれはなる！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルフィ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ルフィ
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 12[6,3,3] ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            来たか　ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルフィ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ルフィ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 シャン！！ (1D100) ＞ 49
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ルフィ ] 飛距離 : 0 → 49
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルフィ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ルフィ
+                        </p>
+                        <p class="message-content-text">
+                            祝うのは今度にするか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            みんな祝ってくれてうわ！ありがとう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～！！！！((🍺))
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            アイシャ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜〜！！！🍻
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>

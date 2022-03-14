@@ -1,0 +1,2271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 200px;
+            --user-items-height: 350px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-進行表" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-進行表" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">進行表</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-うちはフガク" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-うちはフガク" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">うちはフガク</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-司令官" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-司令官" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">司令官</span>
+                </label>
+                <label for="user-ニンジン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ニンジン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ニンジン</span>
+                </label>
+                <label for="user- " class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user- " onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts"> </span>
+                </label>
+                <label for="user-忍びのホモ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-忍びのホモ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">忍びのホモ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            忍者ゲームブック虚無<br>お前は忍者だ<br>敵国の城に潜入し巻物を盗み出せ<br>①ステータス<br>ステータスは体術・忍術・分身の3種類を使用する<br>体術は走ったりジャンプしたり手裏剣を投げたりするのに用いる<br>忍術はその他諸々の小細工に用いる<br>分身は残機　死んだ時に進行表上2つ戻ってリスタートできる<br>②キャラメイク<br>体術　初期値30 最大値80<br>忍術　初期値30 最大値80<br>分身　初期値0 最大値3<br>ここに90点を自由に割り振る<br>ただし分身は10点ごとに1つ増やせる<br>③プレイ<br>別記進行表に従って遊べ<br>クリアしたやつみんなが忍者王だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-進行表 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">進行表</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            1:堀<br>お前は国境の森を抜け、目的の城まで辿り着いた<br>しかし広い堀が城の周囲を囲み、侵入を阻んでいる<br>（飛び越える→2へ　水蜘蛛を使う→3へ）<br><br>2:跳躍<br>お前は修行で鍛えた自分の脚力を信じることにした<br>助走をつけて堀の縁で踏み切り、対岸の石垣へ向けて跳躍する<br>（1d100<=体術で判定　成功→5へ　失敗→4へ）<br><br>3:水蜘蛛<br>お前は水上を歩く忍具・水蜘蛛の力で堀を越えることにした<br>足に水蜘蛛を装着し、そろりそろりと水上へ進み出る<br>（1d100<=忍術で判定　成功→5へ　失敗→4へ）<br><br>4:落水<br>お前は堀に転落した<br>「何の音だ…？」<br>石垣の上で警備の侍が水音を聞きつけ、こちらを見下ろしてくる<br>急ぎ水遁の術で潜水して身を隠せ<br>（1d100<=忍術-20で判定　成功→5へ　失敗→14へ）<br><br>5:城内<br>お前は堀を越え、石垣を登って城内へ潜入した<br>巻物があるという天守閣へ行ってみると、入口の前に見張りの侍が数人いる<br>（手裏剣を投げて殺す→6へ　変装して通してもらう→7へ）<br><br>6:暗殺<br>任務のためには殺生もやむなし<br>お前は侍を殺すことにした<br>物陰から彼らの急所を狙って手裏剣を投げ放つ<br>（1d100<=体術で判定　成功→9へ　失敗→8へ）<br><br>7:変装<br>お前は事前に収集していた情報を参照<br>天守閣に出入りする権限を持つ侍に変装して入口へ向かった<br>見張りたちを騙せるか<br>（1d100<=忍術で判定　成功→10へ　失敗→8へ）<br><br>8:鉄火場<br>お前の策は失敗に終わり、侍たちはお前を敵として認識した<br>「さては曲者か！ええい出会え出会え！」<br>ある者は刀を抜き、またある者は味方に通報すべく走る<br>お前は急ぎ彼らを始末しなければならない<br>（1d100<=体術-20で判定　成功→9へ 失敗→14へ）<br><br>9:殺戮者<br>お前は侍たちの息の根を止め、死体をまたいで天守閣へ入る<br>しばらく進むと事前の情報にない分かれ道を発見した<br>どちらに進むかは運に委ねるほかにないか<br>（1d100<=低い方のステータスを振る　成功→13へ　失敗→11へ）<br><br>10:詐欺師<br>お前は見事侍たちを欺き、堂々と天守閣へ入る<br>しばらく進むと事前の情報にない分かれ道を発見した<br>どちらに進むかは運に委ねるほかにないか<br>（1d100<=低い方のステータスを振る　成功→13へ　失敗→12へ）<br><br>11:終着<br>お前は左へ進んだが、その先は行き止まりだった<br>引き返そうとした時、来た道から大勢の足音と声が聞こえる<br>「出会え出会え！見張りが殺されていた、こっちに曲者がいる！」<br>（→14へ）<br><br>12:罠<br>お前は左へ進んだが、足元でカチリという音が鳴る<br>次の瞬間床板が開き、落とし穴が姿を現した<br>お前はそこへ落下し、下にあった斜めのトンネルの中を転がる<br>そして石垣の半ばに開いた出口から城外へと放り出される…<br>（→4へ）<br><br>13:巻物<br>お前は右へ進み、その先で隠し階段を発見する<br>登った先は最上階である<br>床の間に飾られていた巻物をお前は掴み取る<br>階下ではようやく侵入者の痕跡を発見して騒ぎ始めたようだがもう遅い<br>お前はモモンガのごとく風呂敷を広げ、窓から飛び立った…<br>（→15へ）<br><br>14:死<br>お前の潜入の試みは完全に敵に露見してしまった<br>大勢の侍がお前を取り囲む<br>「曲者め！生きて帰れると思うな！」<br>お前は無数の刃に貫かれ、切り裂かれて息絶えた<br>GAME OVER<br><br>15:報告<br>お前は母国の殿様のもとへ帰り着き、巻物を献上した<br>「よくやった！お前は誇りだ！」<br>殿様は大いに喜び、お前に莫大な恩賞を与える<br>金でも酒でも女でも思いのままだ！<br>GAME CLEAR
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            さすがはオレの息子だ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ うちはフガク ] 体術 : 30 → 60
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ うちはフガク ] 忍術 : 30 → 70
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ うちはフガク ] 残機 : 0 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            さて…巻物のあるという城まで来たが…<br>堀が邪魔だな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            うちは流水蜘蛛で攻略する　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70 (1D100<=70) ＞ 99 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            まずい堀に落ちた<br>このままでは見つかってしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70-20 (1D100<=50) ＞ 59 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜〜っ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ うちはフガク ] 残機 : 2 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            堀からリスタートだ<br>来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70 うちは流水蜘蛛 (1D100<=70) ＞ 73 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            また落ちた🌈<br>水遁を…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70-20 (1D100<=50) ＞ 81 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            死んだ🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ うちはフガク ] 分身 : 1 → 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            まずい後がない<br>とにかく堀を水蜘蛛で越えるぞサスケ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70 (1D100<=70) ＞ 78 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            このダイス壊れてんのか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70-20 水遁 (1D100<=50) ＞ 59 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            🌈🌈🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            私に代わってゲームクリアを見つけてくれ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            えらく凝った虚無だろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            パラノイア虚無改良してたらいつのまにかこれになったのだ…何故かな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            へ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            やるか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            飛び越えるぞ 来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=75 体術 (1D100<=75) ＞ 86 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜っ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 司令官 ] 体術 : 75 → 75
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 司令官 ] 忍術 : 75 → 75
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            来たか　司令官
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            いちおうメイン2作っておくか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 司令官 ] 分身 : 0 → 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            45ずつ振るのは駄目だったか🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待て堀に落ちても続きがあるぞ<br>頑張ってくれ(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            やばい落水があったか🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=75-20 落水 (1D100<=55) ＞ 73 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜っ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            俺はニンジンャ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ニンジン ] 忍術 : 30 → 60
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ニンジン ] 体術 : 30 → 60
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            来たか　ニンジン
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ニンジン ] 分身 : 0 → 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            ニンジン跳躍！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60 (1D100<=60) ＞ 11 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            城内に侵入成功ャ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            はじめて堀を越えるやつが現れたな…イタチ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            ニンジンは人寺ン（ニンジン）…<br>つまり侍に変装する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60 (1D100<=60) ＞ 67 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             
+                        </p>
+                        <p class="message-content-text">
+                            人参が歩いておるぞ！曲者じゃ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            マンドラゴラか何かか…！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >人参が歩いておるぞ！曲者じゃ！<br>もうちょっと他の感想があるだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            なぜばれた…！いや仕方あるまい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60-20 (1D100<=40) ＞ 15 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            ニンジン強いな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            これで判定成功したらクリアだな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            人参を口に詰め込み窒息死…悲しい最後ャ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            どちらにいくか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60 (1D100<=60) ＞ 84 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            ニンジンが…切り刻まれた！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ニンジン ] 分身 : 3 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            藤虎開眼<br>城の献立に人参が追加されたよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            歩いて喋って殺してくる人参とか食べたくねェなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            ２本目のニンジンも侵入成功…というわけだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            さっきは何故かバレたが今度はバレまい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60 (1D100<=60) ＞ 42 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            どちらに行けばいい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60 (1D100<=60) ＞ 23 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            進行表の9で失敗したら11→14と進んで死んで分身消費したら9からやり直しになるんすがね？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            これが巻物か…ではいただいたぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             
+                        </p>
+                        <p class="message-content-text">
+                            通路が土まみれじゃ！曲者じゃー！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            もう遅い！さらば！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            そうだな<br>14から一回戻って11、2回戻って9からリスタートだ<br>もっとうまい書き方があったかもしれないな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            へ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            ニンジンに人間キャラが二人も負けてるのか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            へ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ニンジン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ニンジン
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-司令官">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            司令官
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            15分で終了を教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            早速堀を飛び越えて仕事に取り掛かろうじゃないの
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=80 (1D100<=80) ＞ 50 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            見張りにゃ悪いが<br>手段は他になさそうだな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            来たか　阿部さん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=80 (1D100<=80) ＞ 25 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            侍達の菊門は音も無く背後から一突きにされてしまう。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            さーてどちらに行くか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=50 (1D100<=50) ＞ 16 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            どうやら当たりだったみたいだな<br>こいつは遠慮なくいただいていくぜ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            ストレート突破すんげェ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            男は既に手遅れの喧騒を顧みる事もせずホモンガの如く玉袋を広げ<br>夜の闇へと溶けていった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            こうして無事ノンケをホモへと変える秘術が記された巻物を手にし<br>殿からの恩賞を得る事が叶った忍びのホモは<br>やがて一つの別派を立てる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            これが伊賀流と並び現代まで伝わるかの肛賀流の始まりとされる出来事である
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-忍びのホモ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            忍びのホモ
+                        </p>
+                        <p class="message-content-text">
+                            どうでもいい事だが甲賀流には女の忍者はいない事で有名だったらしいな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            やはり…ホモ軍団か！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            ではそろそろ終了
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            クリア賞　ニンジン<br>ストレートクリア賞　忍びのホモ<br>堀　うちはフガク　司令官
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-うちはフガク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            うちはフガク
+                        </p>
+                        <p class="message-content-text">
+                            たまにはこんな虚無もいいだろう？<br>3人は参加ありがとシャンだァ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
