@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 150px;
+            --user-items-height: 250px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-noname1" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-noname1" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">noname1</span>
+                </label>
+                <label for="user-バランスのいい数字を出す山本選手" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-バランスのいい数字を出す山本選手" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">バランスのいい数字を出す山本選手</span>
+                </label>
+                <label for="user-ドンモモタロウ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ドンモモタロウ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ドンモモタロウ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            1d100で一番高い数字出した奴が優勝<br>100が出たらランキング発表と宴
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            相変わらずすげェ虚無だ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            虚無だァ〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noname1">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noname1
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こんなんでゲラゲラ笑っちゃっただろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            チャットパレットに登録して連打していい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そこまでして勝ちたいか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            おわァァアアアァァアアアッッッッッ！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            もう多分こいつより面白い事出来る奴居ねえよこの卓
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            助けてくれ(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            相変わらずバランスがかけらもねえ数字だ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 38
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 41
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 90
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 66
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 38
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 96
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 68
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x10 1d100=100 #1<br>(1D100=100) ＞ 70 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 64 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 85 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 80 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 48 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 70 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 74 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 84 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 26 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 27 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            出な過ぎてちょっと面白い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x10 1d100=100 #1<br>(1D100=100) ＞ 7 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 26 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 24 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 51 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 48 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 30 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 43 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 33 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 39 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 93 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x10 1d100=100 #1<br>(1D100=100) ＞ 68 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 8 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 12 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 88 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 9 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 51 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 95 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 60 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 42 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 66 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x10 1d100=100 #1<br>(1D100=100) ＞ 83 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 1 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 56 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 18 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 32 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 23 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 49 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 9 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 43 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 61 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x10 1d100=100 #1<br>(1D100=100) ＞ 99 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 98 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 2 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 64 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 81 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 20 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 94 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 96 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 75 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 61 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドンモモタロウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ドンモモタロウ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x10 1d100=100 #1<br>(1D100=100) ＞ 13 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 67 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 17 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 66 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 37 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 9 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 14 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 38 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 75 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 18 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ズルすんな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x20 1d100=100 #1<br>(1D100=100) ＞ 56 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 63 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 33 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 31 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 24 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 46 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 53 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 29 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 23 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 9 ＞ 失敗<br><br>#11<br>(1D100=100) ＞ 71 ＞ 失敗<br><br>#12<br>(1D100=100) ＞ 49 ＞ 失敗<br><br>#13<br>(1D100=100) ＞ 93 ＞ 失敗<br><br>#14<br>(1D100=100) ＞ 34 ＞ 失敗<br><br>#15<br>(1D100=100) ＞ 4 ＞ 失敗<br><br>#16<br>(1D100=100) ＞ 35 ＞ 失敗<br><br>#17<br>(1D100=100) ＞ 48 ＞ 失敗<br><br>#18<br>(1D100=100) ＞ 66 ＞ 失敗<br><br>#19<br>(1D100=100) ＞ 14 ＞ 失敗<br><br>#20<br>(1D100=100) ＞ 82 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x30 1d100=100 #1<br>(1D100=100) ＞ 28 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 35 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 66 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 13 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 53 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 58 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 15 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 25 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 20 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 86 ＞ 失敗<br><br>#11<br>(1D100=100) ＞ 67 ＞ 失敗<br><br>#12<br>(1D100=100) ＞ 6 ＞ 失敗<br><br>#13<br>(1D100=100) ＞ 65 ＞ 失敗<br><br>#14<br>(1D100=100) ＞ 75 ＞ 失敗<br><br>#15<br>(1D100=100) ＞ 31 ＞ 失敗<br><br>#16<br>(1D100=100) ＞ 32 ＞ 失敗<br><br>#17<br>(1D100=100) ＞ 60 ＞ 失敗<br><br>#18<br>(1D100=100) ＞ 2 ＞ 失敗<br><br>#19<br>(1D100=100) ＞ 31 ＞ 失敗<br><br>#20<br>(1D100=100) ＞ 15 ＞ 失敗<br><br>#21<br>(1D100=100) ＞ 62 ＞ 失敗<br><br>#22<br>(1D100=100) ＞ 61 ＞ 失敗<br><br>#23<br>(1D100=100) ＞ 38 ＞ 失敗<br><br>#24<br>(1D100=100) ＞ 48 ＞ 失敗<br><br>#25<br>(1D100=100) ＞ 30 ＞ 失敗<br><br>#26<br>(1D100=100) ＞ 64 ＞ 失敗<br><br>#27<br>(1D100=100) ＞ 61 ＞ 失敗<br><br>#28<br>(1D100=100) ＞ 56 ＞ 失敗<br><br>#29<br>(1D100=100) ＞ 7 ＞ 失敗<br><br>#30<br>(1D100=100) ＞ 87 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x40 1d100=100 #1<br>(1D100=100) ＞ 30 ＞ 失敗<br><br>#2<br>(1D100=100) ＞ 88 ＞ 失敗<br><br>#3<br>(1D100=100) ＞ 7 ＞ 失敗<br><br>#4<br>(1D100=100) ＞ 22 ＞ 失敗<br><br>#5<br>(1D100=100) ＞ 89 ＞ 失敗<br><br>#6<br>(1D100=100) ＞ 38 ＞ 失敗<br><br>#7<br>(1D100=100) ＞ 21 ＞ 失敗<br><br>#8<br>(1D100=100) ＞ 85 ＞ 失敗<br><br>#9<br>(1D100=100) ＞ 30 ＞ 失敗<br><br>#10<br>(1D100=100) ＞ 44 ＞ 失敗<br><br>#11<br>(1D100=100) ＞ 84 ＞ 失敗<br><br>#12<br>(1D100=100) ＞ 28 ＞ 失敗<br><br>#13<br>(1D100=100) ＞ 55 ＞ 失敗<br><br>#14<br>(1D100=100) ＞ 96 ＞ 失敗<br><br>#15<br>(1D100=100) ＞ 58 ＞ 失敗<br><br>#16<br>(1D100=100) ＞ 33 ＞ 失敗<br><br>#17<br>(1D100=100) ＞ 72 ＞ 失敗<br><br>#18<br>(1D100=100) ＞ 63 ＞ 失敗<br><br>#19<br>(1D100=100) ＞ 45 ＞ 失敗<br><br>#20<br>(1D100=100) ＞ 69 ＞ 失敗<br><br>#21<br>(1D100=100) ＞ 82 ＞ 失敗<br><br>#22<br>(1D100=100) ＞ 56 ＞ 失敗<br><br>#23<br>(1D100=100) ＞ 43 ＞ 失敗<br><br>#24<br>(1D100=100) ＞ 44 ＞ 失敗<br><br>#25<br>(1D100=100) ＞ 61 ＞ 失敗<br><br>#26<br>(1D100=100) ＞ 91 ＞ 失敗<br><br>#27<br>(1D100=100) ＞ 7 ＞ 失敗<br><br>#28<br>(1D100=100) ＞ 94 ＞ 失敗<br><br>#29<br>(1D100=100) ＞ 81 ＞ 失敗<br><br>#30<br>(1D100=100) ＞ 87 ＞ 失敗<br><br>#31<br>(1D100=100) ＞ 23 ＞ 失敗<br><br>#32<br>(1D100=100) ＞ 27 ＞ 失敗<br><br>#33<br>(1D100=100) ＞ 67 ＞ 失敗<br><br>#34<br>(1D100=100) ＞ 51 ＞ 失敗<br><br>#35<br>(1D100=100) ＞ 41 ＞ 失敗<br><br>#36<br>(1D100=100) ＞ 100 ＞ 成功<br><br>#37<br>(1D100=100) ＞ 87 ＞ 失敗<br><br>#38<br>(1D100=100) ＞ 10 ＞ 失敗<br><br>#39<br>(1D100=100) ＞ 10 ＞ 失敗<br><br>#40<br>(1D100=100) ＞ 48 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            > (1D100=100) ＞ 99 ＞ 失敗<br>おしい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            優勝だァ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            宴だァァアアアァァアアアッッッッッ！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ランキング発表
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            嬉しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            お前ズルで優勝して悔しくないのかよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 悔しさ (1D100) ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            ぜ<br>ん<br>ぜ<br>ん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            1位ズルnoname<br>2位ドン桃太郎　10<br>3位バランスのいい数字を出す山本選手　１
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ嬉しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            こう見ると結構頑張った方だろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どこがだよ他に参加者いなかっただけだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            ウッ…！ウッ…！ウァッ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドンモモタロウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ドンモモタロウ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x40 1d100 嬉しさ #1<br>(1D100) ＞ 97<br><br>#2<br>(1D100) ＞ 75<br><br>#3<br>(1D100) ＞ 84<br><br>#4<br>(1D100) ＞ 33<br><br>#5<br>(1D100) ＞ 6<br><br>#6<br>(1D100) ＞ 96<br><br>#7<br>(1D100) ＞ 29<br><br>#8<br>(1D100) ＞ 39<br><br>#9<br>(1D100) ＞ 30<br><br>#10<br>(1D100) ＞ 73<br><br>#11<br>(1D100) ＞ 6<br><br>#12<br>(1D100) ＞ 22<br><br>#13<br>(1D100) ＞ 45<br><br>#14<br>(1D100) ＞ 41<br><br>#15<br>(1D100) ＞ 35<br><br>#16<br>(1D100) ＞ 58<br><br>#17<br>(1D100) ＞ 1<br><br>#18<br>(1D100) ＞ 11<br><br>#19<br>(1D100) ＞ 41<br><br>#20<br>(1D100) ＞ 7<br><br>#21<br>(1D100) ＞ 20<br><br>#22<br>(1D100) ＞ 62<br><br>#23<br>(1D100) ＞ 87<br><br>#24<br>(1D100) ＞ 66<br><br>#25<br>(1D100) ＞ 44<br><br>#26<br>(1D100) ＞ 31<br><br>#27<br>(1D100) ＞ 72<br><br>#28<br>(1D100) ＞ 9<br><br>#29<br>(1D100) ＞ 30<br><br>#30<br>(1D100) ＞ 49<br><br>#31<br>(1D100) ＞ 54<br><br>#32<br>(1D100) ＞ 58<br><br>#33<br>(1D100) ＞ 10<br><br>#34<br>(1D100) ＞ 90<br><br>#35<br>(1D100) ＞ 51<br><br>#36<br>(1D100) ＞ 99<br><br>#37<br>(1D100) ＞ 86<br><br>#38<br>(1D100) ＞ 10<br><br>#39<br>(1D100) ＞ 66<br><br>#40<br>(1D100) ＞ 86
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それはともかく宴だァ～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            バランスのいい宴をするぞ　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドンモモタロウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ドンモモタロウ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            1d100 バランスのよさ (1D100) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-バランスのいい数字を出す山本選手">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            バランスのいい数字を出す山本選手
+                        </p>
+                        <p class="message-content-text">
+                            ウッ…！ウッ…！ウァッ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
