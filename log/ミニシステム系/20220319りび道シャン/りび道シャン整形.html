@@ -1,0 +1,4671 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 250px;
+            --user-items-height: 300px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-王国メイキング" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-王国メイキング" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">王国メイキング</span>
+                </label>
+                <label for="tab-キャラメイキング" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-キャラメイキング" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">キャラメイキング</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GMアイシャ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GMアイシャ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GMアイシャ</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-蒼星石" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-蒼星石" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">蒼星石</span>
+                </label>
+                <label for="user-ブラックワーム(騎士) " class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ブラックワーム(騎士) " onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ブラックワーム(騎士) </span>
+                </label>
+                <label for="user-アザゼル(神官) " class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アザゼル(神官) " onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アザゼル(神官) </span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            王国作成から<br>参加人数は1〜6人？<br>サプハラ可<br>ジョブは自由<br>ルルブ無しでも参加は自由<br><br>キャラシサイト<br>https://character-sheets.appspot.com/mayoland/<br><br>新規・継続どちらでも可
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            21時前後に出航予定
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            前回の国<br>ここはデーモンキングダム<br>https://character-sheets.appspot.com/mayoking/edit.html?key=ahVzfmNoYXJhY3Rlci1zaGVldHMtbXByFwsSDUNoYXJhY3RlckRhdGEYgfHwjQQM
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ご飯とお風呂入ってくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            戻った
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            どうだ様子は
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 調子 (1D100) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ゲ<br>ボ<br>カ<br>ス
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ﾀｲﾁｮｳ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            参加シャンが来ない……っ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            一時期集まってたからルルブ持ってるのが少ないってことはなさそうなんだがな…ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            やはり…連休だからか……！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            連休で減るのは逆に謎だろ<br>まさかコロナなのに旅行…！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 真実度 (1D100) ＞ 53
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わっか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わっか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おい！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            敵だね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            最悪他にクトゥとかミニゲームやってもいいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            結構離れてたけどまだ続いてたんだ…ここ最近参加シャンとかどうなってるんすかね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            色々来てる感じですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            年末にRPつよつよ初心シャンが来たり、この前はお外から参加者が来たり色々
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            へ～！<br>色々あったけど賑わってるみたいでよかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            スレは前と変わらずあんまり伸びてないけど人もいるみたいで嬉しいだろ<br>またね～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            またね〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            22時まで待つ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            22時まで延長
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            https://character-sheets.appspot.com/mayoland/edit.html?key=ahVzfmNoYXJhY3Rlci1zaGVldHMtbXByFwsSDUNoYXJhY3RlckRhdGEYssq-gQQM
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            きたよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            まあ人いなさそうだしミニゲームでもいいけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            うわあり！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ミニゲームやるにしてもせめてもう１人欲しいな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ブラックワーム(騎士) ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブラックワーム(騎士) 
+                        </p>
+                        <p class="message-content-text">
+                            https://character-sheets.appspot.com/mayoland/edit.html?key=ahVzfmNoYXJhY3Rlci1zaGVldHMtbXByFwsSDUNoYXJhY3RlckRhdGEYuuWUigQM
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-アザゼル(神官) ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            アザゼル(神官) 
+                        </p>
+                        <p class="message-content-text">
+                            https://character-sheets.appspot.com/mayoland/edit.html?key=ahVzfmNoYXJhY3Rlci1zaGVldHMtbXByFwsSDUNoYXJhY3RlckRhdGEYvOWUigQM
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            そういえば国は一から作るのかい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            やる場合はそうしましょう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            こっちに前使った騎士と神官のデータあるので
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            わかった。じゃあ一応ふっとこう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            KNT1 王国名決定表(13) ＞ 超、スーパー、秘密主義、高等、ハイ、どん底
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            KNT2 王国名決定表(66) ＞ (国王の名前。後で決定)、(国王のジョブ名。後で決定)、(ランダムな武具アイテム名)、(ランダムな日常アイテム名)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            KNT3 王国名決定表(25) ＞ 市、シティ、ポリス、都、のみやこ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            こっちも振るか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            choice 超 スーパー 秘密主義 高等 ハイ どん底 (choice 超 スーパー 秘密主義 高等 ハイ どん底) ＞ スーパー
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            choice 国王 頑張り屋　武具アイテム　日常アイテム (choice 国王 頑張り屋 武具アイテム 日常アイテム) ＞ 頑張り屋
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            choice 市　シティ　ポリス　都　のみやこ (choice 市 シティ ポリス 都 のみやこ) ＞ のみやこ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ブラックか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            スーパー頑張り屋のみやこ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            まあぼくが頑張ったらろくなことにならなそうだけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            KET 王国環境表(3) ＞ あなたの国には、名工がつくった武器がある。ランダムに選んだ武具アイテム1個を獲得する。その武具アイテムはレベル1として扱う。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            WIT 武具アイテム表(11) ＞ だんびら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            もう持ってるからいらないね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            スーパー頑張り屋のみやこ<br>https://character-sheets.appspot.com/mayoking/edit.html?key=ahVzfmNoYXJhY3Rlci1zaGVldHMtbXByFwsSDUNoYXJhY3RlckRhdGEYmaDZhwQM
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            王国のシート作った
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後欲しいジョブはある？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            KET 王国環境表(4) ＞ あなたの国は、辺境に位置する王国だ。周辺には怪物も少ない。保管系施設の中からランダムに1種を選ぶ。自国にその施設を1件建設する。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            3 天文台
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            これはあたりかな？というかこれ初めて見たね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            当たりかな？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            気力保存２はつよいな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            全部神官にわたしとけばかなり安全だね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それか騎士か王の後押しに使えるのはいいね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            剣劇は序盤強いみたいだからね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後２回振っていいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来なさそうだし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            わかったよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            KET 王国環境表(3) ＞ あなたの国は、天然の要害に囲まれており、外敵に襲われにくい。《民》が（2D6）人増加する。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            2d6 (2D6) ＞ 4[1,3] ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            あたりだったのにもったいないなあ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            KET 王国環境表(3) ＞ あなたの国には、名工がつくった武器がある。ランダムに選んだ武具アイテム1個を獲得する。その武具アイテムはレベル1として扱う。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            また！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            WIT 武具アイテム表(25) ＞ 甲冑
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            これは欲しいかも
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ スーパー頑張り屋のみやこ ] 人口 : 30 → 34
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            良かったなァ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            旗捨てて甲冑にしとこ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            schoice まよキン 小鬼 (choice まよキン 小鬼) ＞ 小鬼
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後は他に欲しいジョブある？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            現状、王、騎士、神官の三人だし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            穴があるとしたら忍者だね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-王国メイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">王国メイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-キャラメイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">キャラメイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice[サンプル,普通に作る] (choice[サンプル,普通に作る]) ＞ サンプル
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-キャラメイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">キャラメイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice 平穏 迷宮 (choice 平穏 迷宮) ＞ 平穏
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-キャラメイキング user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">キャラメイキング</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice スシ ござる (choice スシ ござる) ＞ スシ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            何かアホンダラな気がする
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            ミニゲームの方は宣伝しなくていいのかい？こっちはそれがダメだったらでいいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            別にいいよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ミニゲームは何がやりたい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            ミニゲームはシャンタンクとかこの前の映画作るやつぐらいしか出てこないなあ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            りび道とか侵略のシャンクスでも良いならやるよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ちょっとルルブ貼るね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ﻿侵略のシャンクス<br><br>１.はじめに<br><br>　このゲームは50%の確率で世界侵略を目論むTRPGなことを教える<br><br>・世界観<br>　PCたちは世界侵略を目論む秘密結社「赤髪海賊団」の船員<br>　船員は全員無限大の特殊能力を持っているのでどんな難題も対処できる<br>　ただし成功率は50%<br><br>２.キャラクターメイキング<br><br>　自分の特殊能力を決めてくれ(^^)<br><br><br>３.朝の集会パート<br><br>　大頭のシャンクスから今日解決すべき目標が発表されるぞォ！<br><br>４.目標解決パート<br><br>　能力を使って目標を解決するロールプレイをしてくれ(^^)<br>　1d2を振り1が出たら成功、2が出たら失敗なことを教える<br><br>５.クライマックス<br><br>　一番活躍した人が1d2を振ってくれ(^^)<br>　1が出たら今日の目標は達成、2が出たら今日の目標は未達成なことを教える<br><br>６.最後に<br><br>  これはTRPGおまじなSOSに収録されている50:50で世界征服TRPG『侵略のドゥビドゥバー』のルールをシャンクナイズしたものなのを教える<br>  暇なときこれで遊んでくれ(^^)<br><br>以上
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ﻿りび道シャン<br><br>１.はじめに<br><br>　このゲームは自分の正体と性癖を暴露するTRPGなことを教える<br><br>・世界観<br>　様々な物や概念が人の形をとった「海賊」が暮らす世界が舞台<br>　全員仲良しのPCたちも実は海賊だが、今までその正体をみんなに隠して生きてきた<br>　しかしPCたちは全員明日に死ぬことになってしまう<br>　死を前にしてやり残したこと─正体と性癖の暴露大会が開かれる<br><br>２.単語決め<br><br>　全員で3周するまでしりとりだァ～！<br>　ここで出た単語から1つを選んで自分の性癖とすることを教える<br><br>３.キャラクターメイキング<br><br>　自分の正体を決めてくれ(^^)<br>　ランダムに決めてもいいしGMが決めてもいいし自分で決めてもいいことを教える<br><br>４.暴露大会<br><br>　順番に自分の正体と性癖を暴露するぞォ！<br>　全員が暴露したら一番好きな暴露に投票してくれ(^^)<br>　勝者は死ぬまでのロールプレイをする権利と義務が与えられることを教える<br><br>５.最後に<br><br>  これはTRPGおまじな大饗宴四次会に収録されているあふれる性癖TRPG『りび道！』のルールをシャンクナイズしたものなのを教える<br>  暇なときこれで遊んでくれ(^^)<br><br>以上
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            りび道シャンはもしかしたら乱入シャンが来るかもな…ルフィ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            じゃあそれでいってみようか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            一旦駒しまうね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            わかったよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            こっちも参加するからね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            正体はランダムにする？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            ランダムだと何が変わるんだい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice 無機物 有機物 (choice 無機物 有機物) ＞ 有機物
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            適当に色々choiceする感じで
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            わかったよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            choice 無機物 有機物 (choice 無機物 有機物) ＞ 無機物
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            まあドールだしね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            BGMとか背景適当に変えてもいいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice 司令官 アロナ オレンジエイド 先生 キャロ ベネツィア〜 (choice 司令官 アロナ オレンジエイド 先生 キャロ ベネツィア~) ＞ アロナ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            わかったよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice[アイシャ,蒼星石] 先手 (choice[アイシャ,蒼星石]) ＞ アイシャ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            こっちからだな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            では始める
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            準備出来たか教えて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            教えるよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            出航だァ〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            出航だ～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            様々な物や概念が人の形をとった「海賊」が暮らす世界が舞台<br>　全員仲良しのPCたちも実は海賊だが、今までその正体をみんなに隠して生きてきた<br>　しかしPCたちは全員明日に死ぬことになってしまう<br>　死を前にしてやり残したこと─正体と性癖の暴露大会が開かれる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「明日…隕石が落ちて…来るらしい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            あちょっとまって！<br>15分ぐらい貰っていい？参加シャン来るかもしれないし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「実感がわかないけど…地球が壊れるなら逃げ場もないね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            15分になったら再開しよう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            まったく人がいないね…視聴シャンはいるんだけどね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            多分性癖語りしたら連鎖召喚されるかも
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            前のドラえもん卓で大量召喚されてたし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            あの全部ドラえもんのやつ？だいぶ前だなあ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            最後にこれやっててその時に乱入シャンが来てたから…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            へ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            それにしても今日はスレにすら人が少ない気がするね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そうだね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            多分皆忙しいんだと思う
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            三連休にお疲れ様だね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わりぃ　俺帰省してる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そうか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            へ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            多分ゴールデンウィークぐらいからまた人が増えそうだけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            決算前だと忙しさで頭おかしくなりそうだしね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            あとあれあったね地震
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それもあるし、当分こんな感じかも
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そろそろ再開するか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            途中参加も有り
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「そこで心残りがないように今かあることをしようか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「…？何をするんだい？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「性癖しりとりをさ…！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「性癖しりとり！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「そうだ」<br>「勝っても負けても恨みっこ無しの真剣勝負だ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「勝っても負けても特にうれしいこともないしね…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ２.単語決め<br><br>　全員で3周するまでしりとりだァ～！<br>　ここで出た単語から1つを選んで自分の性癖とすることを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「それはそう」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「こちらから先手貰うぞ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「どうぞどうぞ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「おっぱい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「じゃあ次は僕かな？」<br>「球体関節」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「ああもうしりとり始まってるのか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「い…い…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「イキ目」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「目か…」<br>「目隠れ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「れ…れ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「レオナルドダヴィンチのモナリザの手」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「手か…」<br>「敵になって想い人が殺しに来るのを阻止される」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「る…る…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「ルビーとか宝石で局所だけ隠した水着」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            三週したからまとめるね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            まとめ<br>おっぱい<br>イキ目<br>目隠れ<br>レオナルドダヴィンチのモナリザの手<br>敵になって想い人が殺しに来るのを阻止される<br>ルビーとか宝石で局所だけ隠した水着
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            4.暴露大会<br><br>　順番に自分の正体と性癖を暴露するぞォ！<br>　全員が暴露したら一番好きな暴露に投票してくれ(^^)<br>　勝者は死ぬまでのロールプレイをする権利と義務が与えられることを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            やるぞォ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            やるぞー！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「楽しかったな…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「うん。意外とね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「最後に見せたい物があるんだ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「なんだい？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「今までごめん」<br>「ほんとはブルアカのアロナなんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「そっか…僕も隠してたことがあるんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「わかった」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「僕実は海賊じゃなくて人形なんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「へ〜！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「まあもうみんな死ぬからどうでもいいけどね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            choice[有り,無し] 重複と組み合わせ (choice[有り,無し]) ＞ 有り
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「悲しいが仕方なかったっ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            逆順にする？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            するとどうなる？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            性癖のまとめから重複と組み合わせ有りだからそれらで語ってもらう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            じゃあ僕から行こうか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「まずこの人形を見てほしい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            はい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「ネタバレの関係で色々話せないんだけどきれいに顔立ちが整った西洋人形だね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            メリメリしてきたな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「はい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            バレてるメリ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「これがこうなる」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「はい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「この人形の右目に注目してほしい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            やはり…日本人形が最高かくね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「なんか裏返ってるっていうかイッたときにこういう風に裏返るみたいな目の動きしてるのいいよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「はい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「へ〜！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            完全に振られた不細工人形は黙るメリ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「なんか示す言葉が見つからないからイキ目って呼ぶことにするよ。これは素晴らしいね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「それはそう」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「僕からの話は以上だ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「君の話を聞きたいな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「わかった」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「ルビーとか宝石で局所だけ隠した水着いいよね…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「ああ特定のゲームでしか見たことないあれね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「このキャラもr-18版だと宝石と紐になるしね…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「普段は行動だけアホンダラだけど好きな人に見て貰いたくて水着ごとアホンダラになるのいいよね…モーションも凝ってるし」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「この状態で雪山疾走とかアホンダラすぎて好き」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「もう健全版の時点でエロすぎる気がするけど…まあそれは置いておいて…恋に暴走しがちな子ってかわいいよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「それはそう」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「普段は大人しいけどここぞっと言うときに押せ押せになるのいいよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「いい…若干方向性間違えてるのがあほ可愛い」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「チョコとかで味で勝てないから物量で勝とうするとかもいいよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「食べられる量には限りがあることを分かって無くてかわいいね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「ほんとそう」<br>「後でその事を怒られてるのもかわいいしね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「ｼｭﾝとなってるところもかわいいね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            「その事をちょっと引きずっててもまたアホな行動してるのも良い…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            「学習できないあほの子可愛いね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後は自由に性癖語りしても良いよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            もう語りつくしたね<br>というか僕のがニッチすぎて広げられないね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            なかなか良かったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            キャラ愛が詰まってたね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            もうひとつの方は好み？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            メリの方はわかったが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            レで思いつかなかったからジョジョの吉良そのままだよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            かくやはちょっと…人形を超越しちゃってるからなあ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            元の面影がほぼないし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            この前の卓で別タブでやって貰ってたが途中でつまってたな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            やはり…西洋人形が最高メリね…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            そうメリそうメリ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            スレも二人の自演になるしね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            基本あんまりキャラ以外のスレが無いね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            語尾だけの適当すぎな奴で笑うんだよね<br>ボインボインメリとか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            悲しい自演の時もあるしね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            たまに男の刑事に嫉妬してるやつがそれっぽくてダメだったよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            最新作　死嚙～シビトマギレ～CFも実施中！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            笑うよねあれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ログいる？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            メリァ！は声出して笑ったね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ほんとそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            一応貰っておこうかな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            宴にするか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            宴だ～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            すまん(Thanks.)<br>こんな感じになって
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            ちゃんと楽しめたから問題ないよ<br>ありがとうGM
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            また今度まよキンの卓立てるね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            うわ！ありがとう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            もう少し参加シャンがいたらりび道もすごいことになるかもね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            たまにそういう卓でもないのに性癖語り凄いことになってるところもあるからね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう<br>そういうのもシャン卓らしいよね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            視聴シャンもメリの画像でびっくりしたかもね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            気になった人は買おうね！おもしろいから！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-蒼星石">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            蒼星石
+                        </p>
+                        <p class="message-content-text">
+                            じゃ改めて楽しませてくれてありがとう！<br>またね～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            お疲れシャン！<br>こっちも楽しかった！<br>またね〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>

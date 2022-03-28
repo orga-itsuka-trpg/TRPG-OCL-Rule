@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 150px;
+            --user-items-height: 350px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-猪木" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-猪木" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">猪木</span>
+                </label>
+                <label for="user-力さん" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-力さん" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">力さん</span>
+                </label>
+                <label for="user-アンドバリ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アンドバリ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アンドバリ</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-恐怖！乳輪寿司男" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-恐怖！乳輪寿司男" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">恐怖！乳輪寿司男</span>
+                </label>
+                <label for="user-ダークドメイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ダークドメイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ダークドメイン</span>
+                </label>
+                <label for="user-吉野家" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-吉野家" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">吉野家</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            過信虚無<br><br>病人のお前たちは不死身の肉体への過信が出て手術後は医師の許可がでるまで絶対禁止の水分をとってしまう！<br>1d100<=90 を振り失敗したら死亡。私は泣いた！ただ、泣いた！<br><br>成功したら見舞客が寿司を1d10個持ってきてくれる。<br>その個数だけ成功値を<br>1d100<=85、80、75...と5ずつ減らしながら振る。失敗したら死亡。私は泣いた！ただ、泣いた！<br>生存したら宴だァ～～～！<br>失敗しても多く平らげて死んだなら伝説に残る...オット！これは言いすぎかな？<br>アントニオ猪木・談
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            ここでまた不死身の肉体への過信がでて、手術後は医師の許可がでるまで絶対禁止の水分を力道山はとってしまう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=90 グビッ！ (1D100<=90) ＞ 1 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            1d10 見舞客の持ってきた (1D10) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            個の寿司までたいらげたとの説もある。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=85 １箱目 (1D100<=85) ＞ 26 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=80　２箱目 (1D100<=80) ＞ 55 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=75 3箱目 (1D100<=75) ＞ 15 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70 4箱目 (1D100<=70) ＞ 87 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            ワタシは泣いた！ただ、泣いた！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-力さん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            力さん
+                        </p>
+                        <p class="message-content-text">
+                            4箱　永眠
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            悲しいから爆食する 来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=90-0 (1D100<=90) ＞ 53 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アンドバリ ] 寿司箱 : 0 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=90-1*5 (1D100<=85) ＞ 5 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ アンドバリ ] 寿司箱 : 1 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=90-2*5 (1D100<=80) ＞ 90 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜っ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            2箱 永眠
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            寿司振ってなかった🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            🌈<br>今振っていいよ<br>１以外が出たら死だけれど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            うわあり！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            1d10 寿司 (1D10) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            2コ食べたな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            最初は水なので2箱だ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=90 (1D100<=90) ＞ 65 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            寿司が増える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=85 １箱目 (1D100<=85) ＞ 37 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=80 ２箱目 (1D100<=80) ＞ 2 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=75 ３箱目 (1D100<=75) ＞ 29 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70 ４箱目 (1D100<=70) ＞ 62 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=65 ５箱目 (1D100<=65) ＞ 56 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60 ６箱目 (1D100<=60) ＞ 93 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            6箱　永眠
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            https://nico.ms/sm39333197
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダークドメイン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ダークドメイン
+                        </p>
+                        <p class="message-content-text">
+                            ネオサイタマの水はどれほどのものか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダークドメイン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ダークドメイン
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=90 (1D100<=90) ＞ 92 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            まさに水が合わなかった！というわけだ！<br>アントニオ猪木・談
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-恐怖！乳輪寿司男">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            恐怖！乳輪寿司男
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダークドメイン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ダークドメイン
+                        </p>
+                        <p class="message-content-text">
+                            まずい！！！111！！！<br>どういうことだワイルドハント＝サン！！！1！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ダークドメイン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ダークドメイン
+                        </p>
+                        <p class="message-content-text">
+                            0箱　水中毒
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            しるだくだァ～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=90 (1D100<=90) ＞ 10 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            お寿司の差し入れ…？なんで…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            なそ<br>にん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=85 (1D100<=85) ＞ 56 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=80 (1D100<=80) ＞ 15 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=75 (1D100<=75) ＞ 58 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=70 (1D100<=70) ＞ 30 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=65 (1D100<=65) ＞ 52 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=60 (1D100<=60) ＞ 7 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            1d100<=55 (1D100<=55) ＞ 65 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アンドバリ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            アンドバリ
+                        </p>
+                        <p class="message-content-text">
+                            おしい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            なんでお寿司なの…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-吉野家">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            吉野家
+                        </p>
+                        <p class="message-content-text">
+                            7箱 永眠
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            集計
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            全員永眠という結果に終わった<br>ｳｯ｡｡｡ｳｯ｡｡｡ｳｱｯ｡｡｡!
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-猪木">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            猪木
+                        </p>
+                        <p class="message-content-text">
+                            1位:吉野家<br>やはり牛丼屋は格が違った！<br><br>ではまたね～～～～
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 150px;
+            --user-items-height: 500px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM北陽" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM北陽" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM北陽</span>
+                </label>
+                <label for="user-馬場家の奥様" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-馬場家の奥様" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">馬場家の奥様</span>
+                </label>
+                <label for="user-梶原家の奥様" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-梶原家の奥様" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">梶原家の奥様</span>
+                </label>
+                <label for="user-ルウのフィギュア" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ルウのフィギュア" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ルウのフィギュア</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-塚地家の奥様" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-塚地家の奥様" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">塚地家の奥様</span>
+                </label>
+                <label for="user-サメ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-サメ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">サメ</span>
+                </label>
+                <label for="user-ピッコロ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ピッコロ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ピッコロ</span>
+                </label>
+                <label for="user-ポメ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ポメ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ポメ</span>
+                </label>
+                <label for="user-ダーク・ウルトラマン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ダーク・ウルトラマン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ダーク・ウルトラマン</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            ほぼ100円ショップ<br><br>品物を店内から選んで(好きなものを勝手に出していいです)レジに持ってきてください<br>choice[100円,100円ではない]<br>を私が振ります(遅かったら勝手に振ってください)<br>100円ではないを引いたら<br>1d999 と　choice[0円,00円,000円,0000円,タダ]を振っていただき組み合わせた額を自腹で払っていただきます<br><br>やりたかったら何回でもやって頂いて構いませんよ<br>それとは関係ないですけど北陽見ませんね...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-馬場家の奥様">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            馬場家の奥様
+                        </p>
+                        <p class="message-content-text">
+                            まずはお手本を見せるわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-梶原家の奥様">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            梶原家の奥様
+                        </p>
+                        <p class="message-content-text">
+                            ナチュラルに画像を間違えたわ...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルウのフィギュア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルウのフィギュア
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-梶原家の奥様">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            梶原家の奥様
+                        </p>
+                        <p class="message-content-text">
+                            これくーださい！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            では...こちらの商品は！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            (全員のカット)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            choice[100円,100円ではない] (choice[100円,100円ではない]) ＞ 100円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            100円です
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-梶原家の奥様">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            梶原家の奥様
+                        </p>
+                        <p class="message-content-text">
+                            よかったわぁ～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 梶原家の奥様 ] お支払い : 0 → 100
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-塚地家の奥様">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            塚地家の奥様
+                        </p>
+                        <p class="message-content-text">
+                            じゃあアタシも行くわね<br>ぶっこわし～ぶっこわし～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-サメ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            サメ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            （チュートリアルのため100円ではないが出た事とする）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-塚地家の奥様">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            塚地家の奥様
+                        </p>
+                        <p class="message-content-text">
+                            (^^)!?
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            こちらの商品は！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            1d9999 (1D9999) ＞ 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            1d999 (1D999) ＞ 501
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            choice[0円,00円,000円,0000円,タダ] (choice[0円,00円,000円,0000円,タダ]) ＞ 000円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            50万1000円です！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-塚地家の奥様">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            塚地家の奥様
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア～っ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 塚地家の奥様 ] お支払い : 501000 → 501000
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ピッコロ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ピッコロ
+                        </p>
+                        <p class="message-content-text">
+                            １０円！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            システム的に無理な奴じゃないですか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            こちらの商品は！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            choice[100円,100円ではない] (choice[100円,100円ではない]) ＞ 100円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            100円です<br>こちらはいわゆる50年代に発行されたギザ10なのですがその中でも流通枚数が多いとのことでこの価格だそうです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ピッコロ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ピッコロ
+                        </p>
+                        <p class="message-content-text">
+                            へ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ピッコロ ] お支払い : 0 → 100
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ピッコロ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ピッコロ
+                        </p>
+                        <p class="message-content-text">
+                            仙豆を商品に出すつもりだったけどまあいいでしょう<br>仙豆は誰か買ってくれ(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            ほぼ100円ショップの貨幣と石って怖かったですよね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            ピッコロさんなんだから酸っぱいりんごでも良かったかもしれないですね<br><br>それはそうとすいません
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ポメ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ポメ
+                        </p>
+                        <p class="message-content-text">
+                            仙豆くれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            こちらの商品は！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            choice[100円,100円ではない] (choice[100円,100円ではない]) ＞ 100円ではない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ポメ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ポメ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            100円ではございません！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            では1d999 と　choice[0円,00円,000円,0000円,タダ]をそれぞれ振ってください
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ポメ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ポメ
+                        </p>
+                        <p class="message-content-text">
+                            1d999 (1D999) ＞ 877
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ポメ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ポメ
+                        </p>
+                        <p class="message-content-text">
+                            choice[0円,00円,000円,0000円,タダ] (choice[0円,00円,000円,0000円,タダ]) ＞ 000円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            87万7000円です！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ポメ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ポメ
+                        </p>
+                        <p class="message-content-text">
+                            5円にしろくそが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            吠えないの(怒)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ポメ ] お支払い : 877000 → 877002
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ポメ ] お支払い : 877002 → 877000
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダーク・ウルトラマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ダーク・ウルトラマン
+                        </p>
+                        <p class="message-content-text">
+                            ダーク・ウルトラマンは財布のひもをコントロールできない…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダーク・ウルトラマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ダーク・ウルトラマン
+                        </p>
+                        <p class="message-content-text">
+                            新作ウルトラマンへの出演権が欲しいと考えているのだ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            こちらの商品は！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            choice[100円,100円ではない] (choice[100円,100円ではない]) ＞ 100円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ピッコロ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            ピッコロ
+                        </p>
+                        <p class="message-content-text">
+                            お前なら…いい…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            100円です<br>ただし一コマのみ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダーク・ウルトラマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ダーク・ウルトラマン
+                        </p>
+                        <p class="message-content-text">
+                            これでダークも”ニュージェネレーション・ヒーローズ”！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM北陽">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GM北陽
+                        </p>
+                        <p class="message-content-text">
+                            閉店<br>ポメさんが８０万のお支払いでトップでした<br>みなさん買い物上手ばかりですけまたのご来店をお待ちしております
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>

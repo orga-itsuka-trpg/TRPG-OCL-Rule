@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --tab-items-height: 150px;
+            --user-items-height: 250px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(255, 255, 255, 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            font-size: 1.17em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(0, 0, 0, 0.20), 0px 16px 24px 2px rgba(0, 0, 0, 0.14), 0px 6px 30px 5px rgba(0, 0, 0, 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: #FFFFFF;
+            margin: 0;
+            word-break: break-word;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: #FFFFFF;
+            margin: 0;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(255, 255, 255, 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: #ffffff;
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(255, 255, 255, 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-エリザベート" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-エリザベート" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">エリザベート</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-ナイトエンジェル" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ナイトエンジェル" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ナイトエンジェル</span>
+                </label>
+                <label for="user-超ベジータ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-超ベジータ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">超ベジータ</span>
+                </label>
+                <label for="user-ミルクちゃん" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ミルクちゃん" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ミルクちゃん</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            アイドル虚無ver.2<br>お前はアイドルだ<br>レッスンで魅力を高めてライブを成功させろ<br>①レッスン<br>ライブへ向けてレッスンに励め<br>以下のうちからレッスンを選び、右記のダイスで魅力を決める<br>1:ソフトなレッスン　1d30+20<br>2:ふつうのレッスン　1d50+10<br>3:ハードなレッスン　1d70<br>②ライブ<br>いざライブ本番に挑め<br>以下のうちからライブ会場を選び、右記のダイスで判定<br>成功したら会場は大盛り上がりとなりライブ成功　魅力も加算<br>失敗したら座席スカスカのお通夜状態となりライブ失敗　魅力加算はなし<br>1:ライブハウス　1d70<=魅力　成功時魅力+10<br>2:コンサートホール　1d60+10<=魅力　成功時魅力+20<br>3:東京ドーム　1d50+20<=魅力　成功時魅力+30<br>③集計<br>最終的な魅力をイニシアチブと情報タブに記録する<br>失敗しても記録できる<br>終了までに一番記録が高かったやつがアイドル王だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            当然アイドル王は私よ！<br>見てなさい子イヌ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            私くらいになるとハードなレッスンは必要ないけどソフトなのもぬるいわね<br>ふつうのレッスンにしましょう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            1d50+10 (1D50+10) ＞ 27[27]+10 ＞ 37
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            ワンツー！ワンツー！<br>フー！処女の血のお風呂で汗を流そうかしら！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ エリザベート ] 魅力 : 0 → 37
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            さあいよいよライブの日が近いわね！<br>会場は…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            コンサートホールにしましょう！<br>さあみんな私の歌声を聞きなさーい！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            1d60+10<=37 (1D60+10<=37) ＞ 24[24]+10 ＞ 34 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            みんなーありがとう！<br>この成功により私の魅力はさらに高まるわね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ エリザベート ] 魅力 : 37 → 57
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            結果は57！<br>まあそこそこね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            57
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            やるか…♠️
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            1d70 ハードな特訓するぞ 来い (1D70) ＞ 25
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ナイトエンジェル ] 魅力 : 0 → 25
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            choice ライブハウス コンサートホール 東京ドーム (choice ライブハウス コンサートホール 東京ドーム) ＞ ライブハウス
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            1d70<=25 (1D70<=25) ＞ 66 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            25
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            アイドルの道は過酷ね…子ジカ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            おいコラお前たち！<br>もう余興はおしまいだ！<br>さあ楽しいビンゴ大会の始まり始まり！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            1d70 BINGO！ (1D70) ＞ 51
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 超ベジータ ] 魅力 : 0 → 51
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            このベジータ様とあろうものがハードな修行で大した出目を出せんとは…<br>だがこのベジータ様が東京ドームでこの美声と華麗なる舞を披露すれば地球人どもは虜だぜ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            1d50+20<=51 地球は楽しいー、と・こ・ろ・だ・よー！ご・は・ん・も・お・い・し・いー！ (1D50+20<=51) ＞ 42[42]+20 ＞ 62 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            くそったれぇ……！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            このベジータ様のビンゴダンスを観に来ないとかどうかしてるぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            51
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-超ベジータ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            超ベジータ
+                        </p>
+                        <p class="message-content-text">
+                            オレ特訓だけで割と高いの頭おかしくなりそうだぞカカロット
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ナイトエンジェル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ナイトエンジェル
+                        </p>
+                        <p class="message-content-text">
+                            ベジータは料理教室も開いてるからでは？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            レッスンでいい出目が出たら小さめの会場で確実に底上げしにいく手もあるわね…子リス
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            めしのためにレッスンをするミルクちゃんなのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            1d50+10 (1D50+10) ＞ 14[14]+10 ＞ 24
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            1d70<=24 ライブハウスくれ (1D70<=24) ＞ 10 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ミルクちゃん ] 魅力 : 24 → 34
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ミルクちゃん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ミルクちゃん
+                        </p>
+                        <p class="message-content-text">
+                            34
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            ミルクちゃんのライブとかどんな客が来るのかしらね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            18時に集計よ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            集計よー！<br>アイドル王は…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            私！？<br>ま、まあ、当然のことね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-エリザベート">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            エリザベート
+                        </p>
+                        <p class="message-content-text">
+                            2位ベジータ3位ミルクちゃんもいいセン行ってたわね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
