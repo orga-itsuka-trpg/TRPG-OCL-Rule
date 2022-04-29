@@ -1,0 +1,4344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 350px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-メグミ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-メグミ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メグミ</span>
+                </label>
+                <label for="user-マキ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-マキ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">マキ</span>
+                </label>
+                <label for="user-シャンクス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャンクス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャンクス</span>
+                </label>
+                <label for="user-イタチ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-イタチ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">イタチ</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            講座(^^)！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待てシャンパラに講座の余地とかあるのかよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラのチュートリアル的なものやりやす<br>今更かよとも思うが明日か明後日に建てるので復帰勢あたりに向けて導入として
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            15分くらいからスタート
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            参加はしなくていいよ<br>こちらから放送するだけです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと早いけど始める
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            …キーンコーンカーンコーン<br>キンコーンカンコーン…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            あー今日も学校楽しかったわねー<br>早く帰ってシャンクトゥやらなきゃ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            メ、メグミちゃん…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            何よマキ<br>今日はあなたがGMする？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            今日は…シャンパラ、やってみない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            …シャンパラ？<br>よく知らないけど、捏造技能でメチャクチャになってるゲームでしょ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            そ、それは…卓の絶対数としてはメチャクチャになってた回数の方が多いのは確かだけど…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラの……匂いだ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラの匂いがこの卓からするぞ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            でもそれはそれで楽しいし！<br>捏造ありなりに調整を入れて遊ぶのも面白いんだよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            …ふーん<br>そこまで言うなら一度やってようかしら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来たか　シャンパラ飢民
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            やった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラ弾を出せ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            …そして2人は家に帰り、赤髪のオッサンを混じえて卓についたのだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            お前に教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            急にシャンクス出てきた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …この人毎回来るけど誰なんだろう…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            頭数になれば何でもいいじゃない<br>…で、何から始めればいいの？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            えっと…まずはキャラクターかな<br>好きな版権キャラを使えるのはシャンクトゥルフみたいな他のシャン卓と同じだよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            他のPCやNPCとあの手この手で殺し合ったり出し抜きあったりするゲームだから<br>基本的にはそういう暗闘に適したキャラクターがいいね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ジエンモーランが暴れてたってスレで聞いたことあるけど？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …（意味深に無言）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            …まあいいわ<br>とにかく、そういうキャラが向いてるっていうなら…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            …
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            うちはイタチ！これで決まりね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            くりきんのキャラじゃないんだ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            くりきんでこの枠って言ったらシンになるじゃない<br>嫌よ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            それはそうだね…<br>じゃあx3 2d10と1d3+3でステータスを決めてみて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            クトゥルフに比べるとえらく少ないのね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            x3 2d10 #1<br>(2D10) ＞ 18[10,8] ＞ 18<br><br>#2<br>(2D10) ＞ 13[8,5] ＞ 13<br><br>#3<br>(2D10) ＞ 16[10,6] ＞ 16
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            1d3+3 (1D3+3) ＞ 2[2]+3 ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            ステータスたっかぁ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …え、えーと、2d10のやつは上から筋力、敏捷、器用っていうステータスになるよ<br>メグミちゃんのイタチは全部高いね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            当然よ。忍者だからね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            格が違う
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            卓によっては器用を参照して隠密っていう強行動ができるんだよね…<br>そういう卓だと器用16は相当強いよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            忍者だからね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            じゃ、じゃあ…いよいよ技能を決めていこうか…<br>シャンパラの事前準備で一番頭を使うというか、やりがいがあるところかもね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラは基本的に高打点破壊耐性持ちか除去効果持ちか永続効果持ちの三つのタイプにキャラタイプが分けられる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラ…というかパラノイアの判定は、使う技能を宣言して10面ダイス2個を振って…<br>出目の合計が技能値より低ければ成功になるよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            パラノイアだとキャラの素質がダイスで決まるから、取る技能がある程度決まってくるんだけど…<br>シャンパラなら自由に取れるね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            TCGみてえだな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            技能値の合計は？<br>クトゥルフだとINTで決まるけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラは全員60点ーーー
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            万華鏡写輪眼20<br>火遁の術20<br>手裏剣20
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            メグミちゃん！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            何か間違ったかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            それぞれの典型<br>高打点破壊耐性持ち←じえん<br>除去、妨害効果持ち←アンジェラ<br>永続効果持ち←ぬえ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            全部間違いだよ！<br>話が長いのはわかるけどちゃんと聞いてよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            くりキン！？(^^)くりキン！？(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            わ、わかったわ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おでくりキンの曲好きだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おでボス戦のBGMすき
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …基本的に技能値は14までしか振れないんだ<br>これでも本家パラノイアよりは緩いけどね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ＞これでも本家パラノイアよりは緩いけどね<br>へ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おでバクテリアンラボ四天王戦がすき
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            そして、技能にはミュータント能力とそうでないものがあるんだ<br>ミュータント能力というのは超能力なんだけど、違法だからゲーム中で堂々と使うことができないんだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            シン戦→キンオブゴッド戦の神曲連続好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🤝
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            ミュータント能力以外にも便利だけど違法な技能があるから…<br>それを隠すために隠密って技能が必要だよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            マキは遅ればせながらルルブを取り出します
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/blob/master/ルルブ_txt/シャンパラノイアTRPG設定.txt
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            隠密って…さっき言ってたわね<br>周りの人から隠れて違法行為をするために使うってこと？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            そうだね…<br>ゲーム中は多くの場合周りに他PCやNPCがいるから…違法な技能を使う前に隠密を振るのが定石なんだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            くりキンあんま覚えてないけどもう手に入らないキン3体いるのは知ってる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            だから隠密14は安定かな…<br>もちろん慣れてくると隠密の代用になる技能とか付属効果のある隠密とか使う人も出てくるんだけどね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ふーん、わかったわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            万華鏡写輪眼14<br>火遁の術14<br>手裏剣14<br>隠密14<br>オレオ4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            グンカマキンとケーキンとオタマージだっけな<br>おれはキンオブゴッドは作れたから満足だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            うん、かなりいい感じになったね…（オレオ…？）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            いまはもうすれちがいやってる奴もいないだろうしなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            オレオとってオレオ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            すれちがいないと最初に貰えるキンも手に入らんのかな忘れたけど<br>まあでもゴッドいたらいいか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …ただ、イタチが手裏剣キャラなのはわかるんだけど…ゲーム中PCはみんなレーザーガンを持ってるから<br>手裏剣は使う機会が少ないかもね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            最初のやつはROM２本あれば片方リセマラでいけるんじゃねェかな<br>まあゴッドまでやりこめば問題ないと考えられる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            あとミュータント能力は必ず一つ以上取って、はっきりそれと明記しておくのと…<br>…あとこれは完全にGMの匙加減なんだけど、万華鏡写輪眼全部は強すぎかな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちなみに好きなキンはメタルドット
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ふーん、じゃあひとまず…手裏剣はやめておきましょうか<br>代わりに何を入れたら便利かしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            断然「違法改造」がオススメだね<br>裁定のゆるいシャン卓では手近なものからなんでも作り出す万能技能と化すよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            じゃあそれにしましょう<br>で…万華鏡写輪眼は強すぎって話だったわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ビビリウムすき
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            だってメグミちゃんたぶん見切りもコピーもツクヨミもアマテラスもスサノオも使うつもりでしょ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            違法改造無法は一度やってみたい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            当然よ。イタチだもん。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            いやまあ…多分多くの卓では裁定は通るんだろうけど…<br>強い技能を持ち込めば持ち込むほど淡々としたプレイになりやすいし、状況が荒れやすくなるからあまりオススメはしないかな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ふーん…<br>…あ。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ルルブに「パイロキネシス」っていう技能があるわね<br>捏造しなくてもこれで火遁の術と天照の再現ってことにしたら面白いかしら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            IQ280
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            IQ2800
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            いいと思うよ…<br>限られた手札で屁理屈をこねながらやりくりするのもパラノイアのミソの一つだと思うから…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            M/月読14<br>人を洗脳したり幻覚を見せたりする<br>M/パイロキネシス14<br>違法改造14<br>隠密14<br>オレオ4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            これでいいかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            よく纏まってると思うよ…<br>人に対応する技能と機械に対応する技能が揃ってるしね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            じゃあさっそく始めない？<br>早く私のイタチを動かしたいわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            わかった、今日は私がGMやるからね…<br>…シャンクスさん、キャラは？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            お前に教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスは技能をマキに秘匿しました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            もう作ってあったんだ…<br>結社は…今回はいいか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            では…出港だよ〜
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            出港よ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            出港だァ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …あっ、メグミちゃん、世界観の説明って大丈夫？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            大体わかったから大丈夫よ<br>DXと同じ感じでしょ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            う、うーん…超能力者ってことしか合ってない気がするけど…<br>まあいいか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …えーでは、地下近未来都市アルファコンプレックスにおいて<br>市民イタチと市民シャンクスは仕事を終えて家路を急いでいます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            超能力者なのを隠さないといけない近未来世界だもんなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            俺は知ってるぜ<br>未来都市の中にイビルジョーが生息してるんだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            少しくたびれたな<br>しかし早く帰ってサスケの稽古をつけてやるとするか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            失せろ失せろ失せろイタチ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            イタチは死にます。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ イタチ ] 残機 : 6 → 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ちょ、ちょっと待ってよ！<br>今何が起こったの！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            何って…失せろ銃で処刑しただけだが…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ああそういえばレーザーガン持ってるって…<br>じゃなくて！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            なんで稽古つけてやろうって言っただけで処刑されなきゃならないのよ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …メ、メグミちゃん、やっぱり世界観を説明させてね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            このアルファコンプレックスは、狂ったAIに支配されていて…<br>幸福で完璧じゃない市民は処刑対象なんだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            仕事帰りとはいえ少しでもくたびれるのは幸福でも完璧でもねェ…よかったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            なっ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            市民は紫から黒までの各階級に分かれていて、上位市民には絶対服従…<br>失せろ銃も上位市民には効かないんだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            正当だとこうだけどシャン卓だと割と自由が容認されてるよなこの都市
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …し、しかしシャンクスさん、ちょっと初心者に酷じゃない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            最近は煮詰まりすぎて冷戦の緊張みたいになってるだけで基本はこれだろ<br>初心者にじっくり教える　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            でも油断するとしっかり疲れるなんて完璧じゃねェなァ…してくるからたのしい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            その辺詰めすぎても色々面倒くせェからなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            ま、まあ、シャンクスさんがそうしたいならそれでいいけど…<br>…ではイタチのクローンが送られてきます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            クローンとかいるのね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            流れでコンピュータに反逆というか反乱してた頃が懐かしいな　ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            でも私は、隠密とかがわざわざ存在する以上ボロを出したら殺すのがゲームの原則だと思っていますよ。（ソンポート氏）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            と、そこにミッションアラートが聞こえてきます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            「市民イタチ、市民シャンクスは30分以内にナノアカデミービルの……階まで来なさい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            よりによってコンピュータ様がPCとして参加してた卓いつだったかなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            そういう解釈は可能です。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            何階かはスピーカーの調子が悪くて聞き取れなかったね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            聞こえ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            いや聞こえたな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            チッ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ヨシ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ミッションアラートの発令の仕方は卓によって大きく異なってくるところだなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            というわけで2人は呼び出された場所に行かないといけないね…<br>今回はビルの場所は知っていることとするよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            場合によってはミッションアラートが力餅にされて食われたりするもんな　ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            移動手段とかかる時間はこんな感じ…<br><br>歩く　120分 <br>走る　60分<br>車　10分<br> 弾道カタパルト　5秒　猛禽注意という張り紙がある
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            秘匿でchoice振られて聞こえなかったり誤報聞こえたりするやつ好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            誤報初導入の時のマミさんで死ぬほど笑った
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            車かカタパルトでないと間に合わんな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            …PL発言いいかしら<br>これ多分カタパルトは何か罠あるわよね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            ！<br>鋭いね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            移動手段に限らず、露骨に楽なものは何かしら罠があることが多いよ…<br>ぶっちゃけ今回もそう…張り紙があるからさらにわかりやすくなってるけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ふん、もうこの世界観には慣れてきたわ<br>学級委員長だもの
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            …シャンクス、貴様はどうする？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスはもういません
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            何でよ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            これは前に説明したからわかるんじゃないかな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            …ははあ、隠密を使ったわね？<br>何か違法行為をしたってことね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            えーでは…イタチはそう勘づいたので<br>近くにあった案内ロボがやたらペラペラ喋っていることに気づきます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            「ブリーフィングルームは666階　ブリーフィングルームは666階」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            …なるほど。違法改造か…あとはマシン・エンパシーっていう技能もあったかしら。<br>そのあたりでロボをいじって目的地を調べたってわけね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            俺もそろそろ動くか<br>シャンクスは失せたが、周りに他に人はいるか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            車を持ってるオレンジ市民が1人だけいるね…<br>オレンジは上位市民だよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            話しかけるぞ<br>「オレンジ様、もしよろしければナノアカデミービルまで送っていただいきたいのですが…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            「は？下賎なレッドごときが俺様に話しかけるな　失せろ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            …マキあなた…そんな強い口調するのね<br>普段何か溜め込んでない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            RPだよ！？<br>さあ早く対応しないとオレンジ市民がイライラして銃を抜きます！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            人目はないんだったわね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            メグミは秘匿でマキに行動宣言を送ります
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            月読でオレンジ市民を洗脳して送ってもらうわよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            振っていいよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14 万華鏡写輪眼・月読！ (2D10<=14) ＞ 10[9,1] ＞ 10 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            「おわァアアア〜〜〜っ！！！」<br>オレンジ市民は幻術に囚われて洗脳されたね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            「オレをナノアカデミービルまで送ってもらおうか…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            このあたりからメインに戻ります
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            ではイタチはオレンジ市民にタワーの前まで送ってもらいました<br>残り20分
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            そしてシャンクスが死にました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜〜っ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ シャンクス ] 残機 : 6 → 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            何だ！？(^^)何だ！？(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            ではイタチはちょうどビルの前に着いたところなので<br>シャンクスの死体が入口の前に転がっているのが見えます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            近くには犬を連れたグリーン市民がいますね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            グリーン様相手に何かヘタを打ったようね<br>フフン、いい気味じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            「グリーン様、私はこのタワーの666階に来るように呼び出されたのですが…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            「ああ、そういえばそんな話もありましたね！<br>ではこのコミー探知犬の検査を受けてからビルの中へどうぞ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            「めしくれ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            えっちょっと待って<br>今誰が喋ったの？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            犬だね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            犬が喋る世界観なのね…<br>ていうかコミーって…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            このアルファコンプレックスは共産主義者の脅威に晒されている…<br>とコンピュータが思い込んでいるからコミーは処刑対象なんだ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            何よこの世界観イカれてるんじゃないの…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            とにかく検査を受ける　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            では犬はイタチの匂いを嗅ぎます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            s2d10<=19 コミーじゃない (2D10<=19) ＞ 5[2,3] ＞ 5 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            「はい非コミー　くそが」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            何よ今のシクダイス…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            判定に失敗してたらシャンクスみたいに死んでたね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            ホントこの世界観は安心できないわね<br>とにかく666階へ行くわよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            入ると受付があってオレンジ市民が寝てるね…<br>移動手段はこんな感じ<br><br>階段（黒）40分　走って20分<br>エスカレーター（橙）10分<br>垂直カタパルト（黒）5秒
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            あとこのあたりでシャンクスのクローンが送られてくるよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            今度のおれは幸福で完璧なのをお前に教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            今は残り20分弱ってとこかしら<br>カタパルトは露骨に怪しいけど…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            これって違法改造で安全に改造するとかできるのかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            ！<br>できますね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            なるほどね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            [秘匿(イタチ,GM)]カタパルトを違法改造して安全にする　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            [秘匿(イタチ,GM)]どうぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            おっと、近くにシャンクスがいるから隠密も要るわね…<br>連続で振ればいいのかしら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14 隠密 (2D10<=14) ＞ 4[1,3] ＞ 4 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            2d10<=14 違法改造 (2D10<=14) ＞ 10[7,3] ＞ 10 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            [秘匿(イタチ,GM)]では安全になりました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            [秘匿(イタチ,GM)]嬉しいでしょ<br>カタパルトで666階へ行くわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …ではメグミとシャンクスは各々の方法で666階に到着しました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            来たか　シャンクス
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            苦労したがなんとかな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            失せろ失せろ失せろシャンクス
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア〜〜〜っ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスは死にました。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ シャンクス ] 残機 : 5 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタチ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            イタチ
+                        </p>
+                        <p class="message-content-text">
+                            移動くらいで苦労するのは幸福でも完璧でもねェ…よかったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …ということで一悶着あったけど、2人とも目的地に到着したね<br>今回はここで宴だ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            宴ね〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            どうかなメグミちゃん…？<br>面白かった…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            秘匿で動くのは他のゲームにはない感じで新鮮ね<br>バタバタ人死にが出るのは少し慣れないけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            …今回も2人ともかなり引き金軽かったけど…<br>フルスケールでやるともっと人死にが出るよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            まあ…残機6機も用意されてるものね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            実は本来PCは色々な秘密結社に所属していて…<br>上司から公に言い渡される任務の他に結社特有の任務を遂行することになるんだけど…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            大量破壊を引き起こすことや他のPCを殺害することが任務の結社があるからなァ…ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            (なぜか知らない結社が生える)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            なるほど…それは荒れるわね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            一人芝居卓でも地味ながら差分芸があるの好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こだわりさらに濃厚に
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            でもお互い体面を繕いながら暗闘するのも面白そうじゃない<br>今度ちゃんとした卓があれば参加させてほしいわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            マキ
+                        </p>
+                        <p class="message-content-text">
+                            やった！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            こうしてメグミはシャンパラプレイヤーの道を歩み始めたのだった…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ろくな道じゃねェ…<br>本編と一緒
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            「だぁぁーっ！！さっきからやたらと爆発させてくるの誰よ！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            「ローカルルール追加って何！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-メグミ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            メグミ
+                        </p>
+                        <p class="message-content-text">
+                            「虚無にされたってどういう状態なの！？なんで死ぬの！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            to be continued...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            終わり<br>くりきんキャラの立ち絵なんかネット上に存在しないから差分は動画からチマチマスクショしてきた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            明日本卓募集するから暇な人は来てね<br>おやすみシャン
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
