@@ -16,9 +16,9 @@ TRPG のルルブをまとめたリポジトリであることをお前に教え
 
 でもォ…←HTMLファイルはソースコードが出てるという難点が…
 
-`.html` ファイルに関しては [https://htmlpreview.github.io/](https://htmlpreview.github.io/) のフォームにファイルのURL (例: https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/blob/master/log/%E3%82%B7%E3%83%A3%E3%83%B3TRPG%E3%83%AD%E3%82%B02021_10_02%E3%81%BE%E3%81%A7/2%E6%9C%88/%E7%AC%AC28%E5%9B%9E%E3%83%AD%E3%82%AF%E3%82%99%20%E3%82%BF%E3%83%BC%E5%9D%8A%E3%81%A8%E3%81%8A%E6%89%8B%E7%B4%99.html ) をフォームに入力し `Preview` ボタンを押すと見れることを教える。
+`.html` ファイルに関しては [https://htmlpreview.github.io/](https://htmlpreview.github.io/) のフォームにファイルのURL (例: https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/blob/master/%E3%83%AD%E3%82%B0/%E3%82%B7%E3%83%A3%E3%83%B3TRPG%E3%83%AD%E3%82%B02021_10_02%E3%81%BE%E3%81%A7/4%E6%9C%88/%E3%82%A2%E3%82%AD%E3%83%8D%E3%82%A4%E3%82%B7%E3%83%A3%E3%83%B3%5Ball%5D.html ) をフォームに入力し `Preview` ボタンを押すと見れることを教える。
 
-こんな感じのURLが生成される https://htmlpreview.github.io/?https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/blob/master/log/%E3%82%B7%E3%83%A3%E3%83%B3TRPG%E3%83%AD%E3%82%B02021_10_02%E3%81%BE%E3%81%A7/2%E6%9C%88/%E7%AC%AC28%E5%9B%9E%E3%83%AD%E3%82%AF%E3%82%99%20%E3%82%BF%E3%83%BC%E5%9D%8A%E3%81%A8%E3%81%8A%E6%89%8B%E7%B4%99.html
+こんな感じのURLが生成される https://htmlpreview.github.io/?https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/blob/master/%E3%83%AD%E3%82%B0/%E3%82%B7%E3%83%A3%E3%83%B3TRPG%E3%83%AD%E3%82%B02021_10_02%E3%81%BE%E3%81%A7/4%E6%9C%88/%E3%82%A2%E3%82%AD%E3%83%8D%E3%82%A4%E3%82%B7%E3%83%A3%E3%83%B3%5Ball%5D.html
 
 少し手間がかかるがこんな感じで使ってくれ(^^)
 
