@@ -1,0 +1,2472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 250px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GMアイシャ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GMアイシャ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GMアイシャ</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-あいまいさん" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-あいまいさん" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">あいまいさん</span>
+                </label>
+                <label for="user-syamu" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-syamu" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">syamu</span>
+                </label>
+                <label for="user-リルトット" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-リルトット" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">リルトット</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            某月某日あなたは外食で美味しい料理を食べました<br>しかし何の因果かどこで何を食べたかを忘れてしまいました🌈<br>おじいシャンですか…？<br>それでもあの感動を伝えずにはいられない心をコントロールできない…<br>そこであなたは食べた味の記憶を頼りにレビューを始めました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            使用するのは1d6のみ<br>ゲームの始める前に予算を1d6で振り予算を決める<br>そして食レポをする項目(振るダイス数)を決めて予算の代金に一番近いプレイヤーの勝ちになる<br>予算オーバーしたら炎上して死ぬ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ゲームの流れ<br>予算→料理評価→料理を決める→店の評価→勝敗結果の順でやる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            予算<br>1:ワンコイン 出目合計15まで<br>2:〜1000円 出目合計20まで<br>3:1000〜2000円 出目合計25まで<br>4:2000〜5000円 出目合計30まで<br>5:5000〜10000円 出目合計35まで<br>6:10000円以上 出目合計40まで
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            料理評価<br>見た目<br>におい<br>食感<br>量<br>味<br>初めに最大5回振るかどうか決めてから5項目を選択してそれぞれ振る
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            料理を決める<br>料理評価の結果で何を食べたか捏造する<br>ここで予算がオーバーすると炎上確定で死ぬ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            店の評価<br>外観<br>店内<br>スタッフ<br>客層<br>メニュー<br>ここは任意で選択できる(最大5項目まで)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            勝敗決定<br>プレイヤーはレビューを書いて出目の合計が一番近いプレイヤーがレビュー王になる<br>予算オーバーしたシャンカーは下記の罵倒表を振って炎上して死ぬ<br><br>罵倒表<br>1:自演乙<br>2:どうせ盛り過ぎなんだろ！騙されんぞ！<br>3:金貰ってんだろ！<br>4:チンパンジーにキャベツあげた方が良い感想くれそう<br>5:店長油売ってないで仕事しろ<br>6:俺今日からこいつの事異世界ハーレムヒロインって呼ぶわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            まるで虚無卓みたいなルールだから皆もやろう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            チュートリアルやるぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >まるで虚無卓みたいなルールだから皆もやろう！<br>おい！言葉を慎めよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d6 予算 (1D6) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            (^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            いつかのラーメン卓みたいなやつか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            多分そんな感じ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            3:1000〜2000円 出目合計25まで
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            料理評価<br>見た目<br>におい<br>食感<br>量<br>味<br>合計25までだから5回振るぞ 来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            5d6 ５項目 (5D6) ＞ 17[2,5,2,6,2] ＞ 17
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            見た目 2<br>におい 5<br>食感 2<br>量 6<br>味 2<br>だな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            量とにおい以外罰ゲームに近い奴食べたのか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            においに騙されて食べたの確定
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これもう量も罰ゲームだろ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            追加でまだ振れるから上から３つ振るぞ<br>店の評価<br>外観<br>店内<br>スタッフ<br>客層<br>メニュー<br>ここは任意で選択できる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            3d6 店の評価 外観 店内 (3D6) ＞ 11[2,6,3] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            合計28になって25越えたから炎上して死ぬ良かったなァ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それにしても店の外観からのこの料理はトラップか何かか！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            28/25<br>炎上死<br>3オーバー
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            不幸のお裾分けは無かった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            よかったなァ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            こんな感じで進むぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            虚無卓みたいに勝手に振っていいんすかね…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            いいよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来たか…あいまいさん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            きのうの夜何食べたっけ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            1d6 予算 (1D6) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            5000〜10000円 出目合計35まで<br><br>結構食べたみたい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            勝敗決定<br>プレイヤーはレビューを書いて出目の合計が一番近いプレイヤーがレビュー王になる<br><br>こうだから下手したら他のシャンカー次第で炎上しても勝つ場合があるのを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            へ～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            あいまいさんは料理評価は5項目振れるな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            別に一回だけにして店の評価で５項目振ってもいい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            合計何個振れるかって決まってる？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            項目数だから５回までだな…すまん（thanks.）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            見た目・匂い・食感B・味：旨味の4つで行こう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            x4 1d6 #1<br>(1D6) ＞ 4<br><br>#2<br>(1D6) ＞ 6<br><br>#3<br>(1D6) ＞ 6<br><br>#4<br>(1D6) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            あいまいさんは当たりの店に行ったのか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            多分そうだと思うよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            味もにおいも食感も素晴らしく写真映えしそうな料理でした…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            （そうだったかな…？）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            店の評価は何個？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            同じ５項目までだな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            外観・店内・客層のことも書いておこうかな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            x3 1d6 #1<br>(1D6) ＞ 4<br><br>#2<br>(1D6) ＞ 2<br><br>#3<br>(1D6) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            31か
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            庶民的でこざっぱりして客層はストイックでした
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            35までだから炎上回避だ～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            良かったなァ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            （多分）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            後は分かりやすいように情報とかに結果を書いておいてくれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            こんなんでいいか…レビュー投稿っと
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-あいまいさん">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            あいまいさん
+                        </p>
+                        <p class="message-content-text">
+                            31/35
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これじゃあまるで虚無卓だ...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            表とかオミットしたら普通に虚無卓になるなァ…ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            100円の価値はあると思うぞ…表のコメントとか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            予算1とか出たらある程度の戦略があるかも知れないな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            ウィィィィィス<br>どうもーsyamuでーす
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来たか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            本日は！昨日食べたご飯について語ろうと思いますよォォォォォォ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            まずねー昨日は外食に出たんですよ、たまにはいいもん食べないとさ、ってなるやないですかァ...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            親が外に俺を連れ出して、車は俺が運転して、どこに行くんやろなーとか思いながら泉南の辺りを運転してさ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            だいたい2...3kmかな？いや4kmかもしれんわ、わからんわ、そのくらい遠くに運転していって外も夜で暗いし〜
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            そしたらめちゃくちゃ立派なお店があったんですよォ〜〜〜<br>立派な...お嬢様かな？昔の...まんが昔話みたいなね！そういうお屋敷みたいなお店です
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            いくらかかるのかなー思うて親に聞いたら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            千円から〜二千円<br>まぁ俺でも行ける額やね、お買い得やね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            ほんで〜〜もうお腹ペコペコだったんで料理が揃ったらすぐにね！食べちゃいましたよォォォォォォ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            要素は5つぐらいあったような気がするな...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            x5 1d6 #1<br>(1D6) ＞ 5<br><br>#2<br>(1D6) ＞ 2<br><br>#3<br>(1D6) ＞ 3<br><br>#4<br>(1D6) ＞ 5<br><br>#5<br>(1D6) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            な<br>か<br>な<br>か
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            見た目は〜もう色鮮やかで、<br>good!good!go〜〜〜〜〜od...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            においがアレなくらいで良さそうだな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            森みたいやったね、なんか<br>来た瞬間はね〜〜なんか変な匂いがしてちょっと嫌だったんですけどねぇ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            量も腹ペコの俺には満足できる量で、最高やったわ、うん<br>女の子、女子！女性の方にはちょっと厳しい量かもしれないかなーと思いました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            味もねー最高だったんですけど<br>なんかうまく噛めなくて、途中で飲み込んでしまったわ、なんか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            と言うわけで料理は<br>見た目　５点<br>におい　２点<br>食感　３点<br>量 ５点<br>味　５点<br>の２０点とさせて貰いますｩｩｩｩｩｩｩ...
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            さあ欲張って店評価いくかな？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            あ、あとね〜料理を持ってくる...ウェイトレス？ウェイトレスさんがめちゃくちゃ美人でね〜も〜俺もかわいいな〜ってお得な気分でしたね、はい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来たか…ぴったり賞
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            スタッフは、５点満点<br>最高のお店やったな、飯もうまいし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            合計２５点やったわ<br>帰りにアイスも食べて帰ったしな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            こんなもんかな、うん<br>あとはこれから明日のカラオケ動画に向けて外出る準備するわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            ほいじゃ、次の動画でお会いしましょう！<br>まったの〜〜〜〜〜ｲﾔｧｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            話が死ぬほど冗長なのは原作再現だな...ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-syamu">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            syamu
+                        </p>
+                        <p class="message-content-text">
+                            25/25<br>inじゃねーの！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            現状はsyamuが一位だな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            昨日は陛下が何か奢ってくれた気がすんな…<br>なんだったっけ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            3:1000〜2000円 出目合計25まで<br><br>ラーメンとかよりは高いもんだった気がすんな…<br>普通の定食にプラス一品くらいだったか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            要素は…3つくらい思い出せそうな気がすんな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 10[6,3,1] ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来たか…1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            俺は大食らいだけど腹一杯にはなった気がすんな…<br>量6だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            しかし味は良くも悪くもあんま印象に残ってねえな…<br>味3と
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            で…そうだ、見た目がクソだったんだよ<br>バンビエッタの性根よりクソだったのを思い出したぜ<br>見た目1だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            店はどんな感じだったっけなァ<br>3つくらい思い出せそうだが…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 14[5,3,6] ＞ 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            外観は覚えてねえな…普通の店だったと思うが…<br>外観3にしとくか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            ああそうだ、だがイートインスペースの内装は相当良かったな<br>俺たちの部屋もあんな風にしたいくらいだったぜ…<br>内装5と
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            …うん？イートイン？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            そうだ！ありゃ定食屋とかじゃない、パン屋だった！<br>陛下も洒落た店知ってるもんだなァって驚いたもんだぜ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            そう…そして店員がすげぇ愛想よかったんだよな<br>あいつの爪の垢を煎じてバンビエッタに飲ませてやりたいぜ<br>店員6と
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            なかなかの接戦だったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            で…合計が…24！<br>ギリギリ予算内に収まったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            けっこう出来のいいレビューになったはずだが<br>ランキングを見ると上には上がいるみてーだな　悔しいぜ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            しかし返すが返すあの店員はサービスよかったな…<br>たしか名札にはイノウエって書いてあったか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-リルトット">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            リルトット
+                        </p>
+                        <p class="message-content-text">
+                            24/25
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            22時に集計
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            だなぁ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            では集計するか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            一位:syamu<br>二位:リルトット<br>三位:あいまいさん<br>炎上死:GM
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            syamuのダイス運がすごかったな…ルフィ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            リルトットも後１多ければ同点だったな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            あいまいさんもダイスが安定してて良かったなァ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            では皆お疲れシャン！<br>またね〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
