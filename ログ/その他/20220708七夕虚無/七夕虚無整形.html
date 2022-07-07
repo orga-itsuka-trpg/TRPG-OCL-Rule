@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 450px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-ささくれ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ささくれ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ささくれ</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GMダ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GMダ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GMダ</span>
+                </label>
+                <label for="user-ロックスター" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ロックスター" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ロックスター</span>
+                </label>
+                <label for="user-シンボリルドルフ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シンボリルドルフ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シンボリルドルフ</span>
+                </label>
+                <label for="user-アームストロング上院議員" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アームストロング上院議員" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アームストロング上院議員</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-笹瀬川佐々美" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-笹瀬川佐々美" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">笹瀬川佐々美</span>
+                </label>
+                <label for="user-アマデウスの黒いやつ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アマデウスの黒いやつ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アマデウスの黒いやつ</span>
+                </label>
+                <label for="user-タナバ・ター" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-タナバ・ター" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">タナバ・ター</span>
+                </label>
+                <label for="user-シャッチー・クウ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャッチー・クウ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャッチー・クウ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            七夕虚無<br>今日は七夕だ　ねがいごとを聞こう　ただし一人のみ<br>1.ねがいごとを言う<br>2.7d7を振る<br>一番多い数値を出したやつが七夕王だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ささくれ user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ささくれ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            ＼　　　＼＼　　　＼　　＼＼　　, ｪｪｪｪｪｪ､＼　　＼＼　＼<br>＼＼　　　＼＼　　　＼　　＼,ィ三三三三三三ヽ.　 ＼＼　＼<br>＼＼＼　　　＼＼,　-‐≦三三三三三三三三三ヽ 　　＼＼<br>　 ＼＼＼　　　 /　　　ｨｴﾐ　ヾ三三三ﾂ"￣｀ヾ三ｦ＼　　 ＼＼<br>＼　 ＼＼＼　 l　　 　 !三ﾘ　　ヾ三ヲ' 　 ヽ、　　＼ 　＼　　 ＼<br>　 ＼　 ＼　f三ﾐ　　　　　　　　/三三　　　 　｀ヽ.、 ＼　 ＼<br>＼　 ＼ 　｀ ヾ三　　　　　　　　ヾ三三　 　 ,ｨ全､　＼ ＼　 ＼<br>＼＼　 ＼　 ＼.゛l　　　　f≧　　ﾉ三三　　./三三､ 　 ヽ. ＼<br>　 ＼＼　 ＼　 　 ､ fn,　　~ 　 /三三". 　,'三三三､.　　l　　＼<br>＼　 ＼＼　 ＼　 .i≧ｭ __,､　/三三"　　,'三三三三､　ﾉ<br>　 ＼　 ＼＼　 ＼ |三ﾐ≧≠三彡" 　 　l三三三三三｢＼＼<br>　　　＼　 ＼＼　 ｀!三三三ﾘー -　､._　!三三三三三　　 ＼＼<br>＼　　　＼　 ＼＼　}三三彡 ＼＼＼　 ヾ三三三彡"≧,　　 ＼<br>　 ＼　　　＼　 ＼.ノ三三ﾘ＼　 ＼＼＼　　　　 ヾ三三ミ､<br>━━━━━━━{三三彡━━━━━━━━━━￣━━<br>　　　　　　　　　　 ￣￣<br>ケ　　ケ　　 ／＼　　　　　　ー―≠―　　　ー―≠<br>┼┼┼　／┌┴┐＼　　　　　　/　　　　　　　／<br>│└┘　　　[ 二 ]　　　ー ､　　 |　　　　　　　ー―　、<br>└──　　　レ｀く＿　　　＿）　　＼＿　　　　くZ＿ノ　<br>　　|二二|　　／＼　　　|　　|　|　　　　　　　＿|　　　　 　 　 　 ||<br>┼└─┘／＿＿ ＼　.|　　|　|　　　　　　　　 |／⌒ヽ　　　　　||<br>┴ ７二二　┌─┐　　|　　　　　ー十十ヽ ／|　　＿ﾉ　二　　 ||<br>　 / / / /　 |＿＿|　　 ヽ＿ノ 　 　 .|　　ノ　　|　 (_ノヽ　/乙　 。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            なかったので
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            ささくれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            7d7 (7D7) ＞ 24[3,1,5,2,5,3,5] ＞ 24
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            映画で大活躍したいんすがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            7d7 (7D7) ＞ 25[6,2,1,3,7,3,3] ＞ 25
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            まずい新入りにねがいごとを蹴られた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シンボリルドルフ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            シンボリルドルフ
+                        </p>
+                        <p class="message-content-text">
+                            今年こそオグリと添い遂げてえなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シンボリルドルフ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            シンボリルドルフ
+                        </p>
+                        <p class="message-content-text">
+                            7d7 (7D7) ＞ 34[7,7,4,6,5,1,4] ＞ 34
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シンボリルドルフ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            シンボリルドルフ
+                        </p>
+                        <p class="message-content-text">
+                            素敵だな　歌：シンボリルドルフ<br>風が寄せた言葉に　泳いだ 心　雲が運ぶ明日に　弾んだ 声<br>久しぶりに君の顔見たら　やっぱ私の気持ち　自分で良くわかった　嘘じゃないって<br>現役時より丸みを帯びたカラダ　前よりずっと　綺麗になったな<br>子供も出来て幸せそうに見えるけど　私のことも　忘れてないんだろ<br>私が欲しかったら　たっぷり与えてやろう　いつでも<br>私だって　君の身体が恋しい　前みたく　私に甘えていいんだ　素直になって<br>「女性同士でこんなこともう無理だ」　って泣きながら言ったな<br>君を胸に抱いて　めいっぱい　君の脚　撫でてやった　最後の夜<br>その後だったよ　最初聞いたときびっくりした　君が母親になるって<br>君を忘れようと　わけもなく　いろんな子をアイドルに仕立て上げようとしたけど　やっぱ君が一番だった　<br>君の手に汗握る激闘　君の勝利の栄光　君の挫折による絶望　そしてラストランの奇跡<br>全部　私のものだ　今でも　いつまでも<br>私は待ってる　いつまでも　君のいないこのスケート場で
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            相変わらず…スゲェ"無礼無礼"だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            きも
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シンボリルドルフ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            シンボリルドルフ
+                        </p>
+                        <p class="message-content-text">
+                            ちよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アームストロング上院議員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            アームストロング上院議員
+                        </p>
+                        <p class="message-content-text">
+                            選挙当選、弱肉強食だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アームストロング上院議員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            アームストロング上院議員
+                        </p>
+                        <p class="message-content-text">
+                            7d7 (7D7) ＞ 41[4,7,4,5,7,7,7] ＞ 41
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アームストロング上院議員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            アームストロング上院議員
+                        </p>
+                        <p class="message-content-text">
+                            Nanomachine Sun！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アームストロング上院議員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            アームストロング上院議員
+                        </p>
+                        <p class="message-content-text">
+                            Sun
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            つよい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            集計<br>七夕が終わったら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-笹瀬川佐々美">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            笹瀬川佐々美
+                        </p>
+                        <p class="message-content-text">
+                            こ、今年こそ名前を間違われないようにしますわっ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-笹瀬川佐々美">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            笹瀬川佐々美
+                        </p>
+                        <p class="message-content-text">
+                            7D7 (7D7) ＞ 23[1,6,3,2,4,2,5] ＞ 23
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-笹瀬川佐々美">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #673ab7;" class="message-user-text">
+                            笹瀬川佐々美
+                        </p>
+                        <p class="message-content-text">
+                            最下位...！？<br>冗談ではないですわっ！？？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アームストロング上院議員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            アームストロング上院議員
+                        </p>
+                        <p class="message-content-text">
+                            弱者は食い荒らされる！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アームストロング上院議員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            アームストロング上院議員
+                        </p>
+                        <p class="message-content-text">
+                            七夕には痛みが伴う
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            来たか　ささささささささ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アマデウスの黒いやつ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アマデウスの黒いやつ
+                        </p>
+                        <p class="message-content-text">
+                            今年こそ息子をザルツブルグに連れ帰る
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アマデウスの黒いやつ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アマデウスの黒いやつ
+                        </p>
+                        <p class="message-content-text">
+                            7d7 (7D7) ＞ 32[3,4,7,6,4,2,6] ＞ 32
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アマデウスの黒いやつ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アマデウスの黒いやつ
+                        </p>
+                        <p class="message-content-text">
+                            アマデウス…私とザルツブルグに帰ろう…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            アマデウスの目がオルコラかと思ったからよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アマデウスの黒いやつ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アマデウスの黒いやつ
+                        </p>
+                        <p class="message-content-text">
+                            noname…私と火星に帰ろう…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タナバ・ター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            タナバ・ター
+                        </p>
+                        <p class="message-content-text">
+                            ええ　重要な願いらしくて確実に叶える為におれが！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タナバ・ター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            タナバ・ター
+                        </p>
+                        <p class="message-content-text">
+                            7d7 (7D7) ＞ 25[3,7,2,3,7,2,1] ＞ 25
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タナバ・ター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            タナバ・ター
+                        </p>
+                        <p class="message-content-text">
+                            お頭！！もう少し時間をくれ！おれはこんな屈辱を受けたのは初めてだ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャッチー・クウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            シャッチー・クウ
+                        </p>
+                        <p class="message-content-text">
+                            転職できますように
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャッチー・クウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            シャッチー・クウ
+                        </p>
+                        <p class="message-content-text">
+                            7d7  (7D7) ＞ 33[7,3,7,4,6,4,2] ＞ 33
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャッチー・クウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            シャッチー・クウ
+                        </p>
+                        <p class="message-content-text">
+                            ウッ…ウッ…ウアッ…！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アームストロング上院議員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            アームストロング上院議員
+                        </p>
+                        <p class="message-content-text">
+                            俺はスポーツマンだ！ そこらの政治家とは願い方が違う！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            結果発表<br>41を出した上院議員が七夕王だ！<br>上院議員のナノマシンは格が違う
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            というわけで当選の願いは聞き遂げられたことを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMダ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            GMダ
+                        </p>
+                        <p class="message-content-text">
+                            またね～
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
