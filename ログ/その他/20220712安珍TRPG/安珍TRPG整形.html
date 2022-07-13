@@ -1,0 +1,2775 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 400px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GMアイシャ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GMアイシャ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GMアイシャ</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-ブリ坊" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ブリ坊" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ブリ坊</span>
+                </label>
+                <label for="user-清姫(0)" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-清姫(0)" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">清姫(0)</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-人狩りヨークシャーテリアの群れ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-人狩りヨークシャーテリアの群れ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">人狩りヨークシャーテリアの群れ</span>
+                </label>
+                <label for="user-清姫(1)" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-清姫(1)" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">清姫(1)</span>
+                </label>
+                <label for="user-カルビ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-カルビ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">カルビ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            安珍TRPG<br>1.プレイヤーは安珍役と清姫役に別れてください<br>2.鐘までの距離と安珍清姫間の距離を設定します<br>3.安珍役と清姫役でダイスを振り、安珍が勝った場合鐘までの距離が縮み、清姫が勝った場合安珍との距離が縮みます<br>4.清姫が追いついた場合清姫側の勝利です。安珍を焼き殺しましょう<br>5.安珍が鐘まで逃げ切った場合安珍側の勝利です。鐘に隠れ焼かれるのを待ちましょう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            今回は鐘までの距離は5<br>清姫との距離は5にする<br>ダイスは1d100でもいいし1d6でもいい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            すいませんこれはどっちにしろ安珍側が死ぬような気がするのですが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ……(意味深に無言)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            成仏するぞ成仏するぞ成仏するぞ成仏するぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来たか…ブリ坊
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            キューキューキュー
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            くっだらねえ！なんだよこれ！バカバカしい！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            安珍二人いた！？とか清姫二人いた！？とかしてもいいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 ビーッ ビーッ ビーッ (1D100) ＞ 89
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            焼きに来ていいよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            聖者か？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            安珍は清姫が大好物なはず！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            どうせだめだされる害獣だしなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            来たか…清姫
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100  (1D100) ＞ 58
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ブリ坊は距離-1だな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 ハッハッハッハッ (1D100) ＞ 60
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            勝っても負けても焼けるのひどない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100 安珍様～ (1D100) ＞ 90
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 清姫(0) ] 安珍との距離 : 5 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            キュー キュー キュー
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 65
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ルルブ制作シャンに言ってくれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            鐘まで残り3 逃げ切るぞォ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これサタスペのケチャップでもできそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 78
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            誰だよこんなルルブ作ったの…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            お気付きになりましたか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            虚無やめろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100 どうして逃げるんですかァ～！！ (1D100) ＞ 68
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            残り2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 36
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ブリ坊 ] 鐘までの距離 : 5 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100 まずい逃げ切られる (1D100) ＞ 95
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            シュタッ シュタッ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 清姫(0) ] 安珍との距離 : 4 → 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 21
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 50
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 清姫(0) ] 安珍との距離 : 3 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            ひどい下痢をしてしまった！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ＊待機しておこう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 59
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            追加ルールでどちらかが二人以上になったら不利側の距離を半分にするか有利側の距離を倍にするか考えてる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            ブリ ブリ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100 もうすぐ会えそうですね…安珍 (1D100) ＞ 42
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ＊ヨークシャーテリアは同意している
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            鐘まで後1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ブリ坊 ] 鐘までの距離 : 2 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            がんばえ〜
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            1d100 こんがり焼けるゾ！ (1D100) ＞ 63
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 49
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            やった！ブリ坊は下から鐘に潜り込んだぞ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            蒸し焼きだァ〜〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            鐘の中に安珍見ゆ♥<br>火焔を放出します❤<br>溶鐘楼🔥🐲
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ｸﾞﾙﾙﾙﾙr…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            おわァァァ〜〜〜！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            追加ルールでどちらかが二人以上になったら不利側の距離を半分にするか有利側の距離を倍にするか考えてる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            息をしていない…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            死んだ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            うぐっ安珍勝ってもオチ変わんねェ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            安珍だもんなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            ブリ坊 上手に焼けました〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 旨さ (1D100) ＞ 31
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            そ<br>こ<br>そ<br>こ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            これ何が楽しいのか教えろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            くだらん...仕事が終わったら参加させてもらう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-清姫(0)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            清姫(0)
+                        </p>
+                        <p class="message-content-text">
+                            抜けますのでこの駒をコピーしたりしなかったりしてくださいね<br>またね～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ｷｬﾝｷｬﾝｷｬﾝｷｬﾝ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ブリ坊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ブリ坊
+                        </p>
+                        <p class="message-content-text">
+                            またね〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            またね〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            代わりに清姫やるぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-清姫(1)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            清姫(1)
+                        </p>
+                        <p class="message-content-text">
+                            ヨークシャーテリアはこのままやる？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ◇清姫役二人…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ＊折角だし中身複数いた方が楽しいだろうから待つ事にする
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-清姫(1)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            清姫(1)
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            サーヴァント安珍の立ち絵ないの悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-清姫(1)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            清姫(1)
+                        </p>
+                        <p class="message-content-text">
+                            悲しいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            風呂に入ってくる<br>GMレスで出来るから好きにやってていいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            私を捕まえてごらんなさい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ｸﾞﾙﾙﾙﾙ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ｶﾞｳｯ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            凶暴なテリアに追われているわ<br>逃げるわよォ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 *人狩り集団が攻めてきた (1D100) ＞ 81
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 人狩りヨークシャーテリアの群れ ] 安珍との距離 : 5 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            まずい向こうはかなり足が速いわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ｸﾞﾙﾙﾙﾙr
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            私も足が速いから美味しいうちに食べてもらわないと<br>なんてね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 61
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 45
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ﾊﾞｳｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ カルビ ] 鐘までの残りの距離 : 5 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            おほほ高級食材は伊達じゃないのよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 32
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            戻った
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 20
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ｸｩﾝ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ カルビ ] 鐘までの残りの距離 : 4 → 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            あらテリアちゃんこんなものかしら〜おほほ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 79
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ダイスつよい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 55
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            (ヨークシャーテリアは戦闘に向かない)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ カルビ ] 鐘までの残りの距離 : 3 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            赤身やホルモンには負けないわよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 77
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            1d100  (1D100) ＞ 76
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            おしい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ﾙﾌｨｶﾀ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            ルフィカタ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ カルビ ] 鐘までの残りの距離 : 2 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            さあ鉄板という名のゴールはすぐそこよ〜！おほほほ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 32
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 22
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            *クソザコヨークシャーテリア
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            蒸し焼きカルビだァ〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ カルビ ] 鐘までの残りの距離 : 1 → 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            ｼﾞｭﾜｰｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            ﾊﾞｳｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            上手に焼けましてよ〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            *ヨークシャーテリアが鉄板に群がり始める…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            *ダイス運弱すぎじゃない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-カルビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            カルビ
+                        </p>
+                        <p class="message-content-text">
+                            テリアは猟犬には向かないのねえ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            *敗北感！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            再チャレンジする？<br>GMは安珍側でやるぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            *問題ない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-人狩りヨークシャーテリアの群れ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            人狩りヨークシャーテリアの群れ
+                        </p>
+                        <p class="message-content-text">
+                            *いい暇つぶしになった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            それは良かった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            これはGMレスでやれるから暇潰しにいいね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            でもよそれじゃまるで虚無だ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 虚無さ (1D100) ＞ 68
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            な<br>か<br>な<br>か
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ご飯食べてくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            戻った
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            21時ぐらいにログ出すぞ 来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアイシャ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            GMアイシャ
+                        </p>
+                        <p class="message-content-text">
+                            ではログ録るか……♣️
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
