@@ -1,0 +1,2310 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 350px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-記録" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-記録" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">記録</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-ワラキアの夜" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ワラキアの夜" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ワラキアの夜</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-山羊" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-山羊" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">山羊</span>
+                </label>
+                <label for="user-ドムロトーペン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ドムロトーペン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ドムロトーペン</span>
+                </label>
+                <label for="user-ボルポテト" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ボルポテト" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ボルポテト</span>
+                </label>
+                <label for="user-スパムトン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-スパムトン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">スパムトン</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            草刈り虚無ver.2 <br>お前は草刈り師だ <br>草を刈れ<br> ①使用ステータス <br>腰　初期値15 <br>腕　初期値5 <br>ここに追加で10点を割り振る<br> ②草刈り <br>1d20<=腰で草を刈る <br>失敗したら腰を壊してチャレンジ終了　④へ<br> 成功したら腰を3減らしてもう一度刈る <br>③計測 <br>成功した数だけ1d腕を振り、その合計で何ヘクタール刈れたか計測する <br>④集計 <br>ヘクタール数をイニシアチブと記録タブに記入する <br>終了までにもっとも広く刈れた奴が草刈り王だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            傑作を撮る　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 腰 : 15 → 20
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 腕 : 5 → 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            アクション！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=20 草刈り (1D20<=20) ＞ 5 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            カット！<br>リテイク！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 腰 : 20 → 17
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=17 草刈り (1D20<=17) ＞ 5 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            カットカットカットォ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 腰 : 17 → 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=14 草刈り (1D20<=14) ＞ 14 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            駄作駄作駄作！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 腰 : 14 → 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=11 草刈り (1D20<=11) ＞ 8 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            まだまだァ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 腰 : 11 → 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=8 草刈り (1D20<=8) ＞ 6 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            カットカットカットカットカット！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 腰 : 8 → 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=5 草刈り (1D20<=5) ＞ 6 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            尽きたか…予算
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            x0 1d10 繰り返し回数は1以上、100以下としてください
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ワラキアの夜 ] 成功数 : 0 → 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            x5 1d10 #1<br>(1D10) ＞ 8<br><br>#2<br>(1D10) ＞ 2<br><br>#3<br>(1D10) ＞ 4<br><br>#4<br>(1D10) ＞ 2<br><br>#5<br>(1D10) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            c8+2+4+2+3 c(8+2+4+2+3) ＞ 19
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            結果は19ヘクタール！<br>これにてクランクアップ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-記録 user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">記録</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            19ヘクタール
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 15 → 25
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            メェ～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=25 草刈り (1D20<=25) ＞ 8 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 25 → 22
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=22 草刈り (1D20<=22) ＞ 4 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 22 → 19
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=19 草刈り (1D20<=19) ＞ 16 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 19 → 16
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=16 草刈り (1D20<=16) ＞ 12 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 16 → 13
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=13 草刈り (1D20<=13) ＞ 6 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 13 → 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=10 草刈り (1D20<=10) ＞ 7 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 10 → 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=7 草刈り (1D20<=7) ＞ 6 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 腰 : 7 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=4 草刈り (1D20<=4) ＞ 18 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 山羊 ] 成功数 : 0 → 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            （咀嚼）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            x7 1d5 #1<br>(1D5) ＞ 3<br><br>#2<br>(1D5) ＞ 4<br><br>#3<br>(1D5) ＞ 3<br><br>#4<br>(1D5) ＞ 1<br><br>#5<br>(1D5) ＞ 3<br><br>#6<br>(1D5) ＞ 2<br><br>#7<br>(1D5) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            c(3+4+3+1+3+2+3) c(3+4+3+1+3+2+3) ＞ 19
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-記録 user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">記録</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            19ヘクタール
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            まずい山羊に並ばれた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-山羊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            山羊
+                        </p>
+                        <p class="message-content-text">
+                            メ゛～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            まずいまだ2人しかいない<br>ちょっと長めに待ってみやす
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            広場がダメになるかならないかなんだ、刈ってみる価値ありますぜ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=20 (1D20<=20) ＞ 17 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ドムロトーペン ] 腰 : 20 → 17
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=17 草刈り (1D20<=17) ＞ 3 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ドムロトーペン ] 腰 : 17 → 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=14 草刈り (1D20<=14) ＞ 7 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ドムロトーペン ] 腰 : 14 → 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=11 草刈り (1D20<=11) ＞ 17 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            腰折りめぇ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ドムロトーペン ] 成功数 : 0 → 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            x3 1d10 #1<br>(1D10) ＞ 7<br><br>#2<br>(1D10) ＞ 5<br><br>#3<br>(1D10) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            c(7+5+5) c(7+5+5) ＞ 17
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            多いよ！15か
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-記録 user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">記録</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            15ヘクタール
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            いまさら気づいたけどドムロトーペンで誤字してんじゃねーか！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ドムロトーペン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e3d7a3;" class="message-user-text">
+                            ドムロトーペン
+                        </p>
+                        <p class="message-content-text">
+                            爆散！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ボルポテト ] 腕 : 5 → 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            光の速さで芝を刈ったことはあるかい～？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=15 草刈り (1D20<=15) ＞ 9 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=15-3 草刈り (1D20<=12) ＞ 9 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            x0 1d15 繰り返し回数は1以上、100以下としてください
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=15-6 草刈り (1D20<=9) ＞ 4 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=15-9 草刈り (1D20<=6) ＞ 4 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=15-12 草刈り (1D20<=3) ＞ 1 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=15-15 草刈り (1D20<=0) ＞ 4 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ボルポテト ] 成功数 : 0 → 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            x5 1d15 #1<br>(1D15) ＞ 9<br><br>#2<br>(1D15) ＞ 3<br><br>#3<br>(1D15) ＞ 5<br><br>#4<br>(1D15) ＞ 9<br><br>#5<br>(1D15) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            c9+3+5+9+3 c(9+3+5+9+3) ＞ 29
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            大量だねェ～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-記録 user-ボルポテト">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">記録</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ボルポテト
+                        </p>
+                        <p class="message-content-text">
+                            29ヘクタール
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            はい　みなさ     n　 こんniち　わ？　 ﾜﾀ94で　　su！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            みな  dieすき　 [[ナンバーワn セールスマ　 ン199７]]
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            急に音なり出して何かと思っただろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            ｽﾊﾟﾑt
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            ｽﾊﾟﾑﾄﾝ G. ｽﾊﾟﾑﾄﾝ　 でsu！　！！　！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            おをッ！！　 これは　ひょとし　て…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            [[草]]
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            今　日は[[限定アイテム]]　[[草]]の　ｺﾞｼｮｳｶｲ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            [[今だけ]]　 [[超お得なチャｿス]]あﾘまs
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            天を貫く　[[エクササイズにコミットする　]]
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            [[草]]
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            この　[[一生 ﾓﾉの]] [[草]] セットで[[歓喜の泣きさけび]]　間違いなレ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            しかるのち　お見せレまレょう　 ﾜﾀ94の
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            しかるのち　お見せレまレょう　 ﾜﾀ94の
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=15 草刈り (1D20<=15) ＞ 2 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ スパムトン ] 腰 : 15 → 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            1d20<=12 草刈り (1D20<=12) ＞ 16 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ スパムトン ] 成功数 : 0 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            ﾋｬﾋｬﾋｬﾋｬﾋｬﾋｬﾋｬ!!
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            x1 1d15 #1<br>(1D15) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            ﾃﾞﾊ　次の手順　ご説　明…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            ご安心くだ　　さ！　 ご満足いた　　　けない場　合
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            [[全額返金いたしません]]
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            いま　[[ご購入]]　いただければ　 絶対　[[後悔]]させます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            そし　　　最後に　 大事なこと…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            [[イイネとチャンネル登録]]をして　 さらに　 [[リンクは削除されました]]をｹﾞｯﾄ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-記録 user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">記録</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            5ヘクタール
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-スパムトン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            スパムトン
+                        </p>
+                        <p class="message-content-text">
+                            それはsう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            参加シャン増えてて嬉しいですね<br>22時に集計します
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            カーテンコール！集計の時間ダ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            4位ドムロトーペン<br>2位タイ私と山羊を超えて<br>ボルポテトが草刈り王で確定ダ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ワラキアの夜">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ワラキアの夜
+                        </p>
+                        <p class="message-content-text">
+                            参加感謝スる<br>カットカットカットカットカットーッ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
