@@ -1,0 +1,3282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 750px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-アクア" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アクア" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アクア</span>
+                </label>
+                <label for="user-リンリン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-リンリン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">リンリン</span>
+                </label>
+                <label for="user-ナレーター" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ナレーター" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ナレーター</span>
+                </label>
+                <label for="user-タローマン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-タローマン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">タローマン</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-女性隊員" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-女性隊員" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">女性隊員</span>
+                </label>
+                <label for="user-キャスター" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-キャスター" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">キャスター</span>
+                </label>
+                <label for="user-解説者" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-解説者" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">解説者</span>
+                </label>
+                <label for="user-社長" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-社長" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">社長</span>
+                </label>
+                <label for="user-秘書" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-秘書" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">秘書</span>
+                </label>
+                <label for="user-隊長" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-隊長" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">隊長</span>
+                </label>
+                <label for="user-山口一郎" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-山口一郎" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">山口一郎</span>
+                </label>
+                <label for="user-山口一郎(サカナクション)" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-山口一郎(サカナクション)" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">山口一郎(サカナクション)</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずいマジで立った
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            早く投げて百合を見せろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            キメてんだろ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            くれよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            病気の人
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ナンキメてるのかなぁ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            お前らが始めた物語だろ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おれは始めてないけど？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            2d100 病気度　健常度 (2D100) ＞ 62[30,32] ＞ 62
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おれは始めてないけど？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ギリ健で確定
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ギリ健のギリ健さんで確定
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            この部屋に来た時点で始めてるけど？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            その線は…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ゾッ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            4人いることはわかってるんだ<br>早く駒を置け
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            境界知能だァ〜〜〜！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            悪い　おれ百合出来ない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            nonameは全ておれなのを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            女の子が複数いれば　わしゃそれを百合と呼ぶ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >そのダイスで最高値を出せれば、STRが1成長します。<br>ちなみにこれ何回でも投げていいのか教えろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            気が済むまで投げろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            どうやって百合に展開してくんだよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待て最高値になったらゴリラにされるのかよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            ナン投げも女神アクアに任せなさい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来たか　アクア
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            3d6 STR (3D6) ＞ 15[5,4,6] ＞ 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            来たわね…最高ランク
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まずいゴリラだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            さて生地をよくこねて発酵させたものをオープンにぶち込み<br>無事焼き上がったナンを投げて優勝していくわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            18じゃないと最高ランクじゃないんじゃねェのかお頭
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 ナン！！！ (1D100) ＞ 82
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            なかなか飛ばしたなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            82メートル飛んだわね…クズマ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            最高値ではないけど1d100振れるから最高ランクではあると解釈したけどあなた達？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それもそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リンリン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffb7e3;" class="message-user-text">
+                            リンリン
+                        </p>
+                        <p class="message-content-text">
+                            私立ホールケーキ学園ナン投げ部。<br>やって来たのはジュースの河川敷。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リンリン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffb7e3;" class="message-user-text">
+                            リンリン
+                        </p>
+                        <p class="message-content-text">
+                            3d6 STR (3D6) ＞ 11[5,3,3] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来たか　リンリン
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待てこいつビッグマムかよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リンリン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffb7e3;" class="message-user-text">
+                            リンリン
+                        </p>
+                        <p class="message-content-text">
+                            焼きたての甘いブリオッシュを片手に、今日も一人自主練習に励みます。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リンリン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffb7e3;" class="message-user-text">
+                            リンリン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 「……ナン……ッ！！」 (1D10) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            プロメテウスとかちゃんといるなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            ロックスにいた頃のイケイケリンリンで確定
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リンリン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffb7e3;" class="message-user-text">
+                            リンリン
+                        </p>
+                        <p class="message-content-text">
+                            練習の理由はここ数日のスランプ。<br>どうしてか肩に力が入り、うまく前に投げられません。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リンリン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffb7e3;" class="message-user-text">
+                            リンリン
+                        </p>
+                        <p class="message-content-text">
+                            「はぁ…どこかにお菓子みたいにトキめく出会いでも落ちてないかなぁ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こいつJKだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            やはり、か…！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-リンリン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffb7e3;" class="message-user-text">
+                            リンリン
+                        </p>
+                        <p class="message-content-text">
+                            早く次やれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずいこのままだとアクアがリンリンに食われる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            見たい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            何言ってんのよあんたたちェ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            お前なら…いい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ここ百合卓だからこのままだと自動的にリンアクが成立するけどお前ら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            お前なら…いい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナレーター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ナレーター
+                        </p>
+                        <p class="message-content-text">
+                            そう、停滞した百合卓に降り立ったのは愛を盛り立てる巨人　タローマンである
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            3d6  (3D6) ＞ 7[1,5,1] ＞ 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            なんだこれは！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >なんだこれは！<br>こっちのセリフだよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 8[2,3,3] ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            なんだこれは！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 0 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 1 → 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 9 → 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10<br> (1D10) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            まずいタローマンがガチ攻略を開始したわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 10 → 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-女性隊員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            女性隊員
+                        </p>
+                        <p class="message-content-text">
+                            「ああっ！信じられない数のナンを投げているわっ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-キャスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            キャスター
+                        </p>
+                        <p class="message-content-text">
+                            「虚無卓は普通、ちょっとやったらポイって投げ捨てるべきものなんですけどね...」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-解説者">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            解説者
+                        </p>
+                        <p class="message-content-text">
+                            「普通、普通と言いましたね？<br>しかし貴方、このゲームには成長ルールがあります」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-解説者">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            解説者
+                        </p>
+                        <p class="message-content-text">
+                            「ルールの隅々まで遊び尽くす事こそ、TRPGプレイヤーとしての行うべき挑戦と言えるのでは？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            マズいタローマンが熱い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナレーター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ナレーター
+                        </p>
+                        <p class="message-content-text">
+                            タローマンは思った。<br>遊び方に縛られるべきではない。何度でも挑戦する事で道が輝きだすのだと。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 11 → 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 12 → 13
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 13 → 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d10 (1D10) ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ タローマン ] STR : 14 → 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 68
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-社長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            社長
+                        </p>
+                        <p class="message-content-text">
+                            「ワシのビルがァ〜〜〜〜！」<br>ナンの投擲によって崩壊するビル
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-秘書">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            秘書
+                        </p>
+                        <p class="message-content-text">
+                            「社長〜〜〜〜〜〜！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 52
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 17
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 16
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 72
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 35
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 81
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 62
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 62
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 26
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 22
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 34
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 29
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 77
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 30
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 37
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 54
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 90
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            芸術は、爆発だ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-隊長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            隊長
+                        </p>
+                        <p class="message-content-text">
+                            「タローマンは我々に教えてくれた。<br>再挑戦を行う勇気を」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-隊長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            隊長
+                        </p>
+                        <p class="message-content-text">
+                            「挑戦した不成功者には、再挑戦者としての新しい輝きが約束されるだろうが、挑戦を避けたままオリてしまったやつには新しい人生などはない。<br>岡本太郎も、そう言っていた」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-隊長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            隊長
+                        </p>
+                        <p class="message-content-text">
+                            「タローマンはきっとこの姿を見せることによって、憧れという意味での百合を成立させたかったに違いない」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            タローマン…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            頭おかしくなりそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナレーター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ナレーター
+                        </p>
+                        <p class="message-content-text">
+                            タローマンは思った。<br>原作とは違い、各登場人物に男という言及はない。全員女の百合世界かもしれない。<br>ましてや、アクアとリンリンは女なのだから同卓するだけでもはや百合なのだと。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-タローマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fdb933;" class="message-user-text">
+                            タローマン
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ナレーター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ナレーター
+                        </p>
+                        <p class="message-content-text">
+                            『挑戦を避けたままオリてしまったやつには新しい人生などはない』
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            オイ…何言ってんの？こいつ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-山口一郎">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            山口一郎
+                        </p>
+                        <p class="message-content-text">
+                            いやぁこの話は確か夏の劇場作品として公開された中の1話なんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-山口一郎(サカナクション)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            山口一郎(サカナクション)
+                        </p>
+                        <p class="message-content-text">
+                            百合卓で上手く回せなかった時にこれを見て再挑戦したいなって気分になれたというか<br>多様性やガッツにも上手く適用する岡本太郎の言葉ですよね本当に
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-山口一郎(サカナクション)">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            山口一郎(サカナクション)
+                        </p>
+                        <p class="message-content-text">
+                            まぁでも<br>過ぎた挑戦は卓を滅ぼすので、他PLやGMの迷惑をかけ過ぎない程度に(笑)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            立てて1時間経つしそろそろ締めるかァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            3位リンリン　1ｍ<br>2位アクア　　82ｍ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そして1位はなんと…<br>90ｍ　タローマン！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            みんなお疲れシャン<br>またね～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            またね〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
