@@ -96,6 +96,7 @@ def main():
 #path ルートフォルダ(ログフォルダ)
 #classID CSSで閉じる仕組みのために着ける
 #addLI 最初の階層だけ<li>付けない IQ28のゴリ押し実装 ベストプラクティスくれ
+#どうせminifyするのでインデントは付けない
 def generate_li(path,classID,addLI=False):
     files = os.listdir(path)
     #引数のパスから得られるディレクトリとファイルの一覧を生成
