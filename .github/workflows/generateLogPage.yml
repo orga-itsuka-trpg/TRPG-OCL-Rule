@@ -13,30 +13,32 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    # html整形のためのおまじないのためのおまじない
-    strategy:
-      matrix:
-        node-version: [15.x]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      # html整形のためのおまじない
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
       
       # ログリストを生成
       - name: Run a python script
         run: |
           python3 .github/workflows/generator.py > logViewer.html
 
-      # 生成されたhtmlを整形
-      - name: Run Prettier
-        run: |
-          npx prettier --write logViewer.html
+      # Job for Minify-JS
+      - name: Minify-JS Action
+        uses: jossydevers/minify-js@v1.0.1
+        with:
+          directory: 'logViewer.html' # (OPTIONAL)
+          output: './'
 
+      # minifyの出力は.min.htmlなのでリネーム
+      - name: rename logViewer
+        run: |
+          rm logViewer.html
+          mv logViewer.min.html logViewer.html
+          cat logViewer.html
+
+      # 成果物をプッシュ
       - name: push
         run: |
           git config user.name github-actions
