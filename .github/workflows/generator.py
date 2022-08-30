@@ -104,6 +104,8 @@ def generate_li(path,classID,addLI=False):
     files_dir = [f for f in files if (not f.startswith('.')) and (f not in black_list_dir) and os.path.isdir(os.path.join(path, f))]
     files_file = [f for f in files if (not f.startswith('.')) and (f not in black_list_file) and os.path.isfile(os.path.join(path, f))]
 
+    files_dir.sort()
+    files_file.sort()
     #デバッグ用
     print(path,file=sys.stderr)
     print(files_dir,file=sys.stderr)
