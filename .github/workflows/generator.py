@@ -17,30 +17,18 @@ header="""<!DOCTYPE html>
         width: fit-content;
       }
 
-      /* チェックボックスは非表示にする（内部的な Off/On の機能だけ利用する） */
-      .menu input {
-        display: none;
-      }
-
       /* 開いた状態のサブメニュー */
-      .menu input:checked + ul {
+      .menu ul {
         display: block;
         width: fix-content;
         padding: 0rem 0rem 0rem 1rem;
-      }
-
-      /* 閉じた状態のサブメニュー */
-      .menu ul {
-        display: none;
-        /* 下記は開閉によらず共通の設定 */
         background: #eee;
         list-style: none;
         margin: 0;
-        padding: 0rem 0rem 0rem 1rem;
       }
 
       /* 親項目の装飾 */
-      .menu label {
+      .menu summary {
         display: block;
         margin: 0;
         padding: 0rem;
@@ -48,7 +36,7 @@ header="""<!DOCTYPE html>
         cursor: pointer;
       }
 
-      .menu label:hover {
+      .menu summary:hover {
         background: #ccc;
       }
     </style>
@@ -58,13 +46,13 @@ header="""<!DOCTYPE html>
     <div class="menu">"""
 
 #この間にul要素が入れ子になる感じで
-example="""<label for="item4">項目4</label>
-    <input type="checkbox" id="item4">
+example="""<details><summary>項目3</summary>
     <ul>
         <li>項目１－１
         <li>項目１－２
         <li>項目１－３お前に教えるooooooooooooooo
     </ul>
+    <details>
 """
 
 #footer 以下略
@@ -82,7 +70,7 @@ def main():
     if not os.path.isdir('./ログ'):
         return
     print(header)
-    generate_li('ログ','logItem')
+    generate_li('ログ')
     print(footer)
 
 #ログのリストをログフォルダを再帰的に走査して入れ子になった<li>要素をprintする
@@ -105,16 +93,15 @@ def generate_li(path,classID,addLI=False):
     print(files_file,file=sys.stderr)
 
     #html生成
-    for i,dir in enumerate(files_dir):
-        localClassID=classID+"-"+str(i)
-        print(('<li>'if addLI else '')+'<label for="'+localClassID+'">'+dir+"</label>")#      <label for="item1">項目１</label>
-        print('<input type="checkbox" id="'+localClassID+'">')#        <input type="checkbox" id="item3">
+    for dir in files_dir:
+        print(('<li>'if addLI else '')+'<details><summary>'+dir+"</summary>")
         print('<ul>')
-        generate_li(path+"/"+dir,'logItem'+"-"+str(i),True)
+        generate_li(path+"/"+dir,True)
         print('</ul>')
+        print('</details>')
 
     for file in files_file:
-        print('<li><a href="'+path+'/'+file+'" target="_blank" rel="noopener noreferrer">'+file+'</a>')
+        print(('<li>'if addLI else '')+'<a href="'+path+'/'+file+'" target="_blank" rel="noopener noreferrer">'+file+'</a>')
 
     return
 
