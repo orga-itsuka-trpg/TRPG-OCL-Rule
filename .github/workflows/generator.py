@@ -5,13 +5,13 @@ import sys
 #ログ一覧を含まないhtml部分 cssやら説明書きやらはこれとfooterに書く
 #checkbox要素のcheckedを使ってCSSに開いたり閉じたりさせている
 #paddingやmarginはよくわかっていない
-#あとどうも今のブラウザはルートディレクトリのfaviconを勝手に取得してくれるらしい
 header="""<!DOCTYPE html>
 <html lang="ja">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ログ一覧</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
     <style>
       /* メニュー全体 */
       .menu {
