@@ -5,6 +5,7 @@ import sys
 #ログ一覧を含まないhtml部分 cssやら説明書きやらはこれとfooterに書く
 #checkbox要素のcheckedを使ってCSSに開いたり閉じたりさせている
 #paddingやmarginはよくわかっていない
+#あとどうも今のブラウザはルートディレクトリのfaviconを勝手に取得してくれるらしい
 header="""<!DOCTYPE html>
 <html lang="ja">
   <head>
