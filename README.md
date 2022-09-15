@@ -12,15 +12,8 @@ TRPG のルルブをまとめたリポジトリであることをお前に教え
 `log` ディレクトリ以下にファイルが置いてあることを教える。
 名前とか適当に変えたいときは次項の共有の仕方を参照しファイル名を変えたりしてくれ(^^)
 
-`.txt` ファイルならクリックすれば簡単に見れるな…ルフィ
-
-でもォ…←HTMLファイルはソースコードが出てるという難点が…
-
-`.html` ファイルに関しては [https://htmlpreview.github.io/](https://htmlpreview.github.io/) のフォームにファイルのURL (例: https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/blob/master/%E3%83%AD%E3%82%B0/%E3%82%B7%E3%83%A3%E3%83%B3TRPG%E3%83%AD%E3%82%B02021_10_02%E3%81%BE%E3%81%A7/4%E6%9C%88/%E3%82%A2%E3%82%AD%E3%83%8D%E3%82%A4%E3%82%B7%E3%83%A3%E3%83%B3%5Ball%5D.html ) をフォームに入力し `Preview` ボタンを押すと見れることを教える。
-
-こんな感じのURLが生成される https://htmlpreview.github.io/?https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/blob/master/%E3%83%AD%E3%82%B0/%E3%82%B7%E3%83%A3%E3%83%B3TRPG%E3%83%AD%E3%82%B02021_10_02%E3%81%BE%E3%81%A7/4%E6%9C%88/%E3%82%A2%E3%82%AD%E3%83%8D%E3%82%A4%E3%82%B7%E3%83%A3%E3%83%B3%5Ball%5D.html
-
-少し手間がかかるがこんな感じで使ってくれ(^^)
+有志により外部サイトに頼らずログを見れるようになったことを教える
+https://orga-itsuka-trpg.github.io/TRPG-OCL-Rule/logViewer.html
 
 ## 共有の仕方
 共有の仕方についてお前に教える。
