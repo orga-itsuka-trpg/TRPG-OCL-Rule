@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 550px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-noyhvh" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-noyhvh" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">noyhvh</span>
+                </label>
+                <label for="user-シャンク" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャンク" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャンク</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-キューブ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-キューブ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">キューブ</span>
+                </label>
+                <label for="user-オルガ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-オルガ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">オルガ</span>
+                </label>
+                <label for="user-わかめラーメン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-わかめラーメン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">わかめラーメン</span>
+                </label>
+                <label for="user-vvsn" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-vvsn" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">vvsn</span>
+                </label>
+                <label for="user-G" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-G" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">G</span>
+                </label>
+                <label for="user- noyhvh" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user- noyhvh" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts"> noyhvh</span>
+                </label>
+                <label for="user-米津玄師レース" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-米津玄師レース" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">米津玄師レース</span>
+                </label>
+                <label for="user-マリア" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-マリア" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">マリア</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            創世記虚無<br>はじめに神は卓とダイスとを創造された。<br>卓は背景なく、むなしく、やみが淵のおもてにあり、卓くれ坊の霊がスレのおもてをおおっていた。<br><br>神は「光あれ」と言われた。するとルールがあった。<br>神はそのルールを見て、良しとされた。神はそのルールとコマとを分けられた。<br>神は卓を虚無と名づけ、PLをシャンクと名づけられた。夕となり、また朝となった。ログはそれくらいに出すのである。<br><br>～中略～<br><br>神はこれらを祝福して言われた、「生めよ、ふえよ、1d100振れよ、また鳥は今の1d100の結果だけ1d100振れよ」。<br><br>2回振って一番増えたやつが海賊王だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンク
+                        </p>
+                        <p class="message-content-text">
+                            増えるぞ　来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンク
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ シャンク ] 増えた数 : 1 → 15
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンク
+                        </p>
+                        <p class="message-content-text">
+                            15d100 (15D100) ＞ 647[8,42,36,68,79,6,43,63,55,68,43,18,65,9,44] ＞ 647
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ シャンク ] 増えた数 : 15 → 647
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-キューブ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            キューブ
+                        </p>
+                        <p class="message-content-text">
+                            1d100　回だけ殴られる (1D100) ＞ 78
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-キューブ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            キューブ
+                        </p>
+                        <p class="message-content-text">
+                            78d100　回だけ殴られる (78D100) ＞ 3887[7,90,57,94,57,45,1,7,69,27,81,20,47,55,17,43,96,35,32,71,14,54,15,24,58,16,16,52,28,63,28,73,17,50,2,45,32,60,99,94,4,47,5,60,82,41,56,57,36,17,70,33,27,60,58,35,36,31,65,16,96,66,97,84,54,41,43,95,98,83,92,91,62,8,33,99,87,31] ＞ 3887
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ キューブ ] 増えた数 : 3887 → 3887
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-オルガ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            オルガ
+                        </p>
+                        <p class="message-content-text">
+                            動画の数だけ増えるからよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-オルガ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            オルガ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 91
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-オルガ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            オルガ
+                        </p>
+                        <p class="message-content-text">
+                            91d100 (91D100) ＞ 4454[47,8,8,87,13,29,39,59,19,82,77,73,67,77,14,31,77,68,45,24,10,85,7,98,64,81,21,48,12,79,7,89,84,18,47,73,1,37,69,76,38,5,39,93,32,14,23,27,11,7,51,66,88,86,98,17,100,85,60,19,88,16,12,16,83,44,61,94,68,51,27,100,21,17,8,46,64,84,90,13,100,23,30,64,53,8,8,56,73,33,94] ＞ 4454
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ オルガ ] 増えた数 : 1 → 4454
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-キューブ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            キューブ
+                        </p>
+                        <p class="message-content-text">
+                            No YHVHはどちらかというと無神論だと思ってんすがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-わかめラーメン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            わかめラーメン
+                        </p>
+                        <p class="message-content-text">
+                            神はこう言われた<br>「わーかめ好き好きピチピチ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-わかめラーメン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            わかめラーメン
+                        </p>
+                        <p class="message-content-text">
+                            1d100 入れられたかやくの数 (1D100) ＞ 19
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-わかめラーメン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            わかめラーメン
+                        </p>
+                        <p class="message-content-text">
+                            19d100 ふえたわかめ (19D100) ＞ 939[56,53,55,58,57,50,95,74,5,22,71,19,12,89,40,33,15,92,43] ＞ 939
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ わかめラーメン ] 増えた数 : 1 → 939
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神は「どう見えるかだ」と言われた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            神はまず、可愛い少年をお作りになられた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            大地は、神の手で少年をその身に置かれ、思った。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            『少年ありがたい』
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            『丁度切らしてた』
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            『泣ける』『ありがとう』
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            『少年助かる』『泣ける』
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            と。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            そんな次第で、母なる大地は少年を愛おしみ、少年の世話をするために、沢山のモンスターを生み出した。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 58
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ vvsn ] 増えた数 : 1 → 58
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            モンスターたちは当初、それは恐ろしい外見をしていたが、少年が怖がるため、
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            その見た目を少しずつ少年に似た形に変えていき、<br>後に少女と呼ばれるものに近しい外見へと変わっていった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            58d100 (58D100) ＞ 2735[58,31,39,5,50,56,28,8,100,62,85,21,27,84,77,68,37,19,43,60,49,21,80,25,80,21,47,22,37,49,16,57,42,55,35,5,55,11,63,94,99,36,46,32,70,65,7,65,30,43,20,80,92,59,36,7,62,64] ＞ 2735
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ vvsn ] 増えた数 : 58 → 2735
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-vvsn">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff9800;" class="message-user-text">
+                            vvsn
+                        </p>
+                        <p class="message-content-text">
+                            モンスター娘の誕生である。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-G">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            G
+                        </p>
+                        <p class="message-content-text">
+                            生めよふえよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神はまた言われた、「頼む…やめてくれェ…！なんでそんな生き物…！」。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-G">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            G
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 40
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ G ] 増えた数 : 1 → 40
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-G">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            G
+                        </p>
+                        <p class="message-content-text">
+                            （卵をうむ音）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-G">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            G
+                        </p>
+                        <p class="message-content-text">
+                            40d100 (40D100) ＞ 2032[25,39,79,2,79,86,92,97,3,74,47,29,26,98,98,69,15,83,75,93,52,91,82,14,76,16,87,46,97,32,12,45,12,3,16,29,1,50,24,38] ＞ 2032
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ G ] 増えた数 : 40 → 2032
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-米津玄師レース">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            米津玄師レース
+                        </p>
+                        <p class="message-content-text">
+                            努力未来 a beautiful star
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-米津玄師レース">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            米津玄師レース
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 50
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-米津玄師レース">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            米津玄師レース
+                        </p>
+                        <p class="message-content-text">
+                            努力未来 a beautiful star
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 米津玄師レース ] 増えた数 : 1 → 50
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-米津玄師レース">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            米津玄師レース
+                        </p>
+                        <p class="message-content-text">
+                            努力未来 a beautiful star!!!
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-米津玄師レース">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            米津玄師レース
+                        </p>
+                        <p class="message-content-text">
+                            50d100 (50D100) ＞ 2225[78,30,12,53,82,74,76,80,20,62,71,76,41,80,13,16,43,69,9,59,12,6,84,3,7,38,48,47,29,91,20,60,3,17,38,74,22,14,8,13,52,87,20,58,36,25,34,77,83,75] ＞ 2225
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-米津玄師レース">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            米津玄師レース
+                        </p>
+                        <p class="message-content-text">
+                            なんかすごい良い感じ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 米津玄師レース ] 増えた数 : 50 → 2225
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            米津玄師ではなかった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神は「21時くらいに集計せよ」と言われた。するとそのようになった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            "神様はそろそろエルデンリングのDLCが欲しいと言った"
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 23
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            "しかしその度にブラボ2も欲しいという奴が来た"
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            23d1000 (23D1000) ＞ 12174[703,406,213,998,671,304,629,971,834,893,626,600,334,459,30,916,303,200,109,692,365,284,634] ＞ 12174
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            まちがえた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            23d100 (23D100) ＞ 1105[14,99,65,73,1,5,37,58,58,1,29,30,100,57,83,95,38,7,92,30,59,71,3] ＞ 1105
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            よし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-マリア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            マリア
+                        </p>
+                        <p class="message-content-text">
+                            "神様は困惑した、そしてアーマードコアの新作を作った"
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            主なる神もまた困惑した。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神はその作業を終えられた。すなわち、そのすべての集計を始めた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神は「満ちたもののそれぞれを集計せよ」と言われた。すると結果発表があった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            647. 神はまた言われた、「シャンクは一つの所に集まり、シャンクスが現れよ」。そこそこそのようになった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神はシャンクス複数人説を見て、良しとされた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            939. 神はまた言われた、「わかめラーメンはまだ食べたことないよ」。明日のお昼はそのようになった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            1105. 神はフロムハラされたのでちょっと宇宙まで行ってきた。何故なら私はアメリカ合衆国大統領だからだ。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            2032. 神はゴキジェットを撒いた。よくやった。殺して正解だった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            2225. 神は「KICK BACKあれ」と言われた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            BGMはそのようになり、米津玄師は収入と魔力を得た。また米津玄師ではなかった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            2735. 神はまた言われた「丁度切らしてた」。もんハラだった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            3887. 神はパルミアに核を落とした。カルマを-100とし、パルミア王は生きていた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            夕となり、朝となるが3度繰り返されると、丸ごと復活していた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            4454. 神は「なんか静かですね～」と言われた。<br>すると来週は夕方5時00分からとなった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            また「止まるんじゃねぇぞ…」と言われた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神はいつもの流れを見て良しとし、オルガを異世界に分けられた。<br>これが異世界オルガの由来である。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            神が造ったすべての物を見られたところ、それは、はなはだ虚無だった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-noyhvh">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            noyhvh
+                        </p>
+                        <p class="message-content-text">
+                            朝となり、また夕となった。宴である。
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
