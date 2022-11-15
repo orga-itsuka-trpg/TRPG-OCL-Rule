@@ -1,0 +1,4239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 550px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-秘匿(匿名さん,匿名さん)" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-秘匿(匿名さん,匿名さん)" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">秘匿(匿名さん,匿名さん)</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-雪音クリス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-雪音クリス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雪音クリス</span>
+                </label>
+                <label for="user-盗賊" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-盗賊" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">盗賊</span>
+                </label>
+                <label for="user-イタコ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-イタコ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">イタコ</span>
+                </label>
+                <label for="user-僧侶" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-僧侶" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">僧侶</span>
+                </label>
+                <label for="user-チャカ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-チャカ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">チャカ</span>
+                </label>
+                <label for="user-フリント" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-フリント" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">フリント</span>
+                </label>
+                <label for="user-ジル" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ジル" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ジル</span>
+                </label>
+                <label for="user-ルルアンタ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ルルアンタ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ルルアンタ</span>
+                </label>
+                <label for="user-ゼネテス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ゼネテス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ゼネテス</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            23時ぐらいまで待ちますか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            やりまあす
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            です
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            りょうかいです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            時間まで待ちましょうか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかりました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おやお久しぶりですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            久しぶりだな！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ちょっとデータ探すのに時間かかるかもしれませんがお待ちを
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            わかった、ありがとう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            本当に随分前になりますね…砂漠から戻ってきてバイアシオン探索してるところですか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ああ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            とりあえずこれが前の卓だと思います<br>https://ccfolia.com/rooms/pG0te7WEq
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            確か、ドラゴンの遺体を拝みに行った記憶がある。それと、アイシャいたっけ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            確かにその記憶あります
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待ってください
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ああ、わかった　探してくれてありがとう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            あった！こっちですね<br>https://ccfolia.com/rooms/VjlMg-D_S
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            そうそう、こっちだ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ということで邪竜の洞窟から戻ってきて猫屋敷からスタートですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それにしても前はHPMPSANと最初からついてたのに駒がめんどくさくなりましたね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (確かにな)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            あ！すいません！今回位はこちらで
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            そういえばSANの方使った覚えがないな<br>神話生物が出てくるわけでもないので当たり前だけれど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            時間内に来ましたもんね<br>わかりました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            …（秘匿の方を見る）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (察し)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            まあいいかぁ！！よろしくなぁ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では準備が良ければ始めましょうか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            だめでした
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            よよい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-秘匿(匿名さん,匿名さん) user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">秘匿(匿名さん,匿名さん)</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            システムがこっちが最初に作られましたからねえ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            準備完了を教えてください！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            教える！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            出航～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            出航だ〜！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ということで邪竜の亡骸見学から帰ってきて猫屋敷からのスタートです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (…あんな巨大な龍も、やっぱり死ぬ時はあるのか。今までの冒険じゃ、想像もつきやしなかったが……)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (上を見るのに切りはねえな……)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            頬を突きながら思案に暮れつつ<br>暫くして
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…さて、どうするかな？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            意見を求めるように、同行者達に視線を向けた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            「どうしたいかによると思う。先に進むのか、ここの地方を冒険するのか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「ん、そうだな……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (…先に進むにしろ、アタッカーがあたし一人は無理が出る場面も多そうだ)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (盗賊もやれるっちゃやれるが……まあ、本職が欲しいのが本音でもある)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (まあ、戦闘面以外は大体楽をさせてもらってるわけなんだが……)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            うんうんと悩み
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「よし、この地方を探索しよう。準備は万全の方がいいだろうしな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-イタコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            イタコ
+                        </p>
+                        <p class="message-content-text">
+                            「私は最初にいた時を知りませんけどいってない所に行けばいいんじゃないですの？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「行ってない所、か……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ガサガサと地図を広げて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            どのあたりが行ってないかな？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-僧侶">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            僧侶
+                        </p>
+                        <p class="message-content-text">
+                            「ノーブルと…ウルカーンでしょうか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「よし、ノーブルから行ってみよう！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では南に断裂の山脈を超え、ノーブルに向かいました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            s1d100 (1D100) ＞ 97
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            schoice 武器　防具　アイテム　種　メタル　メタル捕まえた　マテリア (choice 武器 防具 アイテム 種 メタル メタル捕まえた マテリア) ＞ 防具
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            s1d47 (1D47) ＞ 24
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            宝箱が落ちています
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「盗賊、頼めるか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            「任せて」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=95 (1D100<=95) ＞ 88 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            相変わらず頼れるな…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            「防具」<br>性能24の防具を手に入れました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「あればあるだけ助かる奴だな……盗賊、あんたが付けるか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            「相手が近接攻撃だけならそれも手だけど…全体攻撃が来た場合かばう戦士がいないから…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            「でもありがとう。うれしいよ。判断は任せる」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「じゃ、装備しておいてくれ、少なくとも、そうそう大規模な敵も来ないだろうさ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            「じゃあそうしておく」<br>そういって防具を着込みました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「じゃ、再出発！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そうして一行はノーブルにつきました<br>ロストールの穀倉地帯で農耕が盛んです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「ほおほお……こりゃ豊かなもんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            辺り一帯を見渡しながら、特徴のある建物を探している
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では目星的な技能をどうぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            そのまんま目星！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=80 (1D100<=80) ＞ 9 ＞ スペシャル
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まず目星＋５で
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            うわあり！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            この領土一帯に重苦しい雰囲気が漂っています。大人から子供に至るまで冒険者と話そうとするのさえ避けてますね<br>ですがそれとは様子がまったく違う一団も見つけました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            一団に向かって寄ってみるか！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            村の若者を中心としている思われる一団が見つからないように畑の中でたむろして何やら談合してますね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…おーっす」<br>小声で声を掛けてみる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「うお！？なんだあんた！？」<br>飛び上がらんほどに驚いて振り返ります
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「あたしは雪音クリスってんだ。冒険者やってんだが……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「村のみんなの雰囲気が暗いのが気になってよ、何か知ってるか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「う～ん…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            s3d100 (3D100) ＞ 29[9,2,18] ＞ 29
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「いや、知らないな。何のことだか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「そう言わずにさ、困り事があるって話なら出来る限りの事はするぜ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「…ここの領主のポルポラってやつがひどい独裁を敷いて重税を課してとその口止めをしてるからだな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…ロビンフッドでも呼びつけたい所だな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「で、口止めしてるっつー事は知られたくない相手でもいるのかい？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「あくまで代理領主…家臣だからな。本当の土地の持ち主であるリューガ家に知られたらという話だろうよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「なるほどなるほど……そして、あんたらは報復が怖くて、そのリューガの連中に直訴はしにくいと」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            仕方がない事だろう、こんな真似を平然とする相手だ。警戒しない訳がない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「いや、直訴しても握りつぶされる可能性が高い」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「なにぃ…？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「ここの領主のリューガ家は、今の中央集権を目指す王…の黒幕であるエリス王妃と対立してるからな。ろくでもない代官を雇っていたともなれば弱みになっちまうから」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「だからまあ、ポルポラを解任できないでいるんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「もちろんやりすぎれば交代だが…そうならないようにこうやって監視もしてると」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「……なーるほど」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            となると、そもそもそのエリス王妃殿まで話を通したい所だが……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            …もしも、強硬手段を取るタイプだと助けるつもりで悲劇の引き金を引きかねない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「それぞれ、出来るだけ探ってみるかね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            リューガが良き党首なら話は早い<br>この件を隠密に片付ける手伝いをする代わりポルポラを排斥してくれるだろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            エリスが穏健なら、裏から手を回してくれるかもしれない。<br>だが、まずは当事者のポルポラを探るべきか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「うし、教えてくれてありがとな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-チャカ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            チャカ
+                        </p>
+                        <p class="message-content-text">
+                            「何のことだ？俺は独り言を言ってただけだ」<br>そういってすっとぼけている<br>監視の関係もあるのだろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…っと、そうか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            そう言うと、チャカ達から離れて…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「(さて、ポルポラについて探る為。繋がりがありそうな奴を探してみるか)」<br>小声で仲間に耳打ちをする
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-盗賊">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            盗賊
+                        </p>
+                        <p class="message-content-text">
+                            「と言っても来たばかりだから…酒場もないようだし、宿屋にでも行ってみる？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「そうするか…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では目ぼしい人を見つけられたか目星どうぞ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=85 パワーアップした目星を使った！ (1D100<=85) ＞ 53 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            では行商人が声をかけてきますね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「おや、旅のお方ですかね？こんななにもないところにどのような御用で？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            s1d300 (1D300) ＞ 118
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            s3d100 (3D100) ＞ 153[36,62,55] ＞ 153
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「よろしければ買い物のついでにお話でも」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「そりゃ助かるよ、補充はいつでもしたいし……この辺り、少し気になるからさ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「お気づきでしたか。かなりきな臭いことになっているようですね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「ああ、そう簡単にどうとか出来るお話しでは無さそうだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「下手に動いて、火の粉を撒くのも避けたい」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「それではことが起きる前に私たちと一緒に脱出しませんか？ちょうど護衛を雇おうかと思っていたところです」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…事が起きるって、まだ。火が付いてるわけでもないと思ってたが……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            無論、火薬庫の如く危うい状況ではあるのだが……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「あんたは、もっと何か知ってるのか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「そうですね…どうやら反乱を起こそうとしているグループが戦力を集めているようです。あなたも腕に覚えがあるなら参加すれば歓迎されると思いますよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…なるほど、のんびり探ってたら火だるまって所だな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            予定変更、真偽はともかく<br>農民はこちらの想定以上に追い詰められている、即断即決で動く他無さそうだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…いい話を聞かせてもらったな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「いえ。又聞きをお聞かせしただけのことなので」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「護衛の件だが、火が付くのが止められそうにないなら引き受けるよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「けど、それまでは。ちょっと走り回る用事が出来ちまった」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「そうですか…何をなさるにせよ、どうかご無事で」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「あんたもな、教えてくれて本当にありがとう」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「どういたしまして。それでは私も娘たちに声をかけに行きますかね。あまり遠くに行っていないといいですが」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「ん、外に出てるのか。必要そうなら手伝おうか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「それはありがたい。私も荷造りなどありますので声をかけてきてもらえますか？近くの森で訓練をしているはずです」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「おう、それじゃ行ってくるわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            軽く手を上げて微笑むと<br>宿を出て森へと向かう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ジル
+                        </p>
+                        <p class="message-content-text">
+                            森の中を少し分け入っていくと剣の素振りをしている少女と
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルルアンタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルルアンタ
+                        </p>
+                        <p class="message-content-text">
+                            それを見て応援している少女がいます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルルアンタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルルアンタ
+                        </p>
+                        <p class="message-content-text">
+                            s3d100 (3D100) ＞ 149[59,63,27] ＞ 149
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ジル
+                        </p>
+                        <p class="message-content-text">
+                            s3d100 (3D100) ＞ 101[26,41,34] ＞ 101
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「おーい、宿の行商人の娘ってあんた達か？親父さんが呼んでたぞ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            見つけると、手を振りながら声をかける
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ジル
+                        </p>
+                        <p class="message-content-text">
+                            「誰？」<br>少し不審な目で見つめてくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルルアンタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルルアンタ
+                        </p>
+                        <p class="message-content-text">
+                            「こらー！開口一番にそれはないよジル！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「いや、唐突に声をかけたあたしも悪かった……あたしはクリス、雪音クリスだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ジル">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ジル
+                        </p>
+                        <p class="message-content-text">
+                            「そう」<br>剣をしまって歩いてくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルルアンタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルルアンタ
+                        </p>
+                        <p class="message-content-text">
+                            「はじめましてクリス。私はルルアンタ！こっちはジルよ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…鏡合わせみたいな二人だなって、それはともかく」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「行商人の娘ってのは、あんた達か？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルルアンタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルルアンタ
+                        </p>
+                        <p class="message-content-text">
+                            「うん！ルルアンタたちはフリントさんの娘だよ！」<br>とことこと小さな足で歩いてくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「お、そうだったか。親父さんが呼んでたぜ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルルアンタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルルアンタ
+                        </p>
+                        <p class="message-content-text">
+                            「ありがと！じゃあ行くよジル。次はちゃんとあいさつしないとダメなんだからね？」<br>そういってジルと手をつないで森を抜けていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…素振りか、剣士に憧れでもあるのか？」<br>二人のいた跡を見回し、呟く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            訓練用の木偶人形など以外は特に何もないようですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「ふんふん……真面目真面目」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            関心したように頷くと<br>そのまま宿屋に戻っていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            目星どうぞ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=85 くりすは　とっさにめぼし　をつかった！ (1D100<=85) ＞ 80 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            宿屋の中でゼネテスさんとフリントさんが何やら話してるみたいですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「ありゃあ……ゼネテス？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ついでだ、用事が終わった事を伝えるついでに挨拶しに行くか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そのまま入りますか？聞き耳を立てることもできますが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            よし、一応聞き耳！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では二人の会話が聞こえてきます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「これはこれはゼネテス様。このような田舎にお越しになるとは」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「…お前さんがここにいるってことはこの件に叔母貴も関わっているということか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「どうですかな？ゼネテス様と同じくたまたま旅をしたくなっただけかもしれません」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「ふん。まあそう簡単に話すようじゃ務まらないだろうな。まあ、俺は俺でやれることをやるだけさ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そのような言葉を二言三言交わした後、沈黙が訪れました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ノックしてから入るか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「おっと。娘たちは無事に帰ってきました。ありがとうございます」<br>そういって柔和な笑みを浮かべる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「よお久しぶりだなクリス。ずいぶん足が長いじゃないの」<br>こちらも何事もなかったかのようにふるまってます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「オメーもな、まさかここで会うとは」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「下町じゃあロストールの遊び人の異名を持つ俺だぜ？どこにでもいくさ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「おうおう、異国にまで異名を轟かすとは大したもんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「……で、二人はどういう関係だ？　真剣な顔で、小難しい話をしてたが」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「なあに、ここで取れるワインの話をちょっとね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「実も熟してなかなかの量が期待できそうなものでして」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「……ま、いいさ」<br>ボソリと呟くと
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「話は変わるけどさ、この辺りの話はもう耳に入ってるだろ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「ああ。どうにも嬉しくないことの渦中みたいだな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「まーな……こっちも、できればなんとかしてやりたいんだが……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「遊びに来たところ悪いけどよ、手伝ってくれないか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「俺は俺で動こうと思ってたが…具体的に何をだ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「……出来る限り穏健に、ポルポラの次にまともな奴を添えたい。　とはいえ、農民の不満の桁にも寄るが」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「それはリューガ家の権限だな…俺が変えれればそれに越したことはねえんだが、レムオンの大将がな…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「まあ、だよな……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「このままエリス様に伝えるにしろ、リューガが大人しくしてねえと、農民の皆様が損をする羽目になる」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「どうしたもんかね…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「考えうる最悪の状況は、反乱に乗じて叔母貴がこのノーブルに介入、リューガ家がそれに反抗して内戦ってところだが…とりあえず俺はそれを押さえようと思ってる」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…そこ、抑えてくれるのは最高に助かるな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「総司令官なんてものを承っちまったんでね。と言ってもいうことを聞くのはファーロス家の兵力ぐらいだが、今回はそれで十分だ。最低でも反乱までで終わらせられる」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「リューガの連中が反乱に勘づいてるなら、状況を考えて妥協してくれるのが良いんだが……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「叔母貴に隙を見せるようなことは絶対にしないだろうな。反乱寸前と認めることすらしないだろう」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…オイオイ、爆発してからじゃあ。元も子もないだろう……奴さんなんか備えでもあるのか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「普段なら座視してるようなレムオンじゃあないだろうが…まさか自分の選んだ代官がこのざまだとは思っても…いや」<br>ちらっとフリントを見て
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-フリント">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            フリント
+                        </p>
+                        <p class="message-content-text">
+                            「ふふ…」<br>涼しい顔をしている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「やられたな。ポルポラと叔母貴が組んでたか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「…リューガの連中は、物の見事に嵌められたって事ネ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「総司令官としては仲間割れみたいなことはやめてほしいんだがねえ」<br>頭をがりがりと掻く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「同情するよ……まったく、身内は大事にしねえと碌な事にならねえのに」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「貴族の私兵の寄せ集めではディンガルに勝てないから中央集権をってのも一理あるんだが…やり方がな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「……まあな、後々の為にはなるだろうが。後へ続くかどうかって話だ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゼネテス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゼネテス
+                        </p>
+                        <p class="message-content-text">
+                            「まあそれはともかく、俺は最悪を避けるためにすぐロストールに向かうぜ。お前は正式にうちの軍人ってわけじゃないし、巻き込まれたくないなら今のうちに逃げるんだな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            「おう、引き時は見据えておくさ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            （時間も時間なのでSAVEしてもいいですよ）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            (よしセーブしよう。ちょうど宿屋だし)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ロストールの陰謀に巻き込まれたクリス一行、この状況を打開できる策はあるのか。<br>それが分かるのはまた先のお話
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            SAVE完了！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            うたげだ～～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            うたげだオラ〜！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            また何やら大変な事が起こってるな！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ロストールって内部がバラバラなせいで陰謀渦巻いてるんですよね<br>そんなだからディンガルに一回勝ったぐらいじゃ優位が崩れません
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まあ中央集権で勝とうとして陰謀してるのが内乱に繋がるっていう…つんでます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            どうしてこうなった！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            エリス王妃が10年前に権力の座に着いたら違ったでしょうね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ディンガルがボロボロのうちに本当は中央集権しなくちゃいけなかったんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            ディンガルに完全勝利するまで、この内乱が続くのか……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            もしくは自滅するか圧殺されるかですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            そして、勝とうとすれば内部はギスる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            は、破滅が近い！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            エリス王妃が好きになっちゃったPL達はいばらの道を歩いています
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まあディンガルの方にも破滅スイッチあるので両者疲弊して戦う力なくなることもあるんですが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            今のところゼネテスと仲良いからな…<br>できれば味方してやりたい、理想としてはお前ら戦争やめろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ディンガルトップのネメアが戦争する気満々ですからね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まあ彼も彼で破壊神復活させないために全ての罪をしょい込む気ですが
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            オイオイオイ、下手に止めても続けさせても破壊神がやってくるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            常に自分に降りかかる理不尽な運命を切り開いてきた人なので頑固だからたちが悪いです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まあそんなところであまり長くするのもあれなので終わります！<br>深夜までお付き合いありがとうございました！お疲れシャンです！<br>またね～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-雪音クリス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            雪音クリス
+                        </p>
+                        <p class="message-content-text">
+                            お疲れシャン！<br>楽しかったよ、またね〜〜〜！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
