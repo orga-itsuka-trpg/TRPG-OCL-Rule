@@ -1,0 +1,2592 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 500px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-妖夢" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-妖夢" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">妖夢</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-シャンクス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャンクス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャンクス</span>
+                </label>
+                <label for="user-幽々子" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-幽々子" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">幽々子</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-西行寺幽々子" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-西行寺幽々子" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">西行寺幽々子</span>
+                </label>
+                <label for="user-ゾロ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ゾロ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ゾロ</span>
+                </label>
+                <label for="user-トナカイ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-トナカイ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">トナカイ</span>
+                </label>
+                <label for="user-？？？" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-？？？" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">？？？</span>
+                </label>
+                <label for="user-四季映姫・ヤマザナドゥ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-四季映姫・ヤマザナドゥ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">四季映姫・ヤマザナドゥ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            ぞろぞろシャンクスガーデン<br><br><br>１.はじめに<br><br>  このゲームは庭園に侘び寂びを見出だしていたシャンクスたちの繁栄と衰退、浪漫、ぞろぞろした感じ、ガーデンの良さなどを追体験するTRPGなことを教える<br><br><br>２.キャラクターメイキング<br><br>  ぞろぞろ引き付けるシャンクスの数を決める<br><br><br>３.庭に出るフェイズ<br><br>  順番に、何か理由をつけて庭にぞろぞろ出てくることを教える<br>  また、PCの庭は全て隣り合っているので、天候等の設定は全員共通したものになることを教える  先に決めたもん勝ちで確定<br><br><br>４.ぞろぞろするフェイズ<br><br>  順番に決めた人数分のシャンクスを引き連れてぞろぞろすることを教える<br>  庭園の美しさやぞろぞろした感じをロールプレイしてくれ(^^)<br>  1人につきぞろぞろできる持ち時間は3分間なことを教える<br><br><br>５.よくやったフェイズ<br><br>  GM(ガーデニングマスター)が一番ぞろぞろしてたと思うPCに「よくやった」と言うことを教える<br>  よくやったされたら勝ちで確定<br><br><br>６.最後に<br><br>  これはTRPGおまじな大饗宴に収録されている栄枯浪漫TRPG「ぞろぞろガーデン」のルールをシャンクナイズしたものなのを教える<br>  暇なときこれで遊んでくれ(^^)<br><br><br>以上
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            来たか…妖夢
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            前回他のGMが建ててた卓も集まりがあまりよくなかったようなので私1人でやる気満々で来ちゃいましたが<br>せっかくなのである程度競えるようにしておきます　来てください
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            他のPLや観戦シャンは見事なぞろぞろっぷりを見せたPLにぜひ「よくやった！」を贈って下さいね<br>いくつも贈るのも可です<br>ステラナイツのブーケくらいの感覚でどうぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスさんは5人でいきます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…これが例のブツだ。これで借りは返したぞ」<br>神秘的なアイテムを差し出す
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「たしかに受け取ったわ。これで幻想郷には用無しになったわけね、四皇さん？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「耳聡いなァ…だがここではただのシャンクスだ」<br>「帰りに庭を見て行ってもいいか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「いいわよ。それならあの子に案内させましょう…妖夢！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「はーい、何ですかぁ幽々子様…」<br>フスマを開けてくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「！？シャンクスさん！？来てたんですか！？いつ幻想郷に！？」<br>「幽々子様、何で教えてくれなかったんですか！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「あら、いつもシャンクスの悪口を言ってたから嫌いなのかと思ったわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「まあまあ。庭を案内してくれねェか、妖夢？」<br>「来る時にチラッと見たが、俺のいた頃とは随分変わってそうじゃねェか…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「庭を？…」<br>「…ええ、わかりました」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            私はシャンクスさんたちを引き連れてぞろぞろと庭に出ます。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            朝からちらちらと舞っていた雪いつのまにか止んでいたようで。<br>それでも冬の寒さでくすんだ木々の枝葉は、いまだ白い衣を纏っていました。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「…あいにくの天気だったもので、雪でよく見えないかもしれませんね」<br>「秋は紅葉がそこそこ綺麗に見えたのですが」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…いや、美しい庭だ。よく整えられたアオキを背景に、雪を被った松の枝葉が映える」<br>「まるでワノ国の水墨画みてェだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…腕を上げたな、妖夢。庭師としても」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「…は、はい…ありがとうございます」<br>「…あっ、そうだ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            私はシャンクスさんを案内し、縁側沿いに裏庭へ向かいました。<br>冬だからこそ美しいものが、そこにあるのです。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ コピー用 ] よくやった！ : 0 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「これは…牡丹か！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            それは私がこの冬の庭で唯一、一定のの出来栄えを自負できる植栽。<br>赤い牡丹の花が、モノクロームに朱墨を落としたように、ぽつりぽつりと咲いていました。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「はい。冬に何もないのも味気ないと思い、今年新しく挑戦しました」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「…シャンクスさん、幻想郷にはいつまでいらっしゃるんですか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…明日には出ていく。船で部下が待ってるからな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「そうですか…」<br>「…次はいついらっしゃるんですか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…わからねェ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            私は言葉に詰まりました。<br>今の私は自由すぎるほどに自由だった昔とは違い、この白玉楼では一介の庭師。<br>幽々子様の手前、気安く滞在するように言うことなどできません。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            この心の乱れを見透かしたように、シャンクスさんが踵を返しました。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…案内ありがとうよ。いい思い出ができた」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「あっ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「…シャンクスさん！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…」<br>「何だ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「私、来年もこの牡丹を咲かせますから。今年よりもっと上手く、この庭を彩ってみせます」<br>「その次の年も、次も、ずっと！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            「だからきっとまた、この花を見に来て下さいね！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「フッ。剣しか取り柄のなかったガキが言うようになったもんだ」<br>「わかった、近いうちに見に来る。必ずな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            …私とシャンクスさんはそれ以上言葉を交わすことはありませんでした。<br>赤髪の海賊は灰色の寒空の下、颯爽と白玉楼を立ち去りました。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            この虚無ゲーでここまで話作れるの凄いだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ コピー用 ] よくやった！ : 1 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            でも、私はもう迷いません。<br>彼は約束を守る人。<br>見に来ると言ったら、必ず見に来るのです。<br>だから私はそれまで、牡丹の花を。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            …牡丹の花言葉は、控えめな美しさ。<br>あるいは、控えめな愛。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 妖夢 ] よくやった！ : 0 → 5
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            終わりです<br>庭じゃなく人間関係メインだったのでちょっと反則だったかもしれません
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            よくやった！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            所で今回時間無制限？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            私も若干オーバーしちゃいましたね…<br>まあ目安程度でお願いします
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 妖夢 ] よくやった！ : 5 → 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ コピー用 ] よくやった！ : 2 → 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            あっ間違えてコピー用そのもの取っちまったなァ…<br>スマン妖夢一回閉まってくれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            🌈<br>わかりました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            そういや地繋ぎだから色々滅茶苦茶にして相手にパスも出来るんだよな…<br>よし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            幽々子様！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            私が来たわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            100D2000　シャンクスの数 (100D2000) ＞ 99490[1345,1503,1175,1546,188,378,813,579,100,19,368,1640,935,1053,1492,31,707,968,810,1772,1575,950,1859,1290,1700,1485,760,761,436,1852,1043,932,1826,1066,389,78,27,1122,1919,1275,1267,1959,937,1858,900,135,1640,96,359,954,1858,250,1459,333,902,408,1169,1507,1062,146,1478,412,137,1035,1170,501,1472,645,1407,959,474,1629,967,1429,1810,1299,269,682,162,521,1374,1372,1622,1808,1673,736,159,80,841,772,907,999,742,1144,1840,762,1477,1947,1413,398] ＞ 99490
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            そして、次の日の朝…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「……ちょっと、何これ…？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            シャンクス、滅茶苦茶いた<br>それも死んで霊体になっているいるシャンクスだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「一体何があったの貴方達…というか妖夢は何してるのよもう～…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「何があったか…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「いや、いつも通りだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「いつも通り？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「そうだ、いつも通りオモチャにされて、勝手に増やされて」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「そして時にはモブ扱いで割と簡単に殺されて…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「今大量のシャンクスの魂がここに居る、笑ってくれ(^^)」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「え…ええ…？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「いや知らないわよ…成仏しなさいよアンタ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「そうしたいのは山々だが…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「おっぱいがデカい死神が仕事してねえんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「そっかあ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「なあ幽々子何とかできねえか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「そうはいっても私の能力は死を操る能力だし…貴方達どうにかするのは無理よ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「！」「それだ！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            大量のシャンクスを三途の川でピストン輸送してる絵面想像して笑いました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「幽々子、覇気って知ってるか？」<br>「こいつは使い方次第で能力の力を引き上げたりも出来るんだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「今から俺達の覇気をお前に流す、これなら何とかなるかもしれん」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「１０万人ぐらいいる四皇の覇気を！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「頼む幽々子！お前だけが頼りだ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「それともお前は俺達がこのままここで永遠にぞろぞろしててもいいのか！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「う～ん…それはやだ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「わかった手伝うわよ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「うわ！ありがとう！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            というわけで１０万近くいる四皇の覇気を…注入！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            （あれ…そういえばその力で具体的に何すれば…）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            （あっ……力が高まって…）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「…ぐううっ！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「あ……あがああああああああああああああああああ！！！？？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            「マズイ入れすぎたかもしれん」「てかこれヤバくねえか？」<br>「マズイ幽々子の力が暴発する！伏せろ俺達！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「アアアアアアアアアアアアアアアアアアアアアアアア！！！！！！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            そして…どうなったか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            気絶した幽々子が目を覚ますと…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスが…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            シャンクス以外もいろいろ増えた！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゾロ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            ゾロ
+                        </p>
+                        <p class="message-content-text">
+                            「てめぇら、聞いてくれ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-トナカイ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            トナカイ
+                        </p>
+                        <p class="message-content-text">
+                            「毒チンがうんたらかんたら」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「こ…これは…？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-？？？">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ？？？
+                        </p>
+                        <p class="message-content-text">
+                            やってくれましたね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「そ…その声は…！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-四季映姫・ヤマザナドゥ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            四季映姫・ヤマザナドゥ
+                        </p>
+                        <p class="message-content-text">
+                            「なんて事をしてくれたんですか…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「貴方が直に来るなんて…何かあったの？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-四季映姫・ヤマザナドゥ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            四季映姫・ヤマザナドゥ
+                        </p>
+                        <p class="message-content-text">
+                            「何かあったはこっちが聞きたいですよ…何をしたんですか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-四季映姫・ヤマザナドゥ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            四季映姫・ヤマザナドゥ
+                        </p>
+                        <p class="message-content-text">
+                            「貴方がさっき放った凄まじい力で」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-四季映姫・ヤマザナドゥ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            四季映姫・ヤマザナドゥ
+                        </p>
+                        <p class="message-content-text">
+                            「現世も冥界ももう区別つかなくなったんですけど」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            「……えっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            そう…四皇のパワーはすさまじかった…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            まずい庭そっちのけで異変が起こる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            それが幽々子の力に影響を与え、滅茶苦茶な出力であの世とこの世の領域を壊してしまった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            ……つまり
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            今誰が何人死のうと
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            そこら辺で蘇りリスポーンする世界になってしまった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            ぞろぞろシャンクスガーデン<br>～転生編～
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            ……続く？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            ヨシ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            つまり今は死んでも復活する庭になったわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            あとシャンクス以外もいっぱいいる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            まあ１０万人近いシャンクスの覇気流されたらこうもなるわよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            明日の朝まで開催とします<br>おやすみなさい…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-西行寺幽々子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff69b4;" class="message-user-text">
+                            西行寺幽々子
+                        </p>
+                        <p class="message-content-text">
+                            おやすみなシャい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 西行寺幽々子 ] よくやった！ : 0 → 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 西行寺幽々子 ] よくやった！ : 9 → 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            終了です<br>私と幽々子様2人とかこれじゃまるで白玉楼だ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-妖夢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            妖夢
+                        </p>
+                        <p class="message-content-text">
+                            参加・観戦ありがとうシャンでした<br>またね〜〜〜！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
