@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 400px;
+            --user-items-height: 200px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-DX" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-DX" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">DX</span>
+                </label>
+                <label for="tab-シャンクトゥ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-シャンクトゥ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャンクトゥ</span>
+                </label>
+                <label for="tab-T&T" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-T&T" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">T&T</span>
+                </label>
+                <label for="tab-聖盆" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-聖盆" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">聖盆</span>
+                </label>
+                <label for="tab-虚無" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-虚無" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">虚無</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-シャンクス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャンクス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャンクス</span>
+                </label>
+                <label for="user-茄子" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-茄子" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">茄子</span>
+                </label>
+                <label for="user-きゅうり" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-きゅうり" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">きゅうり</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            突発で立ったイエス・キリストが居た奴好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            盤面のお頭こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            語るぞ<br>来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            カップ麺卓好きだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            チャカ様が太陽の神クトゥグアになり初めた奴好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            どの卓だ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >イエス・キリスト<br>https://shanshan1129.github.io/TRPG-OCL-Rule/%E3%83%AD%E3%82%B0/DX/20221222Magnificent%20Soliloquy/Magnificent%20Soliloquy.html<br>これ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            酔っ払いのウタが居た奴
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            それ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            福ロクジュとイデオンの百合は笑っただろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            何時聞いても頭おかしくなるカップリングなんすがね…すがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            モゾモゾ←探す音<br>1d100<=70 見つける
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            聖盆(^^)！？聖盆(^^)！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずい願いが叶う盆になった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            アホンダラなルールなんすがシリアスな卓多い気がするんすがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-茄子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            茄子
+                        </p>
+                        <p class="message-content-text">
+                            あの世に迎えに行く<br>来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            すみフラ<br>T&Tってルルブ必須ですか？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-虚無 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">虚無</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            一時期ボルトが死にまくってたの好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            仲間にきゅうりがいるだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            “すみフラ”…？（ﾋﾟｷﾋﾟｷ）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスT&Tは無料でばら撒かれてるだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-茄子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            茄子
+                        </p>
+                        <p class="message-content-text">
+                            俺は茄子<br>隣のやつは無視してくれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            見つけた見つけた見つけた<br>https://shanshan1129.github.io/TRPG-OCL-Rule/%E3%83%AD%E3%82%B0/%E3%82%B7%E3%83%A3%E3%83%B3%E3%82%AF%E3%83%88%E3%82%A5/20221009%E6%99%82%E3%82%92%E5%88%BB%E3%82%80/%E6%99%82%E3%82%92%E5%88%BB%E3%82%80%E6%95%B4%E5%BD%A2.html
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            オルガんとこにあるから拾ってこい^^
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            ありがとう<br>探せばログだいたい出てくるの今更だけどすんげ〜👀
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            クトゥルフT&Tもセットで拾えば最強だろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            やかましい<br>https://github.com/orga-itsuka-trpg/TRPG-OCL-Rule/tree/master/%E3%83%AB%E3%83%AB%E3%83%96_txt/T%26T<br>にあるから読んで参加しろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            2年くらい前からやってなかったけど今は何からやるのがいいのでしょうか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            オルガのとこのログ全部ローカルに落としておけばエクスプローラーやらの検索機能使えて便利ってチョッパーが言ってたぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            それだそれ<br>初期位のノリっぽくて面白かっただろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ルルブいらない奴とかでリハビリすれば良いんじゃねえかお頭
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            クトゥルフは前より無法濃度下がったくらいで比較的同じ感覚でできるんじゃねえか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンクトゥを推薦する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンクトゥやってみます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちょうど土日の卓が立ってるだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            シャンパラくれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            T&Tもやれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            最新版だけ読めばいいのを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-T&T user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">T&T</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            うわ！ありがとう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-きゅうり">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            きゅうり
+                        </p>
+                        <p class="message-content-text">
+                            俺はきゅうり<br>騙されるな皆俺が本体だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >T&Tもやれ<br>わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-茄子">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            茄子
+                        </p>
+                        <p class="message-content-text">
+                            きゅうり、すまないさっきのは冗談だ<br>な、機嫌戻せって
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            T&Tはキャンペもやってたし人口多そうだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            よく言った！お前は誇りだ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-きゅうり">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            きゅうり
+                        </p>
+                        <p class="message-content-text">
+                            しょうがないにゃあ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずい茄子ときゅうりの痴話げんかが始まった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            Y凪卓でシンが居た奴好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            正直あんまやれてないんすがね…ワンピっぽい雰囲気が好きなんで流行ってほしいんすがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-聖盆 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">聖盆</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            このまま野菜百合やれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            まずい眠くなってきた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            30分頃には終わることを教える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずい早寝早起きだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まだ22時だぞ!?
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おじいシャンですか…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            良い子はもう寝なさい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            Y凪卓でうっせぇわちゃんが泥酔してた卓好き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            虚無虚無の〜〜〜
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            choice ピストル　バズーカ　暴風雨 (choice ピストル バズーカ 暴風雨) ＞ 暴風雨
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-虚無 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">虚無</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            賽の河原クリアできなかったなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-虚無 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">虚無</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            今からやれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-虚無 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">虚無</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            そういえば賽の河原はシナリオギミックだったなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            POW対抗でクトゥグアのPOW参照しようとする無法でダメだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >うっせぇわちゃんが泥酔<br>https://shanshan1129.github.io/TRPG-OCL-Rule/%E3%83%AD%E3%82%B0/%E3%82%B7%E3%83%A3%E3%83%B3TRPG%E3%83%AD%E3%82%B02021_10_02%E3%81%BE%E3%81%A7/4%E6%9C%88/%E3%82%B7%E3%83%A3%E3%83%B3%E3%82%AF%E3%83%88%E3%82%A5_%E3%81%AF%E3%81%AB%E3%83%BC%E2%9D%A4%E3%81%99%E3%81%84%E3%83%BC%E3%81%A4%E2%9D%A4%E3%81%A1%E3%82%87%E3%81%93%E3%82%8C%E3%83%BC%E3%81%A8.txt<br>かめかわいくてすき
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-虚無 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">虚無</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            あそこに囚われてた奴三人位居た気がするだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-虚無 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">虚無</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            なそ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            テキストファイルでログ出てきてた時代懐かしいだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-虚無 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">虚無</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            一時期は樹海立ちまくってたなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-シャンクトゥ user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">シャンクトゥ</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >シン<br>https://shanshan1129.github.io/TRPG-OCL-Rule/%E3%83%AD%E3%82%B0/%E3%82%B7%E3%83%A3%E3%83%B3%E3%82%AF%E3%83%88%E3%82%A5/20220816%E7%84%A1%E6%B3%95%E6%9C%89%E3%82%8A%E6%82%AA%E9%9C%8A%E3%81%AE%E5%AE%B6/%E7%84%A1%E6%B3%95%E6%9C%89%E3%82%8A%E6%82%AA%E9%9C%8A%E3%81%AE%E5%AE%B6%E6%95%B4%E5%BD%A2.html<br>シン、いっぱいいる！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            何かPOPしたイエス・キリストと別にUGNでも何でも無いのに首突っ込んできた岸辺露伴と巻き込まれたUGNエージェントの変なセッション面白かった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >ヌヌハラ「貴方も今回参加の？？？メンバーなので？？？取り敢えず？？？捜査に参加していただけますわね？？？？」<br>>イエス「イエス」<br>このキリストこれが言いたくて卓にコマ置いたんだな？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            出オチ過ぎる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-DX user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">DX</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            >イエス「…………」<br>>男は十字架にくくりつけられている。まるで死んでいるようだ……。<br>>ヌヌハラ「うわーーー！！変態だーーーー！！！！」<br>>岸辺露伴「変態じゃないさ。彼はキリスト、自分らしくしているだけだよ」<br>ここ好きすぎて頭おかしくなりそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            そろそろ寝るからログ取るぞ<br>来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
