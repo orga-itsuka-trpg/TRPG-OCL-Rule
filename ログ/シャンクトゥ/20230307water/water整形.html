@@ -1,0 +1,4836 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 400px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-ステータス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ステータス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ステータス</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-置くんですよ…！" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-置くんですよ…！" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">置くんですよ…！</span>
+                </label>
+                <label for="user-増えるんですよ…！" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-増えるんですよ…！" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">増えるんですよ…！</span>
+                </label>
+                <label for="user-有栖川夏葉" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-有栖川夏葉" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">有栖川夏葉</span>
+                </label>
+                <label for="user-置くんですよ…！1号" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-置くんですよ…！1号" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">置くんですよ…！1号</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-看護師" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-看護師" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">看護師</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            お邪魔するんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            あくらつな<br>ハック卓立て
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            CoC(^^)！？CoC(^^)！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっぴゃっぴゃっ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            久しぶり過ぎてシャンクトゥとCoCを区別することすら忘れたんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            アイコンもコイトフクマルにするんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            スレ伸びてた割りにメンバーリストの数が普段とあんまり変わらねェ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            昼なのにいっぱいいたら怖いんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            OCLの民はコイトフクマルだったんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            3.キャラクターメイキング<br><br> <br><br>　シナリオが準備できたらセッションを開始する前に全ＰＣのキャラクターメイキングをするぞォ！<br><br>　ＰＣの能力値は、基本的には以下のようになるのを教える<br><br><br> <br>ＳＴＲ（筋力:戦闘時などに補正として使う）　３ｄ６<br><br>ＣＯＮ（体力:ＨＰの最大値でもある）　３ｄ６<br><br>ＤＥＸ（敏捷性:行動順や回避などに使う）　３ｄ６<br><br>ＰＯＷ（精神力:ＳＡＮ値などに影響する）　３ｄ６<br><br>ＩＮＴ（知性:技能ポイントなどに影響する）　３ｄ６<br><br><br><br>　本当はもっと項目があるがこの５つを決めれば大体どうにかなることを教える<br><br>　この数値を使って他の設定を決めていくことを教える<br><br><br><br>ＨＰ（０になったらキャラロスト）　初期値をＣＯＮの値とする<br><br>ＳＡＮ値（０になったらキャラロスト）　初期値をＰＯＷの5倍とする<br><br>アイデア（技能の一種として使う）　ＩＮＴの5倍とする<br><br>幸運（技能の一種として使う）　ＰＯＷの5倍とする<br><br>技能ポイント（これを割り振って技能を決める）　ＩＮＴの３０倍とする<br><br><br><br>　これらが決まったら技能ポイントを割り振っていくぞォ！<br>　技能はルールブックに載っているものでも捏造したものでも何でもいいことを教える<br>　ただし捏造の場合は何ができるのかをＫＰに教えろ<br>　<br>　技能ポイントは一つの技能につき１～９９まで割り振ることができるのを教える<br>　この数字が高いほどその技能が得意ということになり、成功しやすくなることを教える<br>　割り振った技能ポイントの合計が先ほど決めたＩＮＴ×３０になるようにしてくれ(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            推奨<br>目星日本語
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            開始日時とかかる時間が知りたいんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            今なんですよ！！！<br>ボイセ30分から1時間なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            お前！仕事は！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            仕事…？ﾁｬｷ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来たか　コマ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 12[5,5,2] ＞ 12
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 13[6,5,2] ＞ 13
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 10[4,1,5] ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 9[2,2,5] ＞ 9
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            3d6 (3D6) ＞ 14[5,5,4] ＞ 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            全体的に数値が高いだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x6 3d6でやると便利なのを小糸に教える 繰り返し対象のコマンドが実行できませんでした (3d6でやると便利なのを小糸に教える)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃ…！教えてくれるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっ！？ライフハックなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x6 3d6 #1<br>(3D6) ＞ 13[3,4,6] ＞ 13<br><br>#2<br>(3D6) ＞ 9[5,1,3] ＞ 9<br><br>#3<br>(3D6) ＞ 11[3,3,5] ＞ 11<br><br>#4<br>(3D6) ＞ 9[2,2,5] ＞ 9<br><br>#5<br>(3D6) ＞ 9[2,1,6] ＞ 9<br><br>#6<br>(3D6) ＞ 13[5,3,5] ＞ 13
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待て6回も振るんだっけ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            5回なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            4回なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            3回なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            さりげなく増やしておくと好きな数値を取捨選択できて便利<br>あくらつなライフハック
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ゾッ！？！？！？！？！？　なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            キャラのデータができたら情報欄にでも貼ってくれ(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            結局どれなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            参加しようと思ったけどもう眠いから無理なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ルルブによると5なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            悪い　6とか3は殺しておいた<br>5回で頼む
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待てなんでこの時間に眠いんだよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            わかったんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            春遠からじなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            ＳＴＲ（筋力:戦闘時などに補正として使う）12<br>ＣＯＮ（体力:ＨＰの最大値でもある）　13<br>ＤＥＸ（敏捷性:行動順や回避などに使う）　10<br>ＰＯＷ（精神力:ＳＡＮ値などに影響する）　9<br>ＩＮＴ（知性:技能ポイントなどに影響する）　14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            私が分身したんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            oh　これは参加者が二人なのかただ増えただけなのか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            choice "二人目" 増えただけ (choice "二人目" 増えただけ) ＞ "二人目"
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-増えるんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            増えるんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            参加するんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-増えるんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            増えるんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            x5 3d6 #1<br>(3D6) ＞ 17[6,6,5] ＞ 17<br><br>#2<br>(3D6) ＞ 4[1,1,2] ＞ 4<br><br>#3<br>(3D6) ＞ 8[3,4,1] ＞ 8<br><br>#4<br>(3D6) ＞ 5[2,1,2] ＞ 5<br><br>#5<br>(3D6) ＞ 16[5,6,5] ＞ 16
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-増えるんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            増えるんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっ…低SAN値
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            コイト一号は技能も決めてほしいんですよ…！<br>INT14*30　の420点を<br>技能390<br><br>目星80<br>聞き耳80<br>隠密80<br>刀剣80<br>図書館70<br><br>こんな風に割り振ってほしいんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            わかったんですよ…！<br>クトゥルフ自体は経験者なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            助かっただろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            PC(適当な版権キャラでもいい)と技能(効果含めて捏造してもいい)を決めたら<br>ステータス欄にステータスと技能を置いておくといいんすがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            低SAN値なコイト2号は初心者ですからよ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ステータス user-置くんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            ＳＴＲ（筋力:戦闘時などに補正として使う）12<br>ＣＯＮ（体力:ＨＰの最大値でもある）　13<br>ＤＥＸ（敏捷性:行動順や回避などに使う）　10<br>ＰＯＷ（精神力:ＳＡＮ値などに影響する）　9<br>ＩＮＴ（知性:技能ポイントなどに影響する）　16<br>目星90<br>聞き耳90<br>図書館90<br>応急処置90<br>精神分析90<br>鍵開け30
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-増えるんですよ…！">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            増えるんですよ…！
+                        </p>
+                        <p class="message-content-text">
+                            初心シャンじゃないんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            じゃあ問題なさそうなんですよ…！短いシナリオだから気負わずにキャラを作ってほしいからよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来たか　大丈夫な人
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            大丈夫よ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            有栖川夏葉久しぶりに見た
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            綺麗なお姉さんが来たんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            母国語なので日本語はINTで振らせてほしいんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            わかった<br>70だな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            日本語キャラの<br>シナリオハック
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            80ですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ステータス user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            STR17<br>CON4<br>DEX8　回避40<br>POW5　SAN幸運25<br>INT16　アイデア80<br>目星　90<br>母国語：日本語　99<br>精神分析　80　大丈夫よ…<br>芸術：アイドル　80<br>図書館　70<br>聞き耳　61
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            オレ計算できなかった！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっぴゃっぴゃ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            キャラシが出そろったので始めるぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            いくんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            大丈夫よ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では出航だァ～～～～～～～～！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            出航よ～～～～～～～～！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            出航なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            今日はとっても暑い日です
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            暑い日のライフハック
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            暑い日はトレーニングすれば大丈夫よ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            でも熱中症には注意しなさいね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            当然暑い日は喉が渇く<br>しかしあなた達探索者は水分補給を怠ってしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            目眩を起こした。熱中症だろうか。探索者は意識を失ってしまう。<br>気がつくと見覚えのない薄暗い部屋にいた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            私、熱中症に注意してなかった！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            あくらつな<br>導入
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            目星聞き耳図書館が見聞色になってないのひさしぶりに見たんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            きっと誰かが運んでくれたんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            きっとここは病院ね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            とりあえず白い部屋に閉じ込めておけば脱出を目的にできて楽ちんなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            見覚えのない部屋にいつの間にかいたあなたたちは不安感を感じたり感じなかったりする<br><br>SANcなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            0/1d3 (0/1D3) ＞ 0/2[2] ＞ 0
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こいつら原作同じ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            部分的にそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=25 (1D100<=25) ＞ 88 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            1d3 (1D3) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=45 (1D100<=45) ＞ 88 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            1d2 (1D2) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 有栖川夏葉 ] SAN : 25 → 23
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 置くんですよ…！1号 ] SAN : 45 → 43
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            病院かと思ったら明らかに違うんですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            恐ろしいんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そりゃこころにも来ますよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            ここ…病院じゃないわ！一体どこなの…！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            部屋は 6 畳くらいの部屋、ローテーブルが１つと扉が１つ。ローテーブルの上には文字が書かれた紙と透明なガラスコップに入った水がある
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            プロデューサーの姿を求めつつ部屋を彷徨うわ<br>大丈夫じゃないわよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            というかお姉さん死にかけなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            この夏葉はおしまい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            せめて人っぽい首饅頭がいるのが救いね…<br>……人なのかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待て　こいつゆっくり体型なのかよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっぴゃっぴゃコイトフクマルなんですよ…！<br>よろしくなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            私は有栖川夏葉よ。よろしくねコイト
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            よろしくなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            礼儀正しい<br>アイサツ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            部屋にプロデューサーがいないことがわかった私はプロデューサーの手紙じゃないかと机の上の紙を拾い上げるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            裏も見るんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            えらい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            えらいわね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            紙には次のように書いてあります<br>表<br>「毎日狂気地満」<br>「胡言乱説事不欠」<br>「現尽虚無也」<br>「召天我夢哉」<br><br>「源光不届、原色有」<br><br>裏<br>「かえる」「とびこむ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            「かえる」「とびこむ」…なぞなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            知識または母国語の半分に成功すると<br>表の文字がきちんと読めるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            漢文に有名な俳句の一節…かしら？<br>漢文のほうは…ダイスを振るわね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            知識ってなんですよ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=99/2 (1D100<=49) ＞ 64 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どうぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            EDUだと思うんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            EDU*5よ！<br>シャン卓ではアイデアか無法技能で代用されるわね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            私の専攻じゃないわ！<br>大丈夫じゃないわよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            私が行くんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=40 (1D100<=40) ＞ 72 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            あくらつな日本語知識
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ありがたいんすがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            古典知識<br>ダ<br>メ<br>ダ<br>メ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            他の場所探索してから改めてアイデアで振ってもらうんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            わかったわ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            わかったんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            じゃあ扉に目星するんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=90 (1D100<=90) ＞ 33 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            見えるんですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            少し変わったドアノブのついた扉。ドアノブのところに小さな窓のようなもの（トイレの開閉を示すようなもの）がついており、最初は赤色になっている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ここトイレなんですよ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            これは…トイレ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どうやらいじると窓の色が変わりそうなんですよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ここは慎重にアイデアでさっきの紙なんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=80 (1D100<=80) ＞ 48 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            よくやったわ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            コイトフクマルはひらめくんですよ<br>中学時代の勉強を…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃ！国語の授業の記憶が！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            そんなのもう記憶にないわね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            書き下し文ってやつなんですよ…！<br>「日ごとに狂気地に満ちる」<br>「胡言乱説事欠かず」<br>「うつつはことごとく虚無なり」<br>「天に召されるが我が夢かな」<br><br><br>「みなもとには光届かず、みなもとに色あり」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            後ろの方には特にないんですよ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            なんだかこわい文章ね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ないんですよ…！ひらがななんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ここで目星なんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=90 (1D100<=90) ＞ 59 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=90 (1D100<=90) ＞ 51 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            何でも手に取り見てると次のことが分かるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            この紙は一見普通の紙のように見える<br>が、普通の紙とは違って少し水に濡れた程度では破けなさそうなほど頑丈である。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            がんじょうな紙
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            これトイレットペーパーではなさそうなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            特殊な紙ね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            トイレの中なのにトイレットペーパーじゃない…妙な話ね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            水にぬれた程度では破けないなら…水でぬらしても大丈夫よ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            というわけで紙をコップの水につけてみたいんだけど…いいかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            いいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            じゃあ濡らすわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ぬ<br>れ<br>ぬ<br>れ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            あくらつな水分ハック
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            変化があるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            一部色が変わる。「毎」が赤、「胡」が青、「也」が黄、「召」が緑になる。<br>　<br>水に濡れた状態で裏面を見ると「かえるには正しいところにとびこむべし」という文章になる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぜんりょうなヒント
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            PDFからコピペすると改行が変になるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            あるあるね…大丈夫よ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            あくらつなPDF…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            何か変わったけど…色の方はよくわからないわ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            かえるは正しいところにとびこめば大丈夫よ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            正しいところを判別するんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            つまり間違えると………なんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            いつものCoCなんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            この部屋はこんなものかしらね…？<br>一応机の下を覗いてみるわ。プロデューサーいないかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            こわいわね<br>大丈夫じゃないわよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            特に何もない、普通のローテーブル
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            プロデューサーはいないんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            大丈夫じゃないわよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            たぶんうつつはことごとく虚無也で黄が正解なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            現（うつつ）なんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            なるほど…虚無っていうからシャンカーかと思ってたわ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ！<br>！！<br>！！！<br>！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            虚<br>無<br>虚<br>無
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっぴゃっぴゃ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            というわけでドアを弄ってみるんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            ガチャガチャするのね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ドアノブのところの小さな窓のようなものが<br>赤から青　にガチャっと変わるんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            もっといじりますからよ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            もっと弄るわね<br>コイトの推測通りなら黄色が出るはずよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            もういっかいなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            確かに青の次は黄だったんですよ<br><br>ガチャっという音と共に黄色になりますからよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            出たわね…現の虚無は黄色
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            …どこに飛び込めばいいんですよ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            扉を開けるしかないのかしら…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            というか扉は開くのかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            開きます
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            じゃあ私は飛び込みますけどお姉さんは自分の推理があればそちらに飛び込んでもいいんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            私のカラーだから緑に…と思ったけどやめておくわ<br>黄色で大丈夫よ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            中身の描写をさせてもらうんですよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            扉を開けるとこんな景色を目にします
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            周囲を石で囲まれたさほど大きくない池。<br>池なので浅そうな雰囲気だが底は見えない。入ってから振り返ると扉の色は黄色になっている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            池ね…まさしく芭蕉の詩みたいじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            私は泳げるから大丈夫よ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            天に召されるとどちらか考えましたけど行くんですよ…！ラオウにはなりたくないんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            悪辣な<br>世紀末覇者
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            天に召されたくわないわね…プロデューサーの元に帰らなくっちゃ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっぴゃ！転がりながら池に入りますよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            華麗なポーズで飛び込むわよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            バッシャ～～～ン
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            気が付くとあなたたちはベッドの上<br>先ほどの部屋とは違い明らかに病院のベッドの上にいることでしょう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            悪辣な病院ライフ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            知らない天井ね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-看護師">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            看護師
+                        </p>
+                        <p class="message-content-text">
+                            「ああ。目が覚めましたか。大丈夫ですか　三次バタに倒れたところを搬送されてきたんですが…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            生還です
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            やったんですよ…！読み勝ちなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            これでシナリオ部分は終わりなんですよ！生還なんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            やったわね！これでプロデューサーに会えるわ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと根拠薄いかと思ったんですが勝てたんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            なにもなければ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～～～～～～～～～！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            宴よ～～～～～～！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっぴゃっぴゃ！宴なんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            よくやった！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            私はさっぱりだったからコイトのお陰ね！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            4択から当てるシナリオなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            照れるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            他の選択肢を引くとどうなるのか気になるわね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            正当な<br>推理
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ▶赤の扉<br>　開けると薄暗い空と断崖絶壁、広がる海。<br>波が高く、不気味な雰囲気を漂わせている。<br>長時間いると気分が悪くなる。<br>〈SAN チェック 0/1〉<br>　飛び込んだ場合クトゥルフと対面することとなる。<br>〈SAN チェック 1d10/1d100〉<br>　入ってから振り返ると扉はの色は赤色になっている。<br>▶青の扉<br>　周囲を葦に囲まれた、一瞬海と見紛うほど広い湖。微かに波打っている。<br>　飛び込むとグラーキと対面することとなる。<br>〈SAN 値チェック 1d3/1d20〉<br>　入ってから振り返ると扉の色は青色になっている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ▶緑の扉<br>　蓮の花が咲き誇る沼。あまりの幻想的な雰囲気に現実とは思えない。<br>　飛び込むとニョグダと対面することとなる。<br>〈SAN 値チェック 1d6/1d20〉<br>　入ってから振り返ると扉の色は緑色になっている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どれもろくでもないんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            黄色だからハスターとかじゃなくてよかったわ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            即バッドにならないだけ優しいんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            どれ当たってもお姉さん発狂なんですよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            死ぬわね！INT高いし！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ぴゃっぴゃっぴゃ<br>生還報酬は…多分単発だからないんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            水分補給が大事ってわかったわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            シャンクトゥで生還報酬なんて見たことないんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            水分補給怠るとトイレ送りにされるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            MBシャンクトゥリレーキャンペーンですら報酬はなかったみたいね<br>シャンカーはSAN値を回復しない生き物なのよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            もともと発狂してるようなものなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            こんな感じの卓があったり<br>DXやらプリンセスウィングやら百合卓やらいろいろやってるんですよ…<br>これからもよろしくなんですよ<br><br>百合卓は怖いんですよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ログ見れるやつもらったのでちょくちょく見つつ参加もしてみるんですよ…！<br>百合卓はよく話には聞くんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            いい噂なんだろうか…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            300人でいって追い返されたと聞いたんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            良い噂…聞くかしら？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ？？？？？？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            後はいつものコピペぐらいなんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            今心臓が大丈夫じゃないわよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ルゥみたいなマミさん笑ったんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ルウコラ<br>沢山ある
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            あくらつなコラ素材
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            何なのかしらね…あのコラ群は…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            ターもなかなか数あるんですよ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            シャンクスは人気素材
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            じゃあお疲れさまでした<br>またね～～～～～～！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-置くんですよ…！1号">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            置くんですよ…！1号
+                        </p>
+                        <p class="message-content-text">
+                            お疲れ様なんですよ…！<br>ぴゃっぴゃっぴゃ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            楽しかったわ！<br>みんなお疲れシャン！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-有栖川夏葉">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #4caf50;" class="message-user-text">
+                            有栖川夏葉
+                        </p>
+                        <p class="message-content-text">
+                            またね～～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
