@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 250px;
+            --user-items-height: 350px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-ラーメン力" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ラーメン力" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ラーメン力</span>
+                </label>
+                <label for="tab-ウンチー力" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ウンチー力" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ウンチー力</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-ラーメン冒険者:南沢" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ラーメン冒険者:南沢" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ラーメン冒険者:南沢</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-革命家：北沢" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-革命家：北沢" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">革命家：北沢</span>
+                </label>
+                <label for="user-ご飯をよく食べるタイプ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ご飯をよく食べるタイプ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ご飯をよく食べるタイプ</span>
+                </label>
+                <label for="user-アクア" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アクア" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アクア</span>
+                </label>
+                <label for="user-食糞要求ゴリラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-食糞要求ゴリラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">食糞要求ゴリラ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            ラーメン評論虚無<br>まず[本店の味]を1d100で決めるよ<br>1d100を好きなだけ振り直してより近い数字を出す事を目指そう<br>でもダイスを振るたびに[いちゃもん]が増えていくよ<br>(ダイスの目と[本店の味]の差)+[いちゃもん]<br>がキミの[ラーメン力]になるんだねぇ……<br>振り直せば振り直すほど最終的な結果が悪くなる可能性があるのがおわかり？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            まずは本店の味を決めるために1d100を振るってのはおわかり？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            1d100
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 22
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ラーメン冒険者:南沢 ] 本店の味 : 0 → 22
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            じゃあふってこうか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 24
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            本店の味がそもそもまずいの<br>おわかり？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ほぼ本店そのままじゃん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ラーメン冒険者:南沢 ] いちゃもん : 0 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            いちゃもん1は必ず付くのかよ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ルール読んだけどもう優勝決まったろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            こんな良い結果引いたら振り直す必要もないってのはおわかり？<br>もっと他の参加シャンのお手本になるダイスを出さないとねぇ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            24(本店の味)-22(出目)=2+1(いちゃもん)=3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ラーメン冒険者:南沢 ] ラーメン力 : 0 → 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ラーメン力 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ラーメン力</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            お、俺の推しキャラレボリューション北沢じゃん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 77
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            色を変え忘れたぜレボリューションっ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            革命家いいところ行ってるな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 36
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            赤って事は"そういうこと"なのおわかり？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            おれを馬鹿にしてんのかレボリューションっ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 革命家：北沢 ] いちゃもん : 0 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 71
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待て全体的に運良すぎだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 革命家：北沢 ] いちゃもん : 1 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            1/10以下の確率をこれだけのダイスで引けるって強運に気づかないとねぇ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            欲張らずにここで止めるぜレボリューションっ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            c77-71+2=
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 革命家：北沢 ] ラーメン力 : 0 → 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ラーメン力 user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ラーメン力</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            おれを馬鹿にしてんのかレボリューションっ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            えー今日は【教導豚骨豚無双】を…いただきまーす！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 本店の味 (1D100) ＞ 42
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ご飯をよく食べるタイプ ] 本店の味 : 0 → 42
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            おいしいです！！！！！おかわりします！！！！！！！！！！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            1d100  (1D100) ＞ 19
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            ずず…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            おかわりします！！！！！！！！！！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ご飯をよく食べるタイプ ] いちゃもん : 0 → 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 27
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            来たかハッピーエンドまで行けたヒロイン
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            ずずずず…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            おかわり！！！！！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ご飯をよく食べるタイプ ] いちゃもん : 1 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            ずびび…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            おいしいです！！！！！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ご飯をよく食べるタイプ ] いちゃもん : 2 → 3
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 7
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            もう一杯ドローします！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ご飯をよく食べるタイプ ] いちゃもん : 3 → 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            豚の餌みたいなのしか食えてないけど？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 40
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずいいっぱい食べたいだけだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            食いすぎだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            ごく、ごく…ぷはー！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            ごちそーさまです！！！！！！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            C(42-40+4) c(42-40+4) ＞ 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            私がラーメンのシメにもう一店はしごする様子はサブチャンネルをご覧ください！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ご飯をよく食べるタイプ ] ラーメン力 : 0 → 6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            ガッチャ！いいご飯でした！！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ラーメン力 user-ご飯をよく食べるタイプ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ラーメン力</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffeb3b;" class="message-user-text">
+                            ご飯をよく食べるタイプ
+                        </p>
+                        <p class="message-content-text">
+                            6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            パクパク食べた後ってブリブリうんこする事が確定だって事に気がつかないとねぇ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            食べようよ　うんこ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-革命家：北沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            革命家：北沢
+                        </p>
+                        <p class="message-content-text">
+                            飯屋でなんてこと言ってんだレボリューションっ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これ振り直せば振り直すだけ得なんじゃねえか…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            いや低ければいいのか…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            ラーメン評論もアクア様に任せなさい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 本店 (1D100) ＞ 50
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            (ヒント:こいつらみたいにいちゃもんを繰り返すと本家のこいつらみたいなラーメン力が高まる)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            来たねぇ　アクア
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            キリがいいわね<br>さてこの店のラーメンは…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 18
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            マッズ！よくもアルカンレティアで寿司屋をやってる私にこんなものを食わせたわね？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 31
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            まだまだ程遠いのがおわかり？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 81
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            まずい寿司エンパイアだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            うわっ油臭っ！<br>ラードでもぶち込んだの！？煮干しの風味が死んでるじゃない！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 97
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            だからラードを入れるなって言ってるでしょ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 51
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            あーこれこれこれこれか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            1+5=6ね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ラーメン力 user-アクア">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ラーメン力</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            アクア
+                        </p>
+                        <p class="message-content-text">
+                            6
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            なんだかんだでいい数値に落ち着いたねぇ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            うんこ食べようよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1d100　本店のうんこ (1D100) ＞ 60
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずいうんこ提案ゴリラだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            バナナじゃなくてうんこ寄越せっつってんだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 14
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            下痢便失せろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 54
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 食糞要求ゴリラ ] うんちゃもん : 0 → 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            う～ん？<br>ウ～ン…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            うんこの味だァ～～～～～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 食糞要求ゴリラ ] ウンチー力 : 0 → 8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ウンチー力 user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ウンチー力</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            8
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            その様子じゃこの卓で鍛えられるのがラーメン力じゃないってことにも気づいてなさそうだね？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-食糞要求ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            食糞要求ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            うんち、ぶりぶり？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ラーメン力 user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ラーメン力</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            ラーメン力<br>1位:北沢　四天王の誇りだねぇ……<br>うんち:ドンキー　味噌ラーメンのある店で食糞を薦めるな<br>同着2位:アクア　エクレシア　ラーメンとライスは相性抜群なのおわかり？<br>最下位:おれ　いちゃもんがたりてないねぇ……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラーメン冒険者:南沢">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff5722;" class="message-user-text">
+                            ラーメン冒険者:南沢
+                        </p>
+                        <p class="message-content-text">
+                            またね〜〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
