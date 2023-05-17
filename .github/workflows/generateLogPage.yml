@@ -32,23 +32,24 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       
-      # ログリストを生成
+      # minify前ログリストを作業用フォルダに生成
       - name: Run a python script
         run: |
-          python3 .github/workflows/generator.py > logViewer.html
+          mkdir ./logviewer
+          python3 .github/workflows/generator.py > ./work/logViewer.html
 
-      # Job for Minify-JS
-      - name: Minify-JS Action
-        uses: jossydevers/minify-js@v1.0.1
+      # Job for Minify
+      - name: HTML/CSS/JS Minifier
+        uses: docker://devatherock/minify-js:1.0.3
         with:
-          directory: 'logViewer.html' # (OPTIONAL)
-          output: './'
+          directory: './work'      # Optional
+          output: '.'  # Optional
+          add_suffix: false     # Optional
 
-      # minifyの出力は.min.htmlなのでリネーム
+      # 作業用フォルダをクリーン
       - name: rename logViewer
         run: |
-          rm logViewer.html
-          mv logViewer.min.html logViewer.html
+          rm ./work/logViewer.html
           cat logViewer.html
 
       #Diffをとって失敗時(=変更無しのとき)でも成功にする
