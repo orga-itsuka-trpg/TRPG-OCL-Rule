@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 400px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-その辺の木・皇" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-その辺の木・皇" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">その辺の木・皇</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GMクス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GMクス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GMクス</span>
+                </label>
+                <label for="user-シャンクス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャンクス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャンクス</span>
+                </label>
+                <label for="user-ルウ・ラッキー" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ルウ・ラッキー" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ルウ・ラッキー</span>
+                </label>
+                <label for="user-アウラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アウラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アウラ</span>
+                </label>
+                <label for="user-ヤソップ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ヤソップ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ヤソップ</span>
+                </label>
+                <label for="user-ダーク・ウルトラマン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ダーク・ウルトラマン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ダーク・ウルトラマン</span>
+                </label>
+                <label for="user-藍染惣右介" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-藍染惣右介" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">藍染惣右介</span>
+                </label>
+                <label for="user-ベックマン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ベックマン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ベックマン</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            おみくじ虚無<br>choice 大吉 吉 中吉 小吉 末吉 凶 大凶<br>大吉でも大凶でもまあおれがログにしてその辺の木に結んどいてやるからいいじゃないか<br>いい一年にしろよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) ＞ 大吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            大吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            三が日終わったらログにしてその辺の木に結んでくるぞォ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) ＞ 大凶
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-シャンクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            シャンクス
+                        </p>
+                        <p class="message-content-text">
+                            大凶
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルウ・ラッキー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルウ・ラッキー
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) ＞ 小吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ルウ・ラッキー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルウ・ラッキー
+                        </p>
+                        <p class="message-content-text">
+                            そ゛こ゛そ゛こ゛
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            アウラ
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) ＞ 凶
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            アウラ
+                        </p>
+                        <p class="message-content-text">
+                            ありえない…この私が…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-アウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            アウラ
+                        </p>
+                        <p class="message-content-text">
+                            凶
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-ルウ・ラッキー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ルウ・ラッキー
+                        </p>
+                        <p class="message-content-text">
+                            小゛吉゛
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ヤソップ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ヤソップ
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) (choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶)) ＞ 大吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ヤソップ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ヤソップ
+                        </p>
+                        <p class="message-content-text">
+                            グビッ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-ヤソップ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ヤソップ
+                        </p>
+                        <p class="message-content-text">
+                            大吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダーク・ウルトラマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ダーク・ウルトラマン
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) ＞ 小吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ダーク・ウルトラマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ダーク・ウルトラマン
+                        </p>
+                        <p class="message-content-text">
+                            「そこそこなんじゃないか？」(業界関係者)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-ダーク・ウルトラマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            ダーク・ウルトラマン
+                        </p>
+                        <p class="message-content-text">
+                            小吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-藍染惣右介">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            藍染惣右介
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) ＞ 凶
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-藍染惣右介">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            藍染惣右介
+                        </p>
+                        <p class="message-content-text">
+                            市丸ギンッ！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-藍染惣右介">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            藍染惣右介
+                        </p>
+                        <p class="message-content-text">
+                            凶
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ベックマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ベックマン
+                        </p>
+                        <p class="message-content-text">
+                            choice 大吉 吉 中吉 小吉 末吉 凶 大凶 (choice 大吉 吉 中吉 小吉 末吉 凶 大凶) ＞ 大吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ベックマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ベックマン
+                        </p>
+                        <p class="message-content-text">
+                            ん？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-その辺の木・皇 user-ベックマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">その辺の木・皇</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            ベックマン
+                        </p>
+                        <p class="message-content-text">
+                            大吉
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            ではこっそりログを取らせてもらうぞ<br>https://ccfolia.com/rooms/sbD8vbDA5<br>まァあとから読んだ奴もぜひ引きに来てくれ(^^)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMクス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ff0000;" class="message-user-text">
+                            GMクス
+                        </p>
+                        <p class="message-content-text">
+                            またね～～～！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
