@@ -1,0 +1,4527 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 450px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-ステータス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ステータス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ステータス</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-アウラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アウラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アウラ</span>
+                </label>
+                <label for="user-GMアウラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GMアウラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GMアウラ</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-かかか仮" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-かかか仮" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">かかか仮</span>
+                </label>
+                <label for="user-ユミエラ･ドルクネス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ユミエラ･ドルクネス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ユミエラ･ドルクネス</span>
+                </label>
+                <label for="user-ユミエラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ユミエラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ユミエラ</span>
+                </label>
+                <label for="user-竪野 琴歌　" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-竪野 琴歌　" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">竪野 琴歌　</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-　" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-　" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">　</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-アウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            アウラ
+                        </p>
+                        <p class="message-content-text">
+                            時間：ボイスセッション/1h<br>人数：無制限<br>形式：クローズド<br>探索者：継続、新規不問。PCは知り合いでなくても構わない。<br>推奨技能：探索系技能<br>注意：グロ、ホラー描写が苦手な方はご注意ください。<br><br>あらすじ<br>目が覚めると、あなたは洞窟の様な場所にいた。<br>昼間の服装になっているが、持ち物は何もない。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            久しぶりにGM復帰じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            感覚を忘れないようにするのも大事じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            それになんだかimgのTRPG熱がすごいらしいじゃない？<br>遅きに失したかもしれないじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-かかか仮">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かかか仮
+                        </p>
+                        <p class="message-content-text">
+                            寝ぼけててみなごろし童話に見えた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かかか仮">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かかか仮
+                        </p>
+                        <p class="message-content-text">
+                            x5 3d6 #1<br>(3D6) ＞ 9[1,4,4] ＞ 9<br><br>#2<br>(3D6) ＞ 10[1,3,6] ＞ 10<br><br>#3<br>(3D6) ＞ 9[3,5,1] ＞ 9<br><br>#4<br>(3D6) ＞ 5[1,3,1] ＞ 5<br><br>#5<br>(3D6) ＞ 10[4,3,3] ＞ 10
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            そういう解釈は可能じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-かかか仮">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かかか仮
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-かかか仮">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かかか仮
+                        </p>
+                        <p class="message-content-text">
+                            めちゃくちゃな無法していい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            いいじゃない<br>実はけっこう難易度高いじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-かかか仮">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かかか仮
+                        </p>
+                        <p class="message-content-text">
+                            うわ！ありがとう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-かかか仮">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かかか仮
+                        </p>
+                        <p class="message-content-text">
+                            難易度高いならPOW5で大丈夫か不安なんすがね…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            そっちの難易度ではないけどまあその要素もあるから振りなおしてもいいじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ･ドルクネス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ･ドルクネス
+                        </p>
+                        <p class="message-content-text">
+                            う～ん…無法許可されたから大丈夫だと思うわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            了解じゃない<br>直撃したら発狂の可能性はあると言っておくじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ステータス user-ユミエラ･ドルクネス">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ･ドルクネス
+                        </p>
+                        <p class="message-content-text">
+                            STR 9<br>CON 10<br>DEX 9<br>POW 5<br>INT 10<br>悪役令嬢レベル99 100 任意の技能を99で振れる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            わかったわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            凄いのきて笑ったじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            レベル99だしね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            まあ概念曲げないだけまだ常識的範疇じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            人は待つじゃない？ソロならすぐに始められるじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            やろうと思えば何でもできるから一応CoCのシステムに合わせてナーフしてみたけど…ひどい無法で自分でも笑ってるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ソロでも大丈夫よ<br>こんなヤバいやつと一緒にやりたい人いないでしょうし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            私はこれ以上のやばい奴らを星の数ほど見てきたじゃない<br>了解じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            準備完了を教えるじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            お労しいわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            準備完了よ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            出航～～～～！じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            出航よ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            目が覚めると、あなたは洞窟の様な場所にいた。<br><br>周囲が石に囲まれ、人が屈んで通れそうな穴が一つあるだけのその場所は、部屋の様になっている。<br>暗い所為なのか育ち切らない苗木がぽつぽつと生えたそこには本棚や椅子、箱が有り、机の上のカンテラがぼんやりと部屋を照らしているだろう。<br><br>また、昼間の服装になっているが、持ち物は何もない。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…ここは…洞窟？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            たしか昨日はちゃんとベッドで寝た記憶があるんだけど、定期的にダンジョン攻略してるから夢遊病で歩いてきたのかしら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…でも、初めて見る洞窟ね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            周囲を見回しながら、ここには訪れたことがないようなと思いつつ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「とりあえず暗いと何もできないし、これ見よがしにカンテラが置いてあるから使えってことよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            机の上のカンテラを手に取って、ついでに机を調べてみてもいい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            カンテラを入手したじゃない<br>・机<br>引き出し付きの机。<br>引き出しを開けると「人柱の歴史」というタイトルの本と、トランプの箱が出て来る。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            カンテラで照らしながら人柱の歴史を開いて読んでみるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ★人柱の歴史<br>このような内容が書かれている。<br><br>＊＊＊<br><br>人柱とは、人身御供の一種。建造物やその近傍にこれと定めた人間を生かしたままで土中に埋めたり水中に沈めたりする風習を言い、狭義では古来日本で行われてきたものを指すが、広義では日本古来のそれと類似点の多い世界各地の風習をも同様にいう。この慣わしを行うことは「人柱を立てる」、同じく、行われることは「人柱が立つ」ということが多い。人柱になることは「人柱に立つ」、強いられてなる場合は「人柱に立たされる」ということが多い。後述するとおり、ここでの「柱」は建造物の「柱」とは違うので「立てる」という表現は本来的でないにもかかわらず、連想が強く働くためか、慣習的に使われている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ★人柱の歴史<br>このような内容が書かれている。<br><br>＊＊＊<br><br>人柱とは、人身御供の一種。建造物やその近傍にこれと定めた人間を生かしたままで土中に埋めたり水中に沈めたりする風習を言い、狭義では古来日本で行われてきたものを指すが、広義では日本古来のそれと類似点の多い世界各地の風習をも同様にいう。この慣わしを行うことは「人柱を立てる」、同じく、行われることは「人柱が立つ」ということが多い。人柱になることは「人柱に立つ」、強いられてなる場合は「人柱に立たされる」ということが多い。後述するとおり、ここでの「柱」は建造物の「柱」とは違うので「立てる」という表現は本来的でないにもかかわらず、連想が強く働くためか、慣習的に使われている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「へぇ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ペラペラと本をめくって内容を頭に入れたあと、次はトランプの箱を手に取って開いてみるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ★トランプ<br>♡のJに「U」と書かれている。<br><br>英語で振るじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=99 英語 (1D100<=99) ＞ 91 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            「U」はよく「You」の略として使われることを思い出す。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            I LOVE Uとかこっぱずかしいこと書いてあるシャツとか見た記憶が溢れてきたわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ★トランプ<br>♡のJに「U」と書かれている。<br>「U」はよく「You」の略として使われることを思い出す。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            机に目星を振っても何もないようなら箱の方を見に行くわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            錠前の付いた箱。2桁の数字を入れる様になっている。<br>またメモが貼られており「Who are you?」と書かれている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            はいはい<br>そういうのね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「11っと」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            箱の錠前に11と数字を入れるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            11と入れると、錠前は開いた。<br><br>中には小さなスコップと、くしゃくしゃの破れた紙きれが入っている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            両方とも拾って、破れた紙を広げて裏表見てみるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ★紙切れ<br>「此の豆は成長が早く、一分程で１０メートルの巨木となる」と書かれている。<br>。裏<br>「461235」という小さな落書きが見つかる。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ★紙切れ<br>「此の豆は成長が早く、一分程で１０メートルの巨木となる」と書かれている。<br>。裏<br>「461235」という小さな落書きが見つかる。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「豆…ああ、向こうの苗木のことか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「暗いから全然そんな風に見えないけど、光を当てたら本当に10メートルになるのかな」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…それで、こっちの数字はさっぱりわからないわね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            一応頭に入れながら、他に何もないようなら苗木を見に行くわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            硬い樫の苗木が生えている<br>まだ成長しきっていない様だ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            詳しく調べることはできる？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            とくにそれ以上の情報はないじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ありがとう<br>わかったわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…成長しきってない苗木と、成長させれば10メートルになるって、これ明らかにやれって言ってるようなものよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            かと言って光が届かないこの場所で現状ではどうしようもないんだけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ブツブツつぶやきながら本棚に向かうわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ♦本棚<br>1段目に瓶があり、2段目以降に本が詰まっている。<br>また上には袋がひとつ置かれている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            まずは瓶を手に取ってみようかな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ★瓶<br>ひとつは液体が入っており、ラベルに「瞬間育成剤」と書かれている。<br>もう一つの瓶は空で「みなしたおる」と書かれている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            はいはい<br>『したをみるな』ね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…瞬間育成剤って、コツコツとレベルを上げるのが楽しいと思うんだけど」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ★瓶<br>ひとつは液体が入っており、ラベルに「瞬間育成剤」と書かれている。<br>もう一つの瓶は空で「みなしたおる」と書かれている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            次は本を手に取ってみるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            「異種子図録」と言う本が出て来る。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            カンテラで照らしながらペラペラと中身を読んでみるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            「異種子図録」<br><br>巨大な木に育つ豆。その力は驚く程強い。<br>這う様に育つが、支柱を使う事によって真っ直ぐ縦へ伸ばす事が出来る。<br><br>（この次のページは破れている）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「異種子図録」<br><br>巨大な木に育つ豆。その力は驚く程強い。<br>這う様に育つが、支柱を使う事によって真っ直ぐ縦へ伸ばす事が出来る。<br><br>（この次のページは破れている）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「へぇ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「そういえば気にしてなかったけど、支柱みたいなのがいくつか刺さってるわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            苗木の左隣と、机の右隣の地面に突き刺さった棒を見つつ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            最後に袋を手に取ってみるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ★袋<br>開けると少し大きな種の様な物が入っている。直径１センチ程。<br>≪アイデア≫≪博物学≫≪生物学≫いずれかを振れるじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            x3 ccb<=99 #1<br>(1D100<=99) ＞ 40 ＞ 成功<br><br>#2<br>(1D100<=99) ＞ 61 ＞ 成功<br><br>#3<br>(1D100<=99) ＞ 100 ＞ 致命的失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            バカやって100ファン引いてしまったわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            豆を一個砕いて壊したじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            種というより、豆の様な大きさだと感じる。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…あっ、力加減を間違えて一個砕いてしまったわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            豆は何個入ってたの？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            袋一杯だから正確な数はないじゃない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            2個とかだったら🌈だったけど、いっぱいあるなら気にしなくて良さそうね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            他に調べられるものがなさそうなら穴を見に行くわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            小さな穴をくぐってしばらく進むと、通路に一人の少女が倒れているのを見つけた。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            100ファンなのに豆を砕く程度にしてもらえて助かるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…えっ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            こんなところに少女が一人っきりで？と多少不審に思いつつも
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…あなた、大丈夫？」<br>少女を抱き上げて声をかけてみるわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            起こすと彼女は目を覚まし、きょとんとした顔をするだろう。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…こんな狭いところで話すのもあれでしょうから、ちょっとこっちに来てもらってもいい？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            少女を抱き上げたまま机のある場所まで引き返すわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            「？」<br>不思議そうな顔をしながら従順に運ばれていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            穴から出てきて、少女を降ろすわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            その場に立つ、その間一言もしゃべらない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            なんであんな場所にいたのか、私に抱き上げられても一切驚くことなくされるがままだったのか気になることはいくつかあるけど、まずは自己紹介ね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「私はユミエラ･ドルクネス。気がついたらこの場所にいたの」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「あなたの名前を伺ってもいい？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            名前を尋ねると少女は土に指で「たての ことか」と書く。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            その様子を見て少し顔を俯かせて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…ごめんなさい、喋ることができないのね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「たての ことか…ことかちゃんって呼んでいい？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            まず喉を指した後、指でばってんを作り<br>こくりと頷く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            これが怪我だったのなら私の闇魔法で治せるんだけど…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「ありがとう。それならそう呼ばせてもらうわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…それで、あなたはこんなところで何を…少し待ってね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            トランプの空き箱を細長く丸めて、ことかに手渡して
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「これを使って書いてみて。直に指で地面に書いていたら怪我をするかもしれないから」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            ぱあっと笑顔になり、嬉しそうにこくんこくんと何度も頷きながら受け取る
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ことかの笑顔に釣られるように私も笑顔を見せて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「それで…ことかちゃんはどうしてこんなところにいたの？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            わかんない<br>とトランプの箱で地面に書く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…そう、あなたもわからないのね…私も目が覚めたらここにいたんだけど」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            …いえ、まだそうと決まったわけじゃないわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「ことかちゃんはここで目が覚めたの？それとも私が起こすまでずっと眠ってたの？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            ねてた<br>と書いて顔をあげる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「わかったわ。先に目が覚めて穴の中に入っていたのならすごい根性してるわねって思ったけど、普通の子みたいで安心したわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            とりあえず私が見つけた情報をことかにも教えておくわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            難しそうな顔をしながら一生懸命聞いている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            素直な子…と顔をほころばせながら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            …私一人だったら効率重視でやってたけど、この子がいるなら無茶はやるべきではないわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「とりあえずこの場にあるものは一通り調べ終わって、最後にあの穴…あなたがいた場所に潜ったらあなたが眠っていたの」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「それで…まだ穴のなかを完全に調べ終わったわけじゃないからまた行こうと思ってるんだけど、あなたも来る？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            意識がはっきりすると心細くなったのか、こくこくと頷いて近くをついてくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「わかったわ。身の危険を感じたらすぐに私の後ろに隠れてね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ことかを連れて再度穴の中へ進んでみるわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ≪先へ進む≫<br>そのまま先へ進んでいると、別の穴に辿り着く。<br>しかし、出口かと考えたあなたの目の前に広がるのは先程と全く同じ光景だった。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            暗い所為なのか育ち切らない苗木がぽつぽつと生えたそこには本棚や椅子、箱が有り、机の上のカンテラがぼんやりと部屋を照らしている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            自分が持ちだした物は無く、動かした物は動かした通りになっている。≪SANチェック1/1d3≫
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=40  (1D100<=40) ＞ 62 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            1d3 (1D3) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=30 (1D100<=30) ＞ 93 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 竪野 琴歌　 ] SAN : 40 → 38
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            1d3 (1D3) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ユミエラ･ドルクネス ] SAN : 30 → 29
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…これは、ループしてる？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            何度も同じ場所に戻るダンジョンは初めてかもしれない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…そして、正真正銘ここはさっきまでいた場所みたいね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            自分が砕いてしまった豆の欠片が本棚の近くにあることを確認して
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…ことかちゃんは平気？私は慣れてるけど、あなたはこういった場所は初めてでしょうし」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            ふるふると首を横に振り、震えながら袖をつかむ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…そうよね。あなたは普通の子どもだから怖いわよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            私はこの子と同じくらいの年齢の頃にはダンジョンに入り浸りだったなぁ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            そんなことを考えつつ、私の服の袖を掴んでいることこの頭を優しく撫でて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「安心して。私が絶対に脱出させてあげるから」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            その言葉を聞いて、こくり…とゆっくり頷くと、体の震えは止まったようだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            穴に入って先に進むと穴から出てきてしまうって解釈であってる？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            あってるじゃない<br>無限ループじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            わかったわ<br>それならもう探索は終わってるとみても良さそうね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ことかの頷きに笑顔で返して
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            …さて、私の考え通りだと条件を満たさないと出ることができない場所みたいね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            豆を支柱の近くに埋めて育成剤を与えれば、ジャックと豆の木よろしく上へ上へと伸びて外に出られる…はず
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            一応上を見上げてみるわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            洞窟天井は硬い鉱物でできているようなことはなく、土でできているように見える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            …土なら突き破れそうね<br>私の闇魔法で突き破ってもいいけど、条件を満たさないやり方だとまたループしてしまう可能性があるからここは素直に従うべきね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            一応この空間全体を見て見落としがないか調べてもいい？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            振るじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=99 (1D100<=99) ＞ 1 ＞ 決定的成功/スペシャル
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            何このダイス…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            な<br>に<br>もじゃない<br>さらにこっちでヒント出してもいいじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            コイントスじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ヒントかぁ…人柱の部分はまだ良くわかってないけど、豆を植えて下を見ないのはあっているはず…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            とりあえずやってみて考えればいいわね<br>豆も薬剤も余裕あるみたいだから
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ことかを連れて机の右隣にある支柱のそばに行き、スコップで穴を掘って豆を埋める
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…さっきも話したけど、すごい勢いで豆の木が出てくると思うから、びっくりして怪我をしないようにね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            こくこくと頷きながら興味深そうにその様子を見ている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            一応ことかが怪我をしないようにガードをするように立って、豆を植えたところに薬剤を散布する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…さて、どうなる？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            次の瞬間勢いよく蔓が伸び始める。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            そして支柱をへし折り、琴歌をかばうユミエラに襲い掛かろうとする
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            １だしたしかばってるしで技能振ってもいいじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ことかを抱えて回避するわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=99 (1D100<=99) ＞ 32 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            蔓は二人を外れて周りの物にどんどんと絡みついていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            全部99ってイカれてるわねこの無法技能
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            それは這うように部屋を埋めるが、硬い樫の木の苗だけは破壊しきれないで巻き付いている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            無法技能を100にしてきたやつを見たことあるじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…なるほど。苗木はそっちだったか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ことかを抱えたまま苗木のそばに移動して、蔓に捕まる前にその場に豆を植えて薬剤を振りかける
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            若い樫に瞬間育成剤をかけると、天井近くまでがっしりとした木が伸びる。<br>豆は樫の木に絡み付きながら伸びて行く。豆の木は天井を突き破り、登れば上へ脱出する事が出来るだろう。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            私はしっかり100ファン出してるからまだ頭が無法になりきれてないみたいね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…よし」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「ことかちゃん、私が少しミスをしてしまったから、すぐにここを出ないと危険な状態になってしまったわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「さっき話したことを覚えてる？『したおみるな』ってやつだけど」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            こくこく、と緊張した面持ちで短く二回頷く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            頷くことかに笑顔を見せて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…私の顔だけを見ていればいいから、しっかり掴まっていてね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ことかを抱きかかえたまま豆の木を登っていくわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            　
+                        </p>
+                        <p class="message-content-text">
+                            空高くまで伸びる豆の木を上っていると、暫くして下から「こっち、こっちだよ！」と言う声が聞こえて来た。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            その声を無視して上へ上へと登っていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            不気味な声を無視して登る。<br>やがて濃くなりだした霧に視界が包まれ、あなたは意識を失うだろう。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「……っ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            次第に意識が遠くなっていくのを感じる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            目が覚めると自室にいた。外は朝のようだ。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…また洞窟…だったらさすがにどうしようか悩んでいたけど、ちゃんと攻略できたようね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…あの子も無事に元の場所へ戻れていればいいんだけど」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            あの場所で出逢った少女のことを思い出しながらも、いつものように学園へ行く準備を整えて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            窓の外を見やると、どこか見覚えのある子供が、見慣れない風景にキョロキョロと不安そうにあたりを見回している
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            「…えっ？あの子ってたしか…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            窓の外にいる黒髪の少女を見つけて、準備をほっぽり出して外へと急ぐ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-竪野 琴歌　">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            竪野 琴歌　
+                        </p>
+                        <p class="message-content-text">
+                            少女はあなたの姿を認めると、不安げな表情をぱあっと明るい笑顔に変えて、あなたに駆け寄ってくるのだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            よかった。無事だったのね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            柄にもなく、他人の幸せそうな姿を見て
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            笑顔で私に駆け寄ってくる少女に、私も同じように笑顔を見せるのだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            笑顔差分が素直な笑顔じゃないのよね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            何か企んでるようにしか見えないじゃない<br>さすが悪役令嬢じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            効率厨で人の心がわからないだけだから
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            私からはこれで終わりで大丈夫
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            OKじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～～！じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            宴ね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            苗木のところは完全にポカだったわ<br>茶色くて細い柱が見えたからそっちに植えるものって思ってしまった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ちなみにかばってなかったら琴歌がなすすべもなく人柱になって死んだじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ロスト回避用のNPCだったのね<br>シナリオ制作者の趣味が悪いわ…ミスった私が悪いんだけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            しかも現実に戻ってきてからわざわざ家の前で交通事故で二回目の死を迎える趣味の悪さじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            えっ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            人の心とかないの？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            魔族なの？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ないようじゃない<br>もしかしたらソリテールかもしれないじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            助けた子が死ぬ様を見てご機嫌な学園生活とか私はできないわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            首さえ飛んでないなら回復魔法でワンチャンあるかもしれないけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            目を覚ますと同時に家の外から悲鳴が聞こえ、自宅の前の道路で死んでいる琴歌の姿を目にする。彼女の体はあらぬ方向に折れ曲がり、まるで何かに潰されて死んだ様な姿になっているだろう。<br><br>だからギリいけるじゃない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            ccb<=99 闇回復魔法 (1D100<=99) ＞ 70 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            めっちゃぐろいけど回復はちゃんとする
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            本当にNPCに救いがなくてGMさんが改変してくれてよかったわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            １が出たら大抵のことはするじゃない<br>しかもちゃんと警戒してたのは熟練者の動きじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ちゃんと正解した場合は普通に元気に登校してる姿が見られるじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            レベル99だからね<br>慣れっこ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ただ家が異世界なので異世界転生してもらったじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            私の世界観だと黒髪は不吉だからいじめられてそうで不憫ね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            火事で喉焼いちゃってるし守護る人が必要じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            そんな状況でも学校にちゃんと通えてる強い子なら大丈夫そうね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            元気で強い子らしいじゃない<br>この作者の趣味なら火事で両親も死んでそうじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            異世界転生した方がマシみたいね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            闇魔法で喉直せるならそうかもしれないじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            私アニメで見た範囲の知識しかないから時間が経った怪我が治せるかわからないけど…レベル99だから多分回復できると思うわ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            可愛い声が聞けるようになってお得じゃない<br>身寄りのない子供を暗殺者に育ててるとか言われるじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            私は魔王扱いされてるから暗殺者よりより悪く言われそうね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            まあどうせ他に寄る辺もないから好き放題じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            私が今住んでる家が私とメイド1人しかいないから、身寄りがいないなら引き取ってもいいのよね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            んじゃあこんなところじゃない？他に質問とかあるじゃない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            そうね…苗木のミス以外はミスらしいミスはあった？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            ないじゃない。そこが一番の分岐じゃない<br>あとは言うことあるとすればジャックと豆の木が元ネタぐらいじゃない？<br>下見ると巨人も出てくるじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            あれ巨人だったんだ<br>余裕があれば声に応えて倒してたわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            戦闘意欲が高いじゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            だって経験値もらえそうじゃない？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            もうレベルが99じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            そのうち限界突破して正確なレベルがわからなくなるらしいから…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            100レベル突破する方のやつじゃない…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            そこまでアニメでやるかわからないけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            とりあえずまだまだ精進が足りないことがわかったから、今度は忖度されないでもちゃんとNPCを救えるように頑張るわね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-GMアウラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GMアウラ
+                        </p>
+                        <p class="message-content-text">
+                            まあしてやられるのが醍醐味ではあるじゃない<br>またね～～～！じゃない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ユミエラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            ユミエラ
+                        </p>
+                        <p class="message-content-text">
+                            楽しかったわ<br>GMさんは長時間ありがとう<br>それではまたどこかで
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
