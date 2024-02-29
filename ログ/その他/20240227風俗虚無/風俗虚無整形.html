@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 350px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-満足度" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-満足度" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">満足度</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-泡歩" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-泡歩" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">泡歩</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-アリエッタ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アリエッタ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アリエッタ</span>
+                </label>
+                <label for="user-森田" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-森田" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">森田</span>
+                </label>
+                <label for="user-水没紳士マサヒコ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-水没紳士マサヒコ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">水没紳士マサヒコ</span>
+                </label>
+                <label for="user-拓也" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-拓也" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">拓也</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            予算は3万円ですぅ<br>質を求めるか量を求めるかは自由ですぅ<br><br>お店<br>風俗　1d100 1万円<br>ソープ　1d150 2万円<br>高級店 2d70+50 3万円<br><br>オプション(選んだお店のダイスに加えられる　重複不可)<br>制服 +10 2000円<br>コス +20 4000円<br>おみやげ ダイス上限+10 500円<br>おもちゃ ダイス上限+10 1000円<br>下着持ち帰り 出たダイスの1/4を追加 3000円<br>デート 追加で1d100を振って足す 1万円<br>特殊プレイ 追加で1d100を振って足す 30以下が出たら出禁 +6000円<br>チェンジ 1回振り直せる 3000円<br>指名 好きなキャラを相手にできる 3000円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            あるお客様の例を出しますね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            2/26 お仕事帰りの本指名K様🎶<br>制服でお出迎えした後、たっぷりおもちゃで愛してくれて気持ちよくなってくれてよかったです☺️☺️<br>アイドル時代のコスまで持ち込んで頂いたのでたっぷりプレイでご奉仕しました。<br>もしかしてこれお仕事に行く前から準備を…… 😳😳💗感激ですぅ✨✨
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            ソープ　1d150 2万円<br><br>にオプションの<br>制服 +10 2000円<br>コス +20 4000円<br>おもちゃ ダイス上限+10 1000円<br>指名 好きなキャラを相手にできる 3000円→雪歩<br><br>をつけて頂きました
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ？？？？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            1d160+10+20 満足度えい！ (1D160+10+20) ＞ 88[88]+10+20 ＞ 118
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            あ～これ少女漫画虚無か
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            泡歩…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            満足してもらえたみたいですぅ<br>今の方がファンの人と近くで触れ合えて<br>もしかしてもっと早くこっちの世界にいた方が良かったんですかね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            ではお楽しみください
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            昔はアイドルやっていたんですよ <br>男の人が大好きですって言ったら、人気なくなっちゃたんです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            むほほｗ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-満足度 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">満足度</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            私のお客様<br>118
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            あ、当然ですけど風俗を楽しまれる方視点で振っていいですからね<br>いつもの虚無みたいに
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            風俗ハシゴも可。です
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            >前のスレで<br>>>少女漫画虚無くれ<br>>で今出されたのか<br>>>風俗虚無<br>>>https://ccfolia.com/rooms/yFAa4I6bA<br>>で笑ってるの俺？<br><br>少女漫画に憧れた事だってあったんですよ？<br>欲しくって、たまらなくって<br>昔漫画で見たアイドルみたいになりたくて<br>待ってても誰もくれなかったんです、だから私が今ここにいるんですよ<br>……今の私に憧れてくれる、そんな人っているんですかね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            あ…アリエッタ、お金のことわかんない…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            けど、お兄さんの言うこと聞いてたらみんな喜ぶ…んだよね？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずい結構いい感じに風俗っぽい感じになってる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            ソープ　1d150 2万円<br>デート 追加で1d100を振って足す 1万円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            お兄さん、アリエッタとえっちなことする前にデートしたいの？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            ……変なの
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            1d150+1d100 (1D150+1D100) ＞ 110[110]+18[18] ＞ 128
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-満足度 user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">満足度</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            128
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            お兄さんとデートするの…悪くなかった、かも
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            また来てもいいからね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            あなたもその一つになろ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            …これ、指名って必須だった？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-アリエッタ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アリエッタ
+                        </p>
+                        <p class="message-content-text">
+                            まあいいでしょう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これ既に出てる嬢に金払って指名できるって意味か？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            好きなキャラに出来るって事です(フレーバー)<br>自分にすればいらないですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            かざりみたいなものなので気にせずに。<br>アリエッタさん良いですね<br>素敵なお時間を過ごせそうです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            ワイや！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            風俗言うたかて暗かったり闇を感じたりする事情ばっかじゃ疲れるで！ ワイが久々に利用者側に回ったるで！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            ここは折角やしアリエッタちゃんを指名するで！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            指名 好きなキャラを相手にできる 3000円<br>ソープ　1d150 2万円<br>コス +20 4000円<br>あかん指名すると金があんまり足りひん
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            1d150+20  (1D150+20) ＞ 54[54]+20 ＞ 74
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            まぁまぁやったわ…　やっぱりAVの方がええんか……？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            以上！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-満足度 user-森田">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">満足度</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            森田
+                        </p>
+                        <p class="message-content-text">
+                            74
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            【水没窒息プレイできますか】<br>ホームページ拝見しました 普通の絡みが希望ですが、ハードM拷問プレイもオーケーとのことのようですね。実は、バスタブに沈ませたい願望があります。<br>なるべく長く潜ってほしいなと思います。もちろん息継ぎしますが、それも鼻呼吸だけですが…。いかがなものでしょうか?
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            OKっす！潜水にしたまま100メートル泳げるんでかなりいけると思います。鎖で縛られてスキューバ用の重りつけられて飛び込み用の水深10メートルに沈められた時は死にそうになっで射精しちゃいましたけど。<br>普通の窒息プレイは全然OKっす !
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            ソープ　1d150 2万円<br>指名 好きなキャラを相手にできる 3000円<br>水中ブリッジ3分間（特殊プレイ） 追加で1d100を振って足す 30以下が出たら拓也が死ぬ +6000円
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「前回の約束を果たせよ！できるよな！拓也！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            「ウッス！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「少し休憩を与えるから、３分間水底に沈め！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            「ウッス！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            1d150+1d100 水没プレイ (1D150+1D100) ＞ 116[116]+70[70] ＞ 186
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「こうなったらやっぱり手錠だな！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            拓也は手錠が嫌いだ。金属で手の筋を痛めることがあるからだ。さっき、手錠は使わないって言ったのに・・・でも、仕方がない。後ろ手に手錠をさせられ、足には足錠、さらにロープがきつく締めつけられ・・・チクショウ！早く３分達成しないとこのまま死んじまうぜ！金属が手足に食い込んで痛い。ロープも胸筋と腹筋、臀筋と大腿筋にこれ以上きつくできない程堅く縛られ、緊縛手錠の中ではもはや激しくもがくこともできない。<br>でも、これが幸いしたぜ！もがき苦しまなければ余計な酸素を使わずに済むからだ。プールに立って深く呼吸を整え最後の10回の深呼吸でスプレーが与えられる…意識が遠のき全身の筋肉が淫乱になる…<br>最後にラッシュが与えられゴボゴボと息を吐き出しながら頭から死んだように水底に沈み、決して酸素の与えられることのない肺呼吸をググっと続ける。<br>緊縛された全身のロープと手錠足錠の拘束感がどうしようもない超絶な快感に変わり、鳥肌を立てた筋肉が痙攣し始める。苦しい無酸素呼吸と同時にマラがMAX勃起してヒクヒクし始める。精液タンクと化したアナルのローターの音が響き渡る。背中を踏まれイヤイヤするように悶え始めると勃起乳首が水底に触れ、気持ち良すぎてマジ死にしそうだ。<br>水面のかなたから２分４０秒、５０秒の声が聞こえ、３分が聞こえた！まだまだいけそうだぜ！さらに10秒、20秒、30秒‥狂乱の苦しさと快感の果てにオレはついに水底で逝った！ビクビクビクビクと痙攣しながら３日間の淫乱セックス漬けで溜まりに溜まった欲情がプールの底で排出される｡エクスタシーに手錠ロープで緊縛されたガタイが痙攣硬直する！あー、いくらでもイケそうだぜ！とたんにガタイが引き上げられ、抱きしめられる。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「拓也、よくがんばったな！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            オレは激しい呼吸をしながら全身の筋肉をビクビク痙攣させてロープと手足錠の拘束に身をまかせる。しばらくプールサイドに放置され鳥肌の立った瀕死の筋肉を撮影される。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「ほら、ご褒美だよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            と言って暖かい黄金水が胃の中に流し込まれ、拘束され濡れたガタイのまま部屋に引きずられて行き、ベッドに放り出された半失神状態の肉体が犯される。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            クスリが効いているのか、硬直と痙攣を続ける筋肉とは別の生き物のようにケツの中はトロトロで熱い。手足錠はそのままに、濡れたロープがさらに筋肉を拘束し、さらけ出したプリケツの中で元気に暴れ続ける５個のローターの中心にデカマラが挿入され、若い２人の精子を掻きまわされながらガン掘りが続く。<br>いったい何時間犯されていたのかわからない。乳首を揉まれ超絶な快感に雄叫びを上げながら、永遠とも思われるセックスが続く。<br>何度もいろいろな気体を吸わされ気絶と覚醒の挾間をさまよい、殺人的なＳＭプレイの最後は交尾中の窒息プレイだ。縛られて、後ろから前から犯されながら両手で口と鼻が塞がれ、息の根を止められクスリ漬けで筋肉を震わせて痙攣させて悶え苦しむ究極の拷問プレイでケツの中のデカマラが勃起し、ドクドクと精子が膣奥に注がれる。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            ようやく開放されると口から泡が噴きだし、ローターで暴れるケツマンからも精子が泡のように噴きだし、それをローションがわりにフィストが始まる。もう片手で口を塞がれて、雄叫びを上げると、苦しむ姿に勃起するＳに再び掘られて窒息プレイで射精・・・の連続。何発タネ付けされたかわからない・・・<br>ついに意識を失って、気が付いてみれば、紳士はスーツを着て立っている。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            「いま、何時っすか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「おぅ、生きてたか。拓也もう9時だぜ。」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            ロープ手錠で拘束されたまま朝まで気を失っていたみたいだ。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「良かったぜ、拓也！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            「ウッス、ありがとうございます！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            手錠がはずされ、ロープが解かれる。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「次は水中ブリッジ３分間、できるか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            「ウッス！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「約束だぞ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            「ウッス！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「じゃあ、ここで練習してから帰れ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            「ウッス！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            「いつかオマエが水中で死んでもオレのせいじゃないからな！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-拓也">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            拓也
+                        </p>
+                        <p class="message-content-text">
+                            と言い残して紳士は月曜の仕事に出かけ、オレはプールで泳いでガタイをほぐした。<br>もちろん水中ブリッジ３分なんて練習するわけねーよ！拘束されなきゃ絶対ムリだぜ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-満足度 user-水没紳士マサヒコ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">満足度</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #3f51b5;" class="message-user-text">
+                            水没紳士マサヒコ
+                        </p>
+                        <p class="message-content-text">
+                            186
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 水没紳士マサヒコ ] お金 : 30000 → 1000
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            風俗の形も色々ですね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-泡歩">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            泡歩
+                        </p>
+                        <p class="message-content-text">
+                            空が段々と明るくなってきました<br>シンデレラ達も元のお家に帰る時間ですね<br>ご来店ありがとうございました
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
