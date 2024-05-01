@@ -1,0 +1,2802 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 200px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+                <label for="tab-ステータス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ステータス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ステータス</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-シャン卓GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-シャン卓GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">シャン卓GM</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-ゴリラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ゴリラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ゴリラ</span>
+                </label>
+                <label for="user-偽GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-偽GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">偽GM</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みー。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずい邪神の侵略が進んでいる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みーっみっみっみ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みーみーみーみみみ<br>みーみー、みーみみみみみーみーみー。<br>みー、みーみーみーみーみみみみみみ。<br><br>みーみーみみー:みー、みーみー<br>みーみ:みー~みーみ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みーみー、みみみみみ。<br>みーみーみみみーみー。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずい何もわからない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            み！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みみっみ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            さっきまでクー子がやってたのに今気がついたけど<br>来るわけないだろこんな連続して
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            人自体はいるんだよなあ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みーみー…みみーみみ〜…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これ超融合されたやつ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これウンババ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            み？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みーみみみーみ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ウホホウホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ウホウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ウ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-シャン卓GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            シャン卓GM
+                        </p>
+                        <p class="message-content-text">
+                            みみ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-ステータス user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            STR555<br>CON555<br>DEX 55<br>POW 15<br>INT バナナ5本分<br><br>ゴリパン55<br>ウホホ55<br>ウホシ55<br>ウホ耳55<br>シットスロー55<br>ドラミング55
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            まずいシャンババクトゥが始まろうとしている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　シットスロー (1D100<=55) ＞ 42 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            👋三三三💩<br>ｼｭｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　ドラミング (1D100<=55) ＞ 22 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウウホウホウホウホウホウホウホウホ！！（ﾄﾞﾝｺﾞﾄﾞﾝｺﾞﾄﾞﾝｺﾞﾄﾞﾝｺﾞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            GM、お前が始めた物語だろ<br>やれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            てかこれ言っていい？<br>見てないけどGMもういないウホよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            せめてまたね～ぐらいやれ～～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            なるほど、いないの見越してふざけてただけか
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            そもそもシナリオ概要がシャンババだもんなァ…<br>それだと出せるのゴリラぐらいしかないだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　タイヤで遊ぶ (1D100<=55) ＞ 83 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            なんだよこれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ゴリラ星人はクトゥやる気自体はある方？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            シナリオ概要がシャンババ的な感じだったから脳死でGMと遊ぶのも一興と思ってた…だろウホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            シャンババ的な感じってかシャンババそのものだけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            情報とかどうすんだろうなこれ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            あ♪ニート♪<br>さあ鬼ごっこ♪
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            乗っ取ってシャンババクトゥするぞ<br>来い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            おお
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            背景なにこれこわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ○ウホ<br>ウホホ、ウホ<br>ウホホホホ<br>ウッ<br>ウホ、ウホホホ(0／1)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55 (1D100<=55) ＞ 6 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ～…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ、ウホホホウホ<br>ウホホ、ウホホ<br><br><ウホ>
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　ゴリパン (1D100<=55) ＞ 9 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            <ウホ><br>ウホホ、ウホ<br>ウホホ<br>ウホホッホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ…？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　シットスロー (1D100<=55) ＞ 26 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ・ウホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            なにこれ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ・ウホホホ<br>ウホ、ウホホホ<br>ウホ<br>ウホホホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホ～ウ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホホホホ<br>ウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            【ウホ/ウホホホウ】
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55 (1D100<=55) ＞ 54 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            【ウホホホウーホ】<br>ウホホ<br>ウホホホホ<br>ウホ、ウホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ→C<br>ウホホ→D
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　ウホホ (1D100<=55) ＞ 9 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            res(ウホホDEX-23)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホウ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホウホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホウ、ホウホウホ<br>ホホホホホウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　ドラミング (1D100<=55) ＞ 97 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ［ウホウーホ］<br>ウホホ<br>ウホホウホ<br>ウッホホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホッホウ<br>ホウホホホホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ［　1B　］<br>ウホホ<br>ウホホホホホ<br>ウ！ウホホｗ<br>・ウホホウ<br>・ウホッホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホホｗ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホホウホホ<br>ウホホウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            「ホウッホウウウホホ」<br>「ウホッホホホホホホホ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホウホホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            「ホウホウ、ウホホウウホ」<br>「ウッホホウホホウ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            「ウーホホ」<br>「ウホウホウホウホ」<br>ウホホ、ウホッホウホホホ<br>🦍＝＝＝＝＝＝＝＜
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホホ～～～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ひどい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55 DEX (1D100<=55) ＞ 90 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ハイコンテクストな卓だ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホホウッホウッホホホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ？ウホホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ［　7C　］<br>ウホホ、ホホホホ<br>ウホッホホホウ<br>※ウホホ、ホホウホホ、【ウホホウホホ→】
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホウ…ウホホホ<br>ウホホウホホウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ○ウホホ、ウホッホウホホウホホ<br>ウホホホウホホホウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウ～ホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　ウホ耳 (1D100<=55) ＞ 19 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ。<br>ウホ、ウホ、ウホ。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ、<br>    ウホ、ウホ。<br>ウホ、
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ、        ウホ、<br><br>ウホ、   ウホ、   <br>                             ウホ、
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホホ…<br>ウ！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホウホウホウホウホウホウホウホウホウホウホウホ。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホホ～～～～～～～！？！？！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ………<br><br>ウホ、ウホ<br><br>ウホホウホホホ。<br>《POW×5》
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            1D100<=55　POW (1D100<=55) ＞ 12 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホ～ウ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            (ウホ：ウホホウホウホホウホ)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ？ウホホウホウホホウホ、ウホホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホホ、ウホッホウホウホホホホホ<br>ウホホウホホホウウホホ<br>―ウホホ、ウホッホウホホホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホッ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ◆END-A <br>ウホホ、ウホホホウホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ～…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホホウホホウホ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホホホーイ～～～～！！！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホホホァ～～～～～～！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホウホウホホホウホホウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホホ<br><br>ウホホウホホウホウホホウホホウホホ<br>ウッホホホウホホウホホホホ<br>ウホホウッホッホウホウホホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホ～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホッホホッホ！<br>ウホホホ、ウホホホ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ウホ！ウホホ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ウホホホウホホウホ…ウホィ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            ホウホウホホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            何時のまにか背景無くなっててこわいホ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            俺には元の画像出せない<br>スマン…thanks
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            おお
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            ということでセッションは終了だ<br>楽しかった？だろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            中々シンプルながら難解な卓だったウホ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おお
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            基本的に話聞かずに無法で暴れてて笑っただろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おお
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            相手の動きが読めないからとりあえず先に仕掛けるしかないからなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            このステで！ステータス判定に失敗するわけねだろうがァ！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            でもＧＭ<br>俺頭ゴリラだからどんなにステ高くても55でしか振れねえんだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            技能少な目なんだよな<br>ゴリラ特効卓なんだよな
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            タイヤとかハンドスラップぐらいは持ってきてても良かったな…それあればもうちょっと立ち回り柔軟にできたはずだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            関係ないけど何でゴリラってあんなにタイヤ好きなんだろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            壊れないから？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            おお<br>たしかにおもちゃとしてはすこぶる頑丈だなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            鬼龍はすぐ壊れるからなァ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            アイツよくわかんない技で脳破壊してくるから嫌い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            でもお前原作じゃ文字通り手玉に取ってたろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            まあそれはそう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-ゴリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ゴリラ
+                        </p>
+                        <p class="message-content-text">
+                            じゃあシャン卓ンも来ないから鬼が出ぬ間に寝るか…<br>お疲れシャン！またね～～～～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-偽GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            偽GM
+                        </p>
+                        <p class="message-content-text">
+                            付き合ってくれてありがとうだろ！<br>またね～～～～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
