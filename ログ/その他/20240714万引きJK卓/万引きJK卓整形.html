@@ -1,0 +1,4341 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 200px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-店長" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-店長" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">店長</span>
+                </label>
+                <label for="user-セレナ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-セレナ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">セレナ</span>
+                </label>
+                <label for="user- " class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user- " onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts"> </span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            セレナはスーパーの入口のところで店長と思しき男に声をかけられる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「お客様、ちょっとよろしいですか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            学校帰り、制服を着たままここを訪れていたあたしは、その言葉に硬直する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……なんですか？もう帰るところなんですけど」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「後で警察の方がご厄介になるかもしれませんけど、それでも良ければ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「バッチリその瞬間は録画してますからね。　どちらでも同じなら、騒ぎにならない方がよろしいかと思いますが」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            慇懃な口調とは裏腹に態度は有無を言わさぬという感じだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「………ちっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            何故バレた…？と、冷や汗をかき
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……わかったわよ」<br>おずおずと店長についていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            ではバックヤードのようなところに通される
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「まずその品を出してもらいましょう。　こちらでも把握はしてますけど念のためにね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「はい、これでいーんでしょ」<br>バッグからどさどさと化粧品類や文房具を落とす
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ふう……やれやれ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「何故こんな事を？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…………」<br>パイプ椅子にふんぞり返り、そっぽを向く
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            当然だか心を開いている訳もなく<br>テキトーにやり過ごそうと思っている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            ではその対面に座ります
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「一つ盗まれるごとに、その10倍以上の額の損失が発生するなどと聞いた事はありませんでした？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「それはあんたたちの都合でしょ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あたしの知ったことじゃない。あたしだって苦しいし」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「文房具はともかく、化粧品はなくても苦しくはないと思うのですが」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「はぁ…………」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「おじさん、モテないでしょ」<br>「女って言うのはある程度容姿を整えてないと舐められるのよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「今はノーメイクで？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「してるわよ？」<br>「ほらほら、近くで見てみる？現役JKのナチュラルメイクよ？ほら」<br>そう言うとずい、と身を乗り出し<br>至近距離で店長に顔を見せつけた<br>薄くだが化粧はしてある
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ねえはやく帰してくんない？こんな近くであたしの顔見せてあげたんだしさ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「生憎ですがあなたと同年代の方のアルバイトの顔を毎日見ているのですよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ちっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「その子はメイクをせずとも美しいですよ？　それに毎日頑張って働いてお金を稼いでいる」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            再び椅子にどかっと座り
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「それはよかったわね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「やれやれ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「君、もしかして以前もやっただろう」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            choice ある ない (choice ある ない) ＞ ある
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「だったらどうしたいわけ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「化粧品売場で怪しい女の子が居たという目撃証言があってね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ダメ元でカメラを大目に設置してみたら、見事に引っかかってくれたというわけだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            そう言ってノートパソコンを操作してセレナに向けると、そこにはまさに万引きしているその時の場面が
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「くっ……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……なんでそれを分かってる上で、こんな回りくどい事してるわけぇ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「さっさと警察にでも何でも言えばいいじゃない。いやがらせ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「私はこれでも青少年の未来を守りたいと思っているのですよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「あなたに反省の態度が見られたら、考えても良いと思っていたのですが…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「してるわよ？反省」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「次はもっとうまくやってやるわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「警察に捕まるのが惜しくないのですか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「いいわよ、別に」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あたし親とは離れてるし」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「進学とかされるおつもりはないと？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「大学ぅ？行くつもりないわね、成人したらさっさともっと都会に出るわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「高校のことなら、同級生も万引きで捕まったけど今もふつーに通ってるし、知ったことじゃないわ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「………また万引きをするつもりだということですね？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ふん」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            店長をからかうように笑って、またそっぽを向いた
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            バン！とテーブルを急に叩いて立ち上がる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ひっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「な…なによ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「気が変わりました」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            そう言って歩くと、バックヤードの入口の鍵をかける
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「このまま帰さない事にします」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「は…はぁ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            生意気だった顔に少しずつ焦りが見え始める
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「なによ…長々と説教でもする気？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「冗談ではないと言っているのですよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「我々があなた方のようなクズのために毎日どれほど頭を抱えている事か…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「あげく、演技でもいいから反省の色ぐらいは見せるだろう、と思っていたのにそれすら裏切られるとは…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「こちらが怒りや恨みを抱かない人間だとすら思っておられないということなのでしょうね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「何が言いたいのよ…！はやく帰しなさいよ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            あたしもばんっと机を叩きながら立ち上がり
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            立ち上がったその両肩をグイと掴んで椅子に戻す　その力は見た目よりもかなり強い
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「くぅぅぅ…！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あ、あんた鍛えてるわね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「でも良いのかしら？暴力なんてしたらあんたの言葉の正当性も失われるわ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            きっ<br>と、店長を見上げて睨みつける
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「こんなスーパーで働いてれば誰でもそうなりますよ　さっき言ってたアルバイトの子もそうですよ？」その視線を緩やかに受け流すと
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            ブチブチ、と制服の前を無理やり開けてしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「きゃぁぁぁぁ！！なにすんのよ！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            抵抗しようにも、男には敵わず
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            あっさりと制服がボタンごと開かれて、あたしの下着が露になってしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「時には暴力を振るわねば分からない事があると思いまして」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ああもちろん、普段はそんな事はしませんよ？　一国一城を預かる身ですから」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ですがあなたのようなカス女には話が別だ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「なっ…カスですって…！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「お前がカスじゃなかったら誰がカスなんでしょうね？」ブラも無理やり引き剥がしてしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「いやっ、やめ…やめなさい、よぉっ！！」<br>じたばたと藻掻き、逃れようとするが<br>有無を言わさぬ男の力でねじ伏せられて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「やだ…やめ、やめて…」<br>次第に言葉も弱くなり<br>ぷるんとした小さな乳を、店長へと晒してしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ここでやめたらおしおきになりませんからねえ」そのまま床へと押し倒すと、パンツをも剥いて、気崩れた制服とスカートだけ纏った半裸の状態に
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「きゃんっ！！」<br>床へと倒され、組み伏されながら<br>あたしのお気に入りのショーツも奪われて…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「やだ…いやよ、だれか！！だれかたすけてえええ！！」<br>恐怖でぽろぽろ泣きながら、そう叫ぶ始末
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ああ、ここに至るまでの通路は割と大きめにBGMをかけてありますし、壁は厚めですから叫んでも無駄ですよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「まあ、叫んで貰ったほうがあくまで個人的趣味としては興奮するので構いませんけど」そういってズボンのチャックをおろしていきり立つ怒張を見せつけ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ひっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            喉から可愛らしい悲鳴が漏れる<br>こ…こんなの、入りっこない！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「おしおきですから濡らしませんよ、一気に行きましょうか」そう言って性器を握るとセレナの秘部に近づけ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「いや！！やだ、やだあああっ！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            じたばたと脚を動かし、拒絶する
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ゆる、し…て、あたし…初めてなの」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「おや…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ぷっ…ふふ……　なんだ、てっきり取っ替え引っ替えなのかと思いましたよ…ふふ」そういう演技とかではなく素で面白がっているようだ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「うぅぅぅぅ……」<br>嘲笑されているのを悟り、あまりにも惨めで涙を流す
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ほんとに…そこだけは、やめ…て」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「しょうがないですねえ、じゃあ咥えてもらいましょうか」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            そう言って口に近づける
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「噛んだら下の方にお世話になりますからね？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「咥えるって…これ、を…？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            ひく、と思わず鼻を動かして、その匂いを嗅ぎとる<br>…くさい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「そうですよ　知識ぐらいあるでしょう」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「心外ですねえ、毎日洗ってるのですが」それでもアンモニア臭はする
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ぅぅ…………」<br>目をきゅっと瞑って<br>そうして決心して
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「わかったわよ、咥えればいいんでしょ、これを」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            心底忌々しそうに、店長にそう宣言してしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ええ、お願いしますね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            （こんなの大したことないわよ……きのこか何かと思えばいいんだわ）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……んっ」<br>ちゅ♡…と、あたしの唇がまずは亀頭に触れて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ちゅっ、ちゅっ…」<br>「……れぇ、る……れぇろ……」<br>こんな感じだったかしら……と<br>先っぽとその裏側を舌先でちろちろと舐め始める
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ほほう、なかなかお上手ですねえ　もしかしてそちらはやってました？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「んっ、ちゅ、ちゅぴ…ふざけらいれ、ひてるわけないれひょ……ん」<br>しばらく先っぽを舐めた後<br>くぷぷ……♡と唇で亀頭を食むように咥え込んでいく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            （情報としては持ってるけど、実践は初めて…）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            口の中に広がる雄臭さと熱量に、あたまをくらくらさせて<br>そのまま口内にくぷくぷと肉棒を咥え込んでいく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「くぅ、始めてでそこまでやれるとは…　娼婦になった方が稼げるのではないですか？」ニヤニヤしながらそう言う
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            （～～～～～～～っ、こいつ……ッ！）<br>思わず口の中のモノを噛んでやりたくなるが、抑えて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「んぐ……くぷっ。ちゅっちゅぽっ。ぐぷっ、ぐぷっ……んぅぅ」<br>そのまま自分の口内を性器に見立てるように、顔を前後させて奉仕していく……<br>店長の顔を見上げて、思いっきり睨めつけながら
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「く………お世辞ではなくお上手です、そろそろ射精そうですよ……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ふーっ、ふーっ……」<br>心底嫌がっていても、どうしても性交を連想させるフェラチオという行為に、あたしの身体は熱くなりはじめて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「くぽっ、くぽっ、ぐぽっ！んじゅるぅぅぅ……っ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            舌でねろねろと店長の竿の裏筋ちかくを愛撫しながら、奉仕し続けてしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            （はやく……はやく、終わりなさいよぉ……！）<br>その一心で、丹念に店長のモノをしゃぶって
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ううっ！」そう言ってセレナの後頭部を持ち上げると、少し喉に入りかねないところまで亀頭を突っ込み
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「んぐっ！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            そのまま射精してしまう 口ではなく食堂を通して直接体内に精液がどんどんと送りこまれていく……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ぐぶっ！？ぐぷ……んぐぇ……ぉ゛え゛っ……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            たまらず店長の腰をばしばし叩くも、やめてもらえるはずもなく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            あたしはぽろぽろと泣きべそかきながら、胃に大量のザーメンを落とし込むはめになる…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ふう……　中々良かったですよ、セレナさん」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            そう言って半ば無理に一物を引き抜き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ぐ…ぇ゛…っ、げほっ、げほっ、げほっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            口の端から白濁を垂らしながら、思い切りえずく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「はぁ…はぁ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「これで…もう、いいでしょ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ですがやはり、映像としてはフェラチオは弱いのですよね」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            初めて会う男に口淫奉仕をしてしまった自分がただひたすらに情けなく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「え、映像？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ちょっと！これ…撮ってたの！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「おっと……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「あーすいません、言ってませんでしたか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            わざとらしく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「聞いてないわよ！ふざけんなぁ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            店長に掴みかかろうとして
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「おっと」あっさりと受け止められてしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「知ってますか？　いかに積荷の荷下ろしがオートメーション化しつつあると言っても、やはり最後にトラックから下ろしたり、商品棚に収めるのは人間の仕事なのですよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「そんな苦労も知らないカスが私に力で勝てるとでも？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「なぁっ、またカスって…！」<br>「ふぎぎ…！は、離して…！さっきの映像も消しなさいよぉ…！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「やれやれ…やっぱりまだ反抗的ですねえ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「仕方ありませんか。　私も辛いのですが…」そのまままたセレナを床に押し倒してしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「きゃぁ！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「やめろぉ！！こ…殺してやるわ！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「確かに私はこれが知られれば社会的に死ぬでしょうねぇ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ですが……　アルバイトは何もあなたと同年代の女子だけではないのですよ。　あなたと同じ学校の男子も居ます」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「前もって万引き犯の噂を調査していたところ、何人かあなたに好意を抱いているらしき生徒も知り合いに居ると言っていましたよ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……えっ」<br>「そ、それが、どうしたっていうのよ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            少し動揺しつつ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「そういう子らにこの動画を見せれば、さぞや喜んで貰えると思いましてねぇ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「っ！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「やめ、ろぉぉ！本気でぶっ殺してやる！！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            脚をばたつかせて店長を蹴り上げようとするが…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user- ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                             
+                        </p>
+                        <p class="message-content-text">
+                            バキ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…ふぇ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            そんな音が響いた、と思った途端、顔に鈍痛が走るのを感じた　頬に手をやれば、わずかに口が切れている
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「え、痛……」<br>あっけにとられ<br>頬を手で抑える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「まさか顔は殴られないと思ったでしょう？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「さっきからカスだカスだと言って人間扱いしていないと言うのに、今更そこだけ人間扱いされると思いました？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「んなわけねえだろ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……ひっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            再び恐怖の鳴き声が漏れる<br>しかし今度は顔も青ざめて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「反対側も行きますか～？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ひぃ……！」<br>思わず身を縮こませてしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            （なんで。なんであたしが、こんな目に合わなきゃならないの）<br>こわい…この男の、店長の態度が
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ようやく従順になりましたねえ、やれやれ、これだからカスは困る」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「じゃ、最後のおしおきと行きましょうか、机に手を付いてケツこっち向けろ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ぅ……ぁ……ぁ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            よろよろと立ち上がり<br>身体を強張らせながら、店長の言う通りにしてしまう…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「おねがい……許してください……」<br>みじめにそう懇願しながら<br>ぷりん、と<br>スカートの中の控えめに実った尻肉を、差し出してしまう…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「そうですか……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「そこまで言われたら仕方ありませんね…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            一度セレナの後ろに回り込んだが、離れるような仕草
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…………は、ぁぁぁ」<br>ようやく終わる<br>そう思い、安心して少しリラックスし
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「そこまで言われたら……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ぶち込みたくなるに決まってますよねぇ！」突然ケツを乱暴に掴むと、前戯もなしに一気にセレナの膣内にぶち込んでくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ひぎぃぃぃぃぃぃッ！？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あ……あ゛……い、やぁ……なんで……どうして」<br>あたしの処女はあっけなくこの男に散らされ、破瓜の血がつつー…と太ももを伝って床へ垂れていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「カスはどこまで行ってもカスですね…　男にそんな仕草見せたら興奮を助長させるに決まってるだろうが？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「あぁ！？」ほとんど濡れていない膣内を、破瓜の血のみを潤滑油に乱暴に抽挿していく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あっ…がっ…！く、くるし、ぃ゛っ、やめ……でぇぇ゛！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            ずきずきと股間が痛む<br>反射的にあたしの膣肉はぎゅうぎゅうと店長のモノをきつく締めあげることとなり…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            加えて年頃の若い乙女の性器だけあり、極上のハメ心地を男に与えてしまうだろう…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「万引きは犯罪じゃないと思ったか？　犯罪なんだよ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「犯罪者が幸せな初体験できると思ったのかよオイ！」セレナの事を一切気遣わない、自分が快楽を得んがための乱暴極まる抽挿
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「はぐ！！あぐ！！痛っ、いた、いぃぃ！やめて、やだ、初めてがこんなのなんていやぁぁぁっ！」<br>机に突っ伏し、いやいやと首を振りながら<br>お尻を乱暴に掴まれたままばこばこと腰を使われる……
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            しかし…先ほどのフェラチオもあり、あたしの中では情欲の炎も燃え始めていて<br>破瓜の血に交じってとろりと分泌された液体が、店長のピストンを助け始めてしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「くくく……なんですかこれは？　締まるだけならまだしも、滑りがよくなってきてますよ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「まさかレイプで感じてるなんて事はないでしょうけど、不思議ですねぇ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あたりまえ、でしょ、んぐッ。こんな強引に犯されて、ん゛ッ、かんじるっ、わけっ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…んひゅ♡」<br>どちゅん、と奥の方を貫かれ<br>雌の鳴き声が思わず漏れる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「では今の声はなんでしょう？　私の聞き間違いですか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ぅぅ…知らないわよ、知らないぃぃぃ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「そうですか……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ではこのままナカに出してもあなたの知った事ではないですよね？」先程よりも抽挿時に発せられる音のペースが早くなっているのを感じる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「え……？んぇ、ぐっ、う゛っ、うぅぅぅ～～～～～～っ！」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            ナカで出される<br>その意味が分からないあたしではなくて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            でも……さっき思い切り殴られて、そして今もあたしを徹底的に躾けにきてる、この雄の言う事に逆らうのが怖くて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あ゛ッ♡ ん゛ん～～～～♡ ぐぅ゛ッ♡ ひっ、いひっ、ひぎゅぅぅぅぅっ♡」<br>ぎゅぅぎゅぅと肉棒を締め上げながら、机に手を突いたまま大人しくなってしまう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ハハハハ！　やっぱりあなた娼婦の才能ありますよ！」ﾊﾟﾝ ﾊﾟﾝ ﾊﾟﾝ ﾊﾟﾝﾊﾟﾝﾊﾟﾝﾊﾟﾝﾊﾟﾝ………リズムが激しくなり
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「うぐうっ…ぅううっ……！　カスJKの膣内にィっ……　射精る……！」苦しげにそう言って動きが遅まると共に男の身体が震え、膣内に精液を大量に吐き出していく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「あッ…あ、ぁぁあ、いや……いやぁぁぁぁぁ……っ♡」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            ごぷ…ごぷ…♡と<br>ナカへ吐き出される熱い精液の感覚にぞくぞくと酔いしれ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「なかで…だされ…て…♡」<br>その絶望感に顔を真っ青にするとともに<br>えへえへと口元は緩み、唾液をだらしなく垂らしていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            徹底的に力関係を分からされたあたしの身体は、店長のザーメンをそれはそれはうまそうに、ごくんごくんと飲み干していく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ふーっ……　年甲斐にもなく2連発もしてしまいましたよ…くっ……う」ようやく、という感じで、咥え込んでいた膣内から一物を引き抜き
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「さあ、これでもまだ万引きを続けますか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ぅぅ……ぅぅぅ……♡」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            ごぷり……白濁と、破瓜の血とが混じったピンク色の粘液が<br>あたしの開きっぱなしになった膣口から垂れて、バックヤードの床の染みに消える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            散々腰を打ち付けられたあたしのお尻と、雌穴のまわりは、ひりひりと赤くなっていて
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「もう……万引き、しまひぇ……ん゛♡」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            ぼろぼろと泣き崩れながら、またごぽりと注がれたザーメンを漏らした
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「それでいいのですよ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「……お、良いものがありましたねえ」その横でセレナの所持品を漁り
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「はい、これを持って」生徒手帳を渡してくる
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「は、ひ♡」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            大人しく受け取って
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「はいチーズ」そう言って、セレナの身元が書かれた資料、セレナの痴態、そして床や太ももに広がる破瓜の血や事後の精液の伝う様と共に何枚も写真に収めていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……ぅ……ん……♡」<br>半ば放心状態であり、カメラのフラッシュにもあまり反応は示さないが…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ぴー、す♡」<br>生徒手帳を顔の前にもってきて<br>空いた手でピースサインを作るのだった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「すっかり出来上がりましたねえ、ククク……その方が生意気な事を言うよりよほどお似合いだ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「さて、では寛容な私は警察には突き出しませんし、今回はこれでよしとしましょう。　ありがたく思うのですよ？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「ありがとぅ、ございまひゅぅぅ…♡ んお゛♡」<br>上の口で返事をしながら、下の口からもごぷりとザーメンを垂らして
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「ですが…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「呼び出したらすぐに来るのですよ…わかりましたか？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「えっ…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「これで、終わりじゃないの…？」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「別に終わりでもいいですが…」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「来なかったら、うっかり手が滑ってしまうかもしれませんねー」先程写真を納めたスマホをセレナに見せつけ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「……ッ」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「わかった、わよ……」<br>屈辱的な思いをしながらも<br>連絡先を素直に交換していく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-店長">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            店長
+                        </p>
+                        <p class="message-content-text">
+                            「では、またのご来店を…お客様」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…………」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            せかせかと制服を着直し
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            「…………ふんっ」<br>その場から逃げるように、去っていく
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            （あたし、これからどうなるんだろ）
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            （ん、熱…）<br>お腹に手を当てて、たらふく注がれた精液の存在を実感する<br>「ピル飲めば大丈夫よね……」
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            あたしはそのまま帰路についたが<br>その後、受難の日々が待ち構えていたことは言うまでもなかった…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-セレナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            セレナ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>

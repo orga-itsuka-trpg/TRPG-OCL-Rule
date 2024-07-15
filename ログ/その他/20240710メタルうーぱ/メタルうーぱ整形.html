@@ -1,0 +1,2211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 450px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-メイン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-メイン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メイン</span>
+                </label>
+                <label for="tab-情報" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-情報" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">情報</span>
+                </label>
+                <label for="tab-雑談" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-雑談" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">雑談</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-まゆしい" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-まゆしい" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">まゆしい</span>
+                </label>
+                <label for="user-岡部" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-岡部" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">岡部</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-リダン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-リダン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">リダン</span>
+                </label>
+                <label for="user-ラッキー・ルウ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ラッキー・ルウ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ラッキー・ルウ</span>
+                </label>
+                <label for="user-カイジ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-カイジ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">カイジ</span>
+                </label>
+                <label for="user-罠" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-罠" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">罠</span>
+                </label>
+                <label for="user-かに" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-かに" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">かに</span>
+                </label>
+                <label for="user-怪盗キッド" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-怪盗キッド" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">怪盗キッド</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <ul class="messages-list">
+            <li class="tab-情報 user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            メタルウーパゲーム<br>ガチャで大人気マスコット「ウーパ」を当てるのです<br>コピー用のコマのチャットパレットに入ってるchoiceでガチャるんだよ<br>ガチャは最大3回まで<br>1回目はメタルウーパ、2回目はシルバーウーパ、3回目はゴールドウーパを狙って引くのですよ〜<br>ルウがガチャから出てきたらレイプされて無惨に死ぬ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            おかりん、まゆしいはウーパをおねだりするのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            よかろう！この俺鳳凰院凶真の強運ぶりを見せてやろう
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            choice メタルウーパ　はずれ　はずれ　はずれ　はずれ　はずれ　はずれ (choice メタルウーパ はずれ はずれ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ハズレだねえ〜
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            い、今のはウォーミングアップだ<br>次いくぞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            choice シルバーウーパ　ルウ　はずれ　はずれ　はずれ　はずれ (choice シルバーウーパ ルウ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            またハズレだあ<br>まゆしい残念なのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            レイプされて無惨に死ぬ<br>こわい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            なんの三度目の正直だ<br>エルプサイコングルウ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            choice ゴールドウーパ　ルウ　ルウ　ルウ (choice ゴールドウーパ ルウ ルウ ルウ) ＞ ゴールドウーパ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            良かったなァ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            3回目殺意高すぎだろ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            フウーハハハ！見ろこの黄金の輝きを！<br>メタルとシルバーを外したのは乱数調整に過ぎん！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            すんげェ～～～～👀✨
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-岡部">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            岡部
+                        </p>
+                        <p class="message-content-text">
+                            まゆり…このゴールドウーパをお前に与える
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            うわあ！ありがとうおかりん！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            まゆしいはみんなにもガチャってみてほしいのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            やあミス・まゆしい！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            とぅっとぅるー！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            ウーパーを取り返すよ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            choice メタルウーパ　はずれ　はずれ　はずれ　はずれ　はずれ　はずれ (choice メタルウーパ はずれ はずれ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            はずれだねえ<br>もしかしてメタルが一番レア？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            邪魔なものが多すぎだねミスまゆしい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            シルバーくらい
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            choice シルバーウーパ　ルウ　はずれ　はずれ　はずれ　はずれ (choice シルバーウーパ ルウ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            まだ出ないねえ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            ダメだゴミしかないねこのガチャ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            最後だ<br>でももう持ってるんだよね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            choice ゴールドウーパ　ルウ　ルウ　ルウ (choice ゴールドウーパ ルウ ルウ ルウ) ＞ ルウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            ﾇｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            ！！？！？！？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            おﾞてﾞおﾞ前ﾞ犯ﾞすﾞ！ﾞ！ﾞ！ﾞ！ﾞ！ﾞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            エクシーズ素材を取り除いて離だ………
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            オッ………あ”………
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            あーあーリダンが無惨に死んじゃったのです<br>もしかしてこのガチャ危険？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-リダン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #222222;" class="message-user-text">
+                            リダン
+                        </p>
+                        <p class="message-content-text">
+                            危険だよMr.岡部はよく生き残ったねぇ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            当てる…メタルウーパっ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ギャンブルに強そうな人が来たのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            choice メタルウーパ　はずれ　はずれ　はずれ　はずれ　はずれ　はずれ (choice メタルウーパ はずれ はずれ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            はずれ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            やっぱメタルウーパガチャ渋いのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            次…シルバーウーパ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            choice シルバーウーパ　ルウ　はずれ　はずれ　はずれ　はずれ (choice シルバーウーパ ルウ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ぐにゃあああ…！<br>なのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            がっ…駄目…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            最後…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            choice ゴールドウーパ　ルウ　ルウ　ルウ (choice ゴールドウーパ ルウ ルウ ルウ) ＞ ゴールドウーパ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            来た……！来たっ……！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            生還…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            宴なのです〜〜〜〜！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-カイジ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #8bc34a;" class="message-user-text">
+                            カイジ
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            これで地下脱出できる…だろ？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            まゆしいはガチャもっと見たいなあ<br>しばらく待つよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            (ガチャ前で待ち構える)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            choice メタルウーパ　はずれ　はずれ　はずれ　はずれ　はずれ　はずれ (choice メタルウーパ はずれ はずれ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            (排出されたカプセルが串刺しになる)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            choice シルバーウーパ　ルウ　はずれ　はずれ　はずれ　はずれ (choice シルバーウーパ ルウ はずれ はずれ はずれ はずれ) ＞ シルバーウーパ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            獲物は鼻が効くみたいだね
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            (排出されたシルバーウーパが串刺しになる)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            まずいレアアイテムが速攻でゴミになった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            choice ゴールドウーパ　ルウ　ルウ　ルウ (choice ゴールドウーパ ルウ ルウ ルウ) ＞ ルウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            ﾇｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            ｽｯ(穴を開けて待ち構える)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            おﾞてﾞおﾞ前ﾞ犯ﾞすﾞ！ﾞ！ﾞ！ﾞ！ﾞ！ﾞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            罠にも穴はあるんだよなァ…
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            (罠に落ちていく)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            (排出されたルウが串刺しになる)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            ﾇｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            おﾞてﾞおﾞ前ﾞ犯ﾞすﾞ！ﾞ！ﾞ！ﾞ！ﾞ！ﾞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-罠">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            罠
+                        </p>
+                        <p class="message-content-text">
+                            !?
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            罠は1匹目のルウを仕留めたけど2匹目に犯されて無惨に死んだのです<br>あーあー
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-情報 user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">情報</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            22時に閉店だよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かに">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かに
+                        </p>
+                        <p class="message-content-text">
+                            choice メタルウーパ はずれ はずれ はずれ はずれ はずれ はずれ (choice メタルウーパ はずれ はずれ はずれ はずれ はずれ はずれ) ＞ メタルウーパ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かに">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かに
+                        </p>
+                        <p class="message-content-text">
+                            choice シルバーウーパ ルウ はずれ はずれ はずれ はずれ (choice シルバーウーパ ルウ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            最大3回までだからやめてもいいよ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かに">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かに
+                        </p>
+                        <p class="message-content-text">
+                            やるけど
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かに">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かに
+                        </p>
+                        <p class="message-content-text">
+                            choice ゴールドウーパ ルウ ルウ ルウ (choice ゴールドウーパ ルウ ルウ ルウ) ＞ ルウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かに">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かに
+                        </p>
+                        <p class="message-content-text">
+                            ｧ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            ﾇｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            おﾞてﾞおﾞ前ﾞ犯ﾞすﾞ！ﾞ！ﾞ！ﾞ！ﾞ！ﾞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-かに">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            かに
+                        </p>
+                        <p class="message-content-text">
+                            うぐっ脂臭すぎだァ～～！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            蟹ムッ…！ムッ…！ムシャッ…！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            あーあー蟹はほどよく茹でられて無惨に食べられちゃったのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            今宵、ゴールドウーパを頂戴しに参ります
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            来たか　まじっくカイト
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            choice メタルウーパ　はずれ　はずれ　はずれ　はずれ　はずれ　はずれ (choice メタルウーパ はずれ はずれ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            メタルウーパ、確率的にゴールドよりレアなんだよな。
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            まずい現場に青子がいるから上手く盗めない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            だがこれは本命ではない…次！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            choice シルバーウーパ　ルウ　はずれ　はずれ　はずれ　はずれ (choice シルバーウーパ ルウ はずれ はずれ はずれ はずれ) ＞ はずれ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ガチャポンコーナーの警備厚いのです
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            まずい現場に工藤新一がいるから妨害される
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            だがこれも本命ではない…次！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            choice ゴールドウーパ　ルウ　ルウ　ルウ (choice ゴールドウーパ ルウ ルウ ルウ) ＞ ルウ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            まずい現場にルウがいて盗めない
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            ﾇｯ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            おﾞてﾞおﾞ前ﾞ犯ﾞすﾞ！ﾞ！ﾞ！ﾞ！ﾞ！ﾞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            おわァアアア～～～～～～～～っ！！！！(cv山口勝平の甲高い悲鳴)
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            ネクストコナンズヒント<br>デスアクメ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            あーガチャたくさん見れて楽しかったあ〜<br>ルウはどうだった？
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-ラッキー・ルウ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            ラッキー・ルウ
+                        </p>
+                        <p class="message-content-text">
+                            たﾞくﾞさﾞんﾞ犯ﾞせﾞてﾞ楽ﾞしﾞかﾞっﾞたﾞ〜ﾞ
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            よかったねえ<br>みんな来てくれてありがとう！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-メイン user-まゆしい">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">メイン</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            まゆしい
+                        </p>
+                        <p class="message-content-text">
+                            またね〜〜〜〜！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+            <li class="tab-雑談 user-怪盗キッド">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">雑談</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            怪盗キッド
+                        </p>
+                        <p class="message-content-text">
+                            またね～～～～～！！！
+                        </p>
+                    </div>
+                </div>
+            </li>
+
+        </ul>
+    </main>
+</div>
+</body>
+</html>
