@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 400px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-main" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-main" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">main</span>
+                </label>
+                <label for="tab-info" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-info" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">info</span>
+                </label>
+                <label for="tab-other" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-other" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">other</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-KP" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-KP" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">KP</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-ムツキング" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ムツキング" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ムツキング</span>
+                </label>
+                <label for="user-蚊ユキ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-蚊ユキ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">蚊ユキ</span>
+                </label>
+                <label for="user-イズナ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-イズナ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">イズナ</span>
+                </label>
+                <label for="user-ANNYUI" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ANNYUI" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ANNYUI</span>
+                </label>
+                <label for="user-California Gurls" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-California Gurls" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">California Gurls</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <div class="messages-list">
+            <div class="tab-info user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            California Gurls 虚無<br>62. ポップコーンとpopsicleに922を振り分ける<br>922. 922-{popsicle}*((({popsicle}+{ポップコーン})d{popsicle}+{popsicle}*922)/{ポップコーン})*922+{ポップコーン}*92+922*{popsicle}-{ポップコーン}+92*(({popsicle}d{ポップコーン}/{popsicle}-{ポップコーン})/{popsicle})*{ポップコーン}<br>を振る<br><br>922を出したらCalifornia girls
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            California girls<br>We're unforgettable<br>Daisy Dukes<br>Bikinis on top<br>Sun-kissed skin<br>So hot<br>We'll melt your popsicle<br>Oooooh Oh Oooooh
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            この卓は何ですか？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            こんな卓でcopyされてる卓なのかよ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #2196f3;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            見てないけど準備するの大変そうだからいったん非公開で作ってからコピーで公開した
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ムツキング ] ポップコーン : 0 → 62
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ ムツキング ] popsicle : 0 → 922
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            922. 922-922*(((922+62)d922+922*922)/62)*922+62*92+922*922-62+92*((922d62/922-62)/922)*62
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            922-922*(((922+62)d922+922*922)/62)*922+62*92+922*922-62+92*((922d62/922-62)/922)*62 (922-922*((984D922+922*922)/62)*922+62*92+922*922-62+92*((922D62/922-62)/922)*62) ＞ 922-922*((0[]+922*922)/62)*922+62*92+922*922-62+92*((0[]/922-62)/922)*62 ＞ -11654650780
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            California girls<br>California girl~s
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            922-922*(((922+62)d922+922*922)/62)*922+62*92+922*922-62+92*((922d62/922-62)/922)*62 (922-922*((984D922+922*922)/62)*922+62*92+922*922-62+92*((922D62/922-62)/922)*62) ＞ 922-922*((0[]+922*922)/62)*922+62*92+922*922-62+92*((0[]/922-62)/922)*62 ＞ -11654650780
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待てよ922を割り振るのに62と922だとオーバーしてるだろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            ルールが分からないクフねぇ…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fef4f4;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 蚊ユキ ] popsicle : 0 → 122
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #fef4f4;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 蚊ユキ ] ポップコーン : 0 → 800
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-蚊ユキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            蚊ユキ
+                        </p>
+                        <p class="message-content-text">
+                            922-122*(((122+800)d122+122*922)/800)*922+800*92+922*122-800+92*((122d800/122-800)/122)*800 (922-122*((922D122+122*922)/800)*922+800*92+922*122-800+92*((122D800/122-800)/122)*800) ＞ 922-122*((0[]+122*922)/800)*922+800*92+922*122-800+92*((55295[419,55,466,283,561,562,197,621,695,790,383,123,226,393,134,593,368,251,752,799,421,562,319,228,150,724,641,320,387,434,376,487,108,93,780,202,695,649,96,663,391,502,424,272,409,596,698,527,598,793,6,598,796,224,22,68,138,326,581,673,719,346,687,388,144,283,659,634,643,290,37,604,502,272,293,367,73,723,359,554,560,561,170,173,368,561,148,530,702,484,532,645,454,788,573,287,648,760,791,168,428,634,461,574,308,460,477,618,782,295,697,74,672,198,454,490,698,495,74,780,788,710]/122-800)/122)*800 ＞ -15782354
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-蚊ユキ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e0e0e0;" class="message-user-text">
+                            蚊ユキ
+                        </p>
+                        <p class="message-content-text">
+                            ｳｳｳｱｱｱｱｱｱ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            これ62にポップコーン入れて922をpopsicleに入れるのかと思った
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            922-450*(((450+472)d450+450*922)/472)*922+472*92+922*450-472+92*((450d472/450-472)/450)*472 (922-450*((922D450+450*922)/472)*922+472*92+922*450-472+92*((450D472/450-472)/450)*472) ＞ 922-450*((0[]+450*922)/472)*922+472*92+922*450-472+92*((0[]/450-472)/450)*472 ＞ -364325174
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ﾕｻﾞﾈﾉｺﾃﾙﾖ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            ブルアカァーのクリーチャーは持ってないでござる
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            >この卓は何ですか？<br>California girls<br>We're undeniable<br>Fine, fresh, fierce<br>We got it on lock<br>West Coast represent<br>Now put your hands up<br>Oooooh Oh Oooooh
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            922-522*(((522+400)d522+522*922)/400)*922+400*92+922*522-400+92*((522d400/522-400)/522)*400 (922-522*((922D522+522*922)/400)*922+400*92+922*522-400+92*((522D400/522-400)/522)*400) ＞ 922-522*((0[]+522*922)/400)*922+400*92+922*522-400+92*((0[]/522-400)/522)*400 ＞ -578502846
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            sex…♡
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            なにこれ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            >なにこれ<br>California girls<br>We're undeniable<br>Fine, fresh, fierce<br>We got it on lock<br>West Coast represent<br>Now put your hands up<br>Oooooh Oh Oooooh
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            922-522*(((522+400)d522+522*922)/400)*922+400*92+922*522-400+92*((522d400/522-400)/522)*400 (922-522*((922D522+522*922)/400)*922+400*92+922*522-400+92*((522D400/522-400)/522)*400) ＞ 922-522*((0[]+522*922)/400)*922+400*92+922*522-400+92*((0[]/522-400)/522)*400 ＞ -578502846
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            >なにこれ<br>ムツキ<br>ポップコーン！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            Popsicle!?
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            I（肯定）
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            sex…♡ on the beach…♡
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-イズナ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            イズナ
+                        </p>
+                        <p class="message-content-text">
+                            システムがゲイシャ・ガール・ウィズ・カタナなの趣を感じますね
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            Geisha girls<br>We're unforgettable
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ムツキング">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #795548;" class="message-user-text">
+                            ムツキング
+                        </p>
+                        <p class="message-content-text">
+                            どっちもSEXだからカリフォいクフねぇ…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ANNYUI">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            ANNYUI
+                        </p>
+                        <p class="message-content-text">
+                            SEX
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ANNYUI">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            ANNYUI
+                        </p>
+                        <p class="message-content-text">
+                            922-822*(((822+100)d822+822*922)/100)*922+100*92+922*822-100+92*((822d100/822-100)/822)*100 (922-822*((922D822+822*922)/100)*922+100*92+922*822-100+92*((822D100/822-100)/822)*100) ＞ 922-822*((0[]+822*922)/100)*922+100*92+922*822-100+92*((0[]/822-100)/822)*100 ＞ -5742486246
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-California Gurls">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            California Gurls
+                        </p>
+                        <p class="message-content-text">
+                            California girls<br>We're unforgettable
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-California Gurls">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            California Gurls
+                        </p>
+                        <p class="message-content-text">
+                            Daisy Dukes Bikinis on top
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-California Gurls">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            California Gurls
+                        </p>
+                        <p class="message-content-text">
+                            Sun-kissed skin <br>So hot<br>We'll melt your popsicle
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ California Gurls ] popsicle : 0 → 922
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-California Gurls">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            California Gurls
+                        </p>
+                        <p class="message-content-text">
+                            Oooooh Oh Oooooh
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ California Gurls ] ポップコーン : 0 → 0
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-California Gurls">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            California Gurls
+                        </p>
+                        <p class="message-content-text">
+                            922-922*(((922+0)d922+922*922)/0)*922+0*92+922*922-0+92*((922d0/922-0)/922)*0 (922-922*((922D922+922*922)/0)*922+0*92+922*922-0+92*((922D0/922-0)/922)*0) ＞ 922-922*((0[]+922*922)/0)*922+0*92+922*922-0+92*((0[]/922-0)/922)*0 ＞ 922
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-California Gurls">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #ffc107;" class="message-user-text">
+                            California Gurls
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            ！？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            >922<br>クフい
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            California Gurls 虚無<br>結果発表<br>California Gurls位<br>California Gurls<br><br>62歳位<br>ムツキング<br><br>ｳｳｳｳｳｱｱｱｱｱｱｱｱｱｱｱｱｱｱ位<br>蚊ユキ<br><br>SEX SEX SEX SEX SEX SEX SEX SEXSEX SEX SEX SE XSEX SEX SEX SEXSEX SEX SEX SE XSEX SEX SEX SEX SEX SEX SEX SEX SEX SEX SEX SEX位<br>イズナ<br><br>おまんこ922連発<br>ANNYUI
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            また来年クフね
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>
