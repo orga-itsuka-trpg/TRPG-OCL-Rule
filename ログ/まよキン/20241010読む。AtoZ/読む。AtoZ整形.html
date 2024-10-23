@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+
+    <meta name="google-site-verification" content="UNW0L1r6dcTv2Q3GuGjxL29dSjZ4P9w68fI-UnikEKE" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="Identifier-URL" content="https://log-formatter.herokuapp.com/"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta content="ココフォリアのログを綺麗に整形するツールです。ココフォリアのUIに近い形で整形し、フィルタリング機能を搭載しています。iOS／Android等のモバイル端末上からでもログを閲覧しやすいように調整しています。"
+          name="description">
+    <meta name="robots" content="all">
+    <link rel="canonical" href="https://log-formatter.herokuapp.com/">
+
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="/static/android-touch-icon.png" sizes="192x192">
+
+    <meta property="og:title" content="Ccfolia Log Formatter | ココフォリアログ整形"/>
+    <meta property="og:description"
+          content="ココフォリアのログを綺麗に整形するツールです。ココフォリアのUIに近い形で整形し、フィルタリング機能を搭載しています。"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://log-formatter.herokuapp.com/"/>
+    <meta property="og:image" content="https://log-formatter.herokuapp.com/static/thumbnail.png"/>
+    <meta property="og:locale" content="ja_JP"/>
+
+    <meta name="twitter:card" content="summary_large_image"/>
+
+    <title>Ccfolia Log Formatter | ココフォリアログ整形</title>
+
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 250px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-label-fonts-file-name {
+            font-size: 0.7rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 200;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+
+        window.onload = () => {
+            const payloads = {"is_alert": true}
+            if (payloads['is_alert']) alert('ログファイルの形式がココフォリア標準のものと異なります！')
+
+            document.getElementById("file-input").addEventListener("change", (event) => {
+                if (window.File) {
+                    const fileName = event.target.files[0].name;
+                    const fileNameElement = document.getElementById("input-file-name")
+                    fileNameElement.innerText = `… ${fileName}`;
+                }
+            })
+        }
+
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XK0DT06RGP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-XK0DT06RGP');
+    </script>
+
+
+
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox"
+                   checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-main" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-main" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">main</span>
+                </label>
+                <label for="tab-info" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-info" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">info</span>
+                </label>
+                <label for="tab-other" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-other" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">other</span>
+                </label>
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox"
+                   checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-概要" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-概要" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">概要</span>
+                </label>
+                <label for="user-リンク" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-リンク" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">リンク</span>
+                </label>
+                <label for="user-連絡先" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-連絡先" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">連絡先</span>
+                </label>
+                <label for="user-リリース履歴" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-リリース履歴" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">リリース履歴</span>
+                </label>
+                <label for="user-使用方法" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-使用方法" onclick="showHide(this)" type="checkbox"
+                               checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">使用方法</span>
+                </label>
+            </div>
+
+            <form action="/formatter" method=post class="accordion-input" enctype=multipart/form-data>
+                <input id="file-input" type="file" name="file" accept="text/html">
+                <input id="mode-setting" name="mode" value="dark">
+                <input id="submit" type="submit" value="Upload">
+            </form>
+            <label for="file-input" class="accordion-label button-elements">
+                <span class="accordion-label-fonts" id="file-input-label-span">ファイル選択</span>
+            </label>
+            <label class="accordion-label">
+                <span class="accordion-label-fonts-file-name" style="" id="input-file-name">…</span>
+            </label>
+            <label for="submit" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">ログ整形</span>
+            </label>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log Formatter</h1>
+        </header>
+        <div class="messages-list">
+            <div class="tab-main user-概要">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            概要
+                        </p>
+                        <p class="message-content-text">
+                            ここは Ccfolia Log Formatter v1.1.0 のページです。<br><br>ココフォリアの全体ログを綺麗に整形するツールです。<br>ちょうどこのページと同じような感じで整形できます！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-info user-リンク">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            リンク
+                        </p>
+                        <p class="message-content-text">
+                            ・<a href="../light">ライトモード</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-info user-連絡先">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            連絡先
+                        </p>
+                        <p class="message-content-text">
+                            不具合等ありましたら
+                            <a href="https://x.com/iemonNotAyataka" target="_blank">@iemonNotAyataka</a>
+                            までご連絡ください！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-リリース履歴">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #03a9f4;" class="message-user-text">
+                            リリース履歴
+                        </p>
+                        <p class="message-content-text">
+                            ◯ v1.2.0: 2024.08.25<br>
+                            … ココフォリアのログのタブ名の仕様変更に伴い、「メイン・情報・雑談」を「main・info・other」として出力するように修正しました。<br>
+                            … その他、UIに軽微な修正を加えました。<br>
+                            <br>
+                            ◯ v1.1.0: 2022.03.31<br>
+                            … ライトモードを実装しました。<br>
+                            <br>
+                            ◯ v1.0.3: 2021.11.10<br>
+                            … 想定外のファイルの挿入による不具合を修正しました。<br>
+                            <br>
+                            ◯ v1.0.2: 2021.10.07<br>
+                            … 発言の英数字が改行されず画面外に突き抜ける不具合を修正しました。<br>
+                            <br>
+                            ◯ v1.0.1: 2021.10.05<br>
+                            … 発言の最後に改行が入る場合の不具合を修正しました。<br>
+                            <br>
+                            ◯ v1.0.0: 2021.09.25<br>
+                            … リリースしました！<br>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-使用方法">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            使用方法
+                        </p>
+                        <p class="message-content-text">
+                            左のメニューから「ファイル選択」をクリックし、整形対象のログファイル（.html）を選択してください。<br>
+                            スマートフォン等からご利用の場合はヘッダー左側のボタンをクリックするとメニューが開けます。<br>
+                            <br>
+                            その後、「ログ整形」ボタンをクリックすると整形済みのログがダウンロードされます！<br>
+                            <br>
+                            ご利用の際は自己責任でお願いします。<br>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
