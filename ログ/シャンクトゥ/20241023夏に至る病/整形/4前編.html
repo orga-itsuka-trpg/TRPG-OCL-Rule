@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 150px;
+            --user-items-height: 1100px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-main" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-main" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">main</span>
+                </label>
+                <label for="tab-info" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-info" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">info</span>
+                </label>
+                <label for="tab-other" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-other" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">other</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-KP" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-KP" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">KP</span>
+                </label>
+                <label for="user-ロックスター" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ロックスター" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ロックスター</span>
+                </label>
+                <label for="user-タイトルコール" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-タイトルコール" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">タイトルコール</span>
+                </label>
+                <label for="user-01_1" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-01_1" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">01_1</span>
+                </label>
+                <label for="user-01_2" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-01_2" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">01_2</span>
+                </label>
+                <label for="user-01_3" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-01_3" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">01_3</span>
+                </label>
+                <label for="user-02_1" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-02_1" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">02_1</span>
+                </label>
+                <label for="user-02_2" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-02_2" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">02_2</span>
+                </label>
+                <label for="user-02_3" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-02_3" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">02_3</span>
+                </label>
+                <label for="user-02_4" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-02_4" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">02_4</span>
+                </label>
+                <label for="user-02_5" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-02_5" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">02_5</span>
+                </label>
+                <label for="user-03_1" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_1" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_1</span>
+                </label>
+                <label for="user-03_2" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_2" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_2</span>
+                </label>
+                <label for="user-03_2成功" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_2成功" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_2成功</span>
+                </label>
+                <label for="user-03_3" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_3" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_3</span>
+                </label>
+                <label for="user-03_4" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_4" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_4</span>
+                </label>
+                <label for="user-03_4失敗" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_4失敗" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_4失敗</span>
+                </label>
+                <label for="user-03_5" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_5" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_5</span>
+                </label>
+                <label for="user-03_6" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_6" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_6</span>
+                </label>
+                <label for="user-03_7" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_7" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_7</span>
+                </label>
+                <label for="user-03_8" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-03_8" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">03_8</span>
+                </label>
+                <label for="user-分岐" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-分岐" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">分岐</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <div class="messages-list">
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            いよいよラスト　死なないことを祈っています
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            こわいだろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            まあどの道シナリオ終わったらロストみたいなもんだし頑張るしかないとは思ってんすがね…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            それはそう
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            では……準備良いか教えろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            教えるんすがね…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            それでは…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            出航だァ～～～～～～～！！！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            出航だァ～～～～！！！！！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            一応ログ用にステータス載せておくんすがね…<br>STR9<br>CON13　HP13<br>DEX6<br>POW12　SAN幸運60<br>INT7　アイデア35<br>210<br><br>見聞色　80<br>図書館　初期値25+55<br>実力者　75　実力者っぽいことができる
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-タイトルコール">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            タイトルコール
+                        </p>
+                        <p class="message-content-text">
+                            親戚の家に泊まることになった。<br>この村は、なんとなく、おかしい気がする。<br>理由は沢山ある。<br><br>それをひとつずつ、振り返っていった。<br><br>それはさておき。<br>今日は6月21日。夏至だ。<br><br><br>　　　　　夏に至る病<br>　　　　　　　　　　作：稀彦<br><br><br>▼01_1へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-01_1">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            01_1
+                        </p>
+                        <p class="message-content-text">
+                            あなたはこの6月、ほとんどを親戚の家で過ごすことになっていた。<br>理由はなんでもいい。<br>未成年であれば両親の仕事の都合であるだろうし、成人しているのであれば、住んでいるアパートが全焼したのかもしれない。<br>いやはや全く、世の中、何が起こるかわからないものだから。<br>日付で言うならば、6月1日から、6月22日まで。そこそこの期間だ。<br><br><br>▼01_2へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-01_2">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            01_2
+                        </p>
+                        <p class="message-content-text">
+                            あなたを受け入れたのは叔母だった。<br>叔母はのどかな土地＿＿言葉を選ばずに言うとクソ田舎＿＿に平屋の一軒家を建て、そこで独り住んでいる。<br>その一室を、あなたは6月の大半間借りしていた。<br><br>叔母は言う。<br><br><br>▼01_3へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-01_3">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            01_3
+                        </p>
+                        <p class="message-content-text">
+                            「この村、ちょっと変わってるからさ。馴染むまで時間かかるかも。あ、だから、ここにいる間に馴染めきれないかも」<br><br>「無理だな、って思ったら、すぐに逃げるんだよ。他人の家にまでは入ってこないからさ」<br><br><br>あなたはそんな話を聞き流しつつ。<br>今日も、梅雨のわりに晴れている空を＿＿＿<br><br><br>まるで、真夏のような空を、見上げていた。<br><br><br>▼02_1へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-02_1">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            02_1
+                        </p>
+                        <p class="message-content-text">
+                            気温は38度。異常気象ではないかと疑う温度をたたき出しているが、ニュースにはなっていない。<br>この地域は毎年、こんなものらしい。<br><br>叔母は今日は朝から忙しそうにしていた。<br>いつもニート……否、なんの仕事をしているのか不明な叔母であるが、やることがある日もあるようだ。<br><br><br>▼02_2へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            「オイ叔母さんなんか忙しそうだけど世話になってるんだしおれが手伝えることがあったら言って欲しいとは思ってんすがね！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-02_2">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            02_2
+                        </p>
+                        <p class="message-content-text">
+                            叔母曰く。<br><br><br>▼02_3へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-02_3">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            02_3
+                        </p>
+                        <p class="message-content-text">
+                            「うちの村はね、夏至の日は祭りを開くんだ」<br>「っていっても田舎の限界で、村のはずれにある鐘の周りで踊って、皆でお酒とか食べ物を持ち寄って、バカ騒ぎするだけ」<br>「一応目玉はあるんだよ」<br>「鐘を鳴らすのは夏至の日だけなんだ。すっごいうるさいけど、体がびりびりして、迫力すごい」<br>「君も鳴らしてみるといいよ。なんか、元気でるよ。知らないけど」<br><br>適当な言葉は、話の締めくくりだったようだ。<br><br><br>▼02_4へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            「はーなるほど祭りの準備だったのか。じゃあおれもやってみるかあ…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-02_4">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            02_4
+                        </p>
+                        <p class="message-content-text">
+                            あなたが興味があるかはさておき。<br>今日は叔母より、手伝いを言い渡されている。行くしかない。<br><br>「お酒はそれでしょ。ご飯はお隣の宮野さんたちが仕切ってるから、一旦うちはお酒と麦茶でいいかな……最悪ニャンコつれていこう。猫は世界を救う」<br>「ああ、あと、タオルとポカリね！日照時間が一番長いからなのか、めちゃくちゃ暑くなるんだ。酒盛りが始まるのは夕方からだから、それまで動きっぱなしだよ。暑いよ。君も持っていきなね」<br><br>（RPの後）<br><br><br>▼02_5へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            「わかったんすがね！叔母さんも熱中症に気を付けて欲しいんすがね！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            叔母はありがとう、と笑う。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-02_5">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            02_5
+                        </p>
+                        <p class="message-content-text">
+                            あなた達は荷物をまとめ、家を出た。<br>足元にまとわりついてくる猫をいなしながら車に乗り込み、叔母がエンジンをかける音を、助手席で聞く。<br><br>「あ、ニャンコ忘れた。まあいっか、塩持ったし」<br>「今日が君の最後の夜だねぇ」<br>「大したもんじゃないけど、まあ、楽しんでいって。いい思い出になればいいな」<br><br>にこ、と。叔母が笑った。<br>車内だというのに、めちゃくちゃ暑い。<br><br><br>▼03_1へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            「まあなんか最近は変な目にばっかあっているしここらで楽しい思い出を作るんすがねェ！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_1">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_1
+                        </p>
+                        <p class="message-content-text">
+                            連れていかれたのは叔母の家から離れたところにある広場であった。<br>あなたはここに、一度だけ来たことがある。<br>この村に到着した日の案内で。<br><br>「初日に来ただけだよね、たぶん。まあ用事ないか、鐘があるだけだし」<br><br>そう言って、叔母は車を止めた。<br><br><br>▼03_2へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            「まあ確かに用事は無かったし来てないんすがね…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_2">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_2
+                        </p>
+                        <p class="message-content-text">
+                            ここは村の人達もなかなか足を運ばないらしい。<br>理由は簡単だ。本当に鐘以外、何もないのだ。<br><br>なぜこんなところに鐘を設置したのだろうと疑問に思うほど、ここには何もない。<br>開けた土地の真ん中に鐘楼のようなものが建てられている。本当に、ただそれだけ。<br><br><br>＜知識＞<br><br><br>成功<br>　▼03_2成功へ<br>失敗<br>　▼03_2失敗へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=75　実力者 (1D100<=75) ＞ 64 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_2成功">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_2成功
+                        </p>
+                        <p class="message-content-text">
+                            鐘楼とは本来、寺院のなかにある建築物だ。<br>仏教法具の釣鐘、梵鐘をつるすために存在している。<br><br>しかしここは寺院ではない。ただ、模した建築物があり、巨大な鐘がつるされているだけ。<br><br>アンバランスさを感じる。この村はやはり、変だ。<br><br><br>＜鐘について聞く＞<br><br>（RPの後）<br><br><br>▼03_3へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            「なんでこんなところにあるんすかね…？ハコモノ行政ってやつの名残なんすかね…？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_3">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_3
+                        </p>
+                        <p class="message-content-text">
+                            「昔はこれで火事を知らせたんだって。火事の時に鳴らす鐘にしてはデカすぎるよね、めちゃくちゃ不便。たぶん嘘だよ」<br>「まあでも、村の人たちはそう信じてる。それがここの普通なんだ」 <br>「夏至の日の夜、皆で順番に鐘を鳴らしていくの。君も鳴らしてみなよ」<br>「あんなに大きな鐘を鳴らせるなんて、なかなかないよ」<br><br><br>▼03_4へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            「まあそれは確かにそうなんすがね…でもせっかくだし鐘以外にもなんかつくっておけばいいのにたあ思ってんすがね…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            「あはは、そうだよね。ほーんと、何もないもんこの村」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_4">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_4
+                        </p>
+                        <p class="message-content-text">
+                            叔母と話しながら荷物を降ろしていると、村人たちが続々とやってくる。<br>村人たちはあなた達ににこやかに話しかけ、楽しそうに準備を進める。<br>お菓子を持ってくる家。料理を持ってくる家。あなた達のように、飲み物を持ってくる家。犬を持ってくる家。様々。<br>この村では、この夏至の日が祭りのようなものなのだろう。<br><br>笑顔で。<br>楽しそうで。<br>和やかな雰囲気だ。<br><br><br>＜アイデア＞<br><br><br>成功<br>　▼03_4成功へ<br>失敗<br>　▼03_4失敗へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            犬持ってきてもにぎやかになるだけで困るだろ<br>祭りだしそれでいいのか
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            CCB<=35　アイデア (1D100<=35) ＞ 85 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_4失敗">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_4失敗
+                        </p>
+                        <p class="message-content-text">
+                            あなたはこの村人たちが非常に親切だと感じるだろう。これから鳴らす鐘の話を誰もがする。<br>とても楽しみにしているようだ。<br><br><br>▼03_5へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            この村ろくに娯楽がなさそうだもんなァ…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_5">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_5
+                        </p>
+                        <p class="message-content-text">
+                            日が暮れてくる。<br>夜が来る。<br>長い暑い日が終わる。<br><br><br>通常ならば。<br><br><br>▼03_6へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_6">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_6
+                        </p>
+                        <p class="message-content-text">
+                            本来夕焼けに差し掛かるだろう時間になっても、まだまだ空は明るかった。<br>いや、少し変わった日の暮れ方をしているとでもいうのか。<br><br>この村の周辺は、夕暮れだ。<br>しかしこの村の上空は、遠くの空よりも明るい。<br>特に灯りを燈しているわけでもないはずなのに、この広場を中心に、ぼんやりとした光が空を照らしていた。<br><br><br>▼03_7へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            なんかあるんすかね…？<br>光がどこからやってくるのか見ようとする
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            光は空、天の上から来ている。<br>まるで昼の日差しのように。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_7">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_7
+                        </p>
+                        <p class="message-content-text">
+                            夜がやってきている。この村以外に。<br><br>しかしこの村はまだ、明るい。暑い。夜の涼しさはやってこない。<br><br><br>この村には、すでにもう、夏が来ている。<br><br><br>▼03_8へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-03_8">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            03_8
+                        </p>
+                        <p class="message-content-text">
+                            あなたはここで、家に帰るか、この場にとどまるか、選ぶことができる。<br><br><br>（選択後）<br><br><br>▼分岐へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            家に帰るつってもなァ…ろくに祭りも楽しんでないし鐘を鳴らしてからだろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            とどまる
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-分岐">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            分岐
+                        </p>
+                        <p class="message-content-text">
+                            ここからは新たにココフォリアの部屋を作成し、先へ進んでいただく。<br>「※指示があるまであけないでください」を解凍し、中にあるデータを使用すること。<br><br><br>家に帰る場合<br>　▼01へ<br>祭りに残る場合<br>　▼02へ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            では……「とどまる」でいいですね？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            いいんすがね…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待てよもしかしたらこの先はGMも未知数なのか…？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            あ、おれはどっちも知ってるから大丈夫
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            ただどっちに進むかはわかんなかったから部屋は今作る
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            わかっただろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            https://ccfolia.com/rooms/rS4ypABOf<br>ルート2
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-ロックスター">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #f44336;" class="message-user-text">
+                            ロックスター
+                        </p>
+                        <p class="message-content-text">
+                            見てないけどどうせどっちに行っても怖い目に合う
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-KP">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            KP
+                        </p>
+                        <p class="message-content-text">
+                            (^^)
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>
