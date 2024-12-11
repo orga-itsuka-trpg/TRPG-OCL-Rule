@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 400px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-main" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-main" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">main</span>
+                </label>
+                <label for="tab-info" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-info" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">info</span>
+                </label>
+                <label for="tab-other" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-other" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">other</span>
+                </label>
+                <label for="tab-バズり" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-バズり" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">バズり</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-メタルマン" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-メタルマン" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">メタルマン</span>
+                </label>
+                <label for="user-秘密法人デスメイカー" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-秘密法人デスメイカー" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">秘密法人デスメイカー</span>
+                </label>
+                <label for="user-カラフルグレー" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-カラフルグレー" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">カラフルグレー</span>
+                </label>
+                <label for="user-MMR" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-MMR" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">MMR</span>
+                </label>
+                <label for="user-アーバン・ゲリラ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-アーバン・ゲリラ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">アーバン・ゲリラ</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <div class="messages-list">
+            <div class="tab-info user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            バズり漫画虚無<br><br>みんなの好きな漫画をバズらさせるッピ！<br>まず三つの値があるッピよ<br><br>話題度　x10のバズりを固定値で獲得<br>完成度 1d20のバズりを獲得できる回数<br>ステマ度　1d100のバズりを獲得できる回数　話題度+完成度ダイスよりも多く稼いだら炎上して🌈<br><br>合計10点になるように割り振るッピ！<br>完成したらチャパレにある<br><br>{完成度}d20+({話題度}*10)<br><br>を振るッピよ　その数だけバズりを獲得だっピ<br>最後にもう一つチャパレにある<br><br>{ステマ度}d100<br><br>を振るッピ！この値がさっきのダイスを超えなかったらどっちも獲得して宴だっピ〜〜〜！<br>...え？超えてたら？<br>そ、そんなことぼくは怖くて言えないッピ...
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            大罪？何の話だッピ？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM ] 話題度 : 0 → 6
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM ] 完成度 : 0 → 2
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ GM ] ステマ度 : 0 → 2
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            2d20+(6*10) (2D20+(6*10)) ＞ 20[17,3]+(6*10) ＞ 80
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            2d100 (2D100) ＞ 79[46,33] ＞ 79
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おお
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-バズり user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">バズり</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            159
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            今年も色んなバズり漫画があったッピね〜<br>みんなも好きなバズり漫画を教えて欲しいッピ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ここに紹介したらステマだった事になるから紹介できねェ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            100ワニ久々に見ただろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            そこまでだ！残念だったな！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            話題度4、完成度3、ステマ度3で行くぞ来い
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            3d20+(4*10) (3D20+(4*10)) ＞ 28[10,16,2]+(4*10) ＞ 68
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これステマ度低ければ低いほどいいんじゃねェか？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            3d100 (3D100) ＞ 128[46,78,4] ＞ 128
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            おわァ～～～～～～～～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            あぁバズり度にはなるのか
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            低すぎると高得点が望めないってギミックのようだ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            へ〜！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-バズり user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">バズり</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            🔥メタルマン炎上🔥
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            そろそろ狙うか…この漫画が凄い！2025
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            3d20+(3*10) (3D20+(3*10)) ＞ 24[18,4,2]+(3*10) ＞ 54
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            4d100 (4D100) ＞ 224[95,14,18,97] ＞ 224
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            お前炎上するほど知名度ないだろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            ウアアアアアアアアアアアッ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            さあみんな！デスメイダンスの時間だよ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-バズり user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">バズり</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            🌈敗北者～ｗ🌈
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            やるわ<br>COMICMeduで連載中よ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            話題度2 完成度6 ステマ度2
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            ちょっと待てよメタルマンは漫画ですらないだろ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            2d20+(6*10)  (2D20+(6*10)) ＞ 12[2,10]+(6*10) ＞ 72
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            違う！これ話題度と完成度逆！🌈
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            6d20+(2*10)  (6D20+(2*10)) ＞ 77[18,18,3,14,13,11]+(2*10) ＞ 97
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-メタルマン">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            メタルマン
+                        </p>
+                        <p class="message-content-text">
+                            メタル……ファイア！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            2d100 (2D100) ＞ 114[39,75] ＞ 114
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            ウアアアアアアアーーーッ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            死
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-バズり user-カラフルグレー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">バズり</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #607d8b;" class="message-user-text">
+                            カラフルグレー
+                        </p>
+                        <p class="message-content-text">
+                            死<br>最新4巻は昨日発売
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            ステマの力だよ！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            完璧な計算に基づいた最適なる割振りにより究極の話題性を得るのだよ！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            9d20+(0*10) (9D20+(0*10)) ＞ 88[10,4,5,7,11,14,2,18,17]+(0*10) ＞ 88
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            1d100 (1D100) ＞ 88
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            ！？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            「超えなかった」！！　これが第五の力だよ！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-秘密法人デスメイカー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            秘密法人デスメイカー
+                        </p>
+                        <p class="message-content-text">
+                            真面目にすごい
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-バズり user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">バズり</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            176
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            全部ゾロ目だよ！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-MMR">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            MMR
+                        </p>
+                        <p class="message-content-text">
+                            割とすごいのだよ！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            第五の力成功してるの久々に見たッピ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            これから酷い世の中になっていくぞ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            ・・・・・・・・・・・・<br>おまえたちにとってだがな
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            オレたちはそれはそれは流行になる！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            1d20+(1*10) (1D20+(1*10)) ＞ 18[18]+(1*10) ＞ 28
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            8d100<=28 (8D100<=28) ＞ 228[70,1,12,74,12,12,28,19] ＞ 228 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            うおおおおおおおっ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-バズり user-アーバン・ゲリラ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">バズり</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            アーバン・ゲリラ
+                        </p>
+                        <p class="message-content-text">
+                            死<br>表社会での名は下里 良
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            冷静に考えるとステマが氾濫してるのは既に酷い気がするッピ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #e91e63;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            結果発表ッピ！<br>優勝:MMR 陰謀論を広めるッピ<br>準優勝:タコピー　タイザン5先生新作期待してるッピ<br>それ以外:爆死<br><br>漫画はステマかどうかよりもみんなが楽しめたかが一番大事ッピよ<br>またね〜〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>
