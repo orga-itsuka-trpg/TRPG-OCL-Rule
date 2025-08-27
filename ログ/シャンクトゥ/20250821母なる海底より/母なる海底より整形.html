@@ -1,0 +1,4443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 500px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-main" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-main" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">main</span>
+                </label>
+                <label for="tab-info" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-info" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">info</span>
+                </label>
+                <label for="tab-other" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-other" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">other</span>
+                </label>
+                <label for="tab-ステータス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ステータス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ステータス</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-パチュリー" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-パチュリー" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">パチュリー</span>
+                </label>
+                <label for="user-物憂げな会員" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-物憂げな会員" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">物憂げな会員</span>
+                </label>
+                <label for="user-幸田義之" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-幸田義之" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">幸田義之</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+                <label for="user-ゾンビ" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-ゾンビ" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ゾンビ</span>
+                </label>
+                <label for="user-客" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-客" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">客</span>
+                </label>
+                <label for="user-宮原" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-宮原" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">宮原</span>
+                </label>
+                <label for="user-星の船" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-星の船" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">星の船</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <div class="messages-list">
+            <div class="tab-info user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            所要時間：2～3時間<br>人数：2～3名<br>傾向：大正初心者向けお手軽シティ<br>舞台：大正日本<br>推奨技能：＜目星＞＜聞き耳＞＜戦闘技能＞＜交渉技能＞※順不同<br>準推奨技能：＜ナビゲート＞＜医学＞＜生物学＞＜薬学＞※今回の準推奨は無くても問題ないと思います。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            さあて今日はいますかね～<br>起きてる時間ですからね～
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おはよー
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            アンタ気は確かか！？今は朝っぱらだぞ！？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            今荒らしが湧いてるからゲスト規制した方がいいかもだろ<br>ユーザーリストの一番下のゲストを見学にするやつ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ”だからこそ”ですよ～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            むしろ荒らしこの時間寝てるんじゃないですか？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            邪神ちゃん！？<br>生きていたのか…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それだと人違いです～！<br>&gt;邪神ちゃん
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            14時前位に終わりそうなら行けるウ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            オフセ２・3時間なので行けますね！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            じゃあやるか
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x5 3d6 #1<br>(3D6) ＞ 8[5,2,1] ＞ 8<br><br>#2<br>(3D6) ＞ 7[2,3,2] ＞ 7<br><br>#3<br>(3D6) ＞ 6[1,1,4] ＞ 6<br><br>#4<br>(3D6) ＞ 9[1,5,3] ＞ 9<br><br>#5<br>(3D6) ＞ 14[6,4,4] ＞ 14
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            何だこのステータス
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            貧弱貧弱ゥ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            オフセってオフパコってこと？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            パコってパチンコの略ですか？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            チンコ(^^)!?チンコ(^^)!?
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            お前「エロ」ゆんか！？！？！？！？！！？！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            私は真尋さんの子供欲しいですけど？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            おお
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-ステータス user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            STR8<br>CON7　HP7<br>DEX6　<br>POW9　SAN/幸運45<br>INT14　アイデア70　技能値420
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-info user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            探索者たちは以前なんらかで知り合った幸田義之という人物主催の社交クラブに所属している。又は、知り合い・友人(他探索者)の紹介で今回懇親旅行に参加することにした。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            たぶん生むのは真尋さんなんですが！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            これふたなり？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それよりおぞましい何かですよ～！男に産ませるとはそういうことです！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            邪神なので！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            虚弱知的キャラで思いついたのが私だったわ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            来ましたか…動かない大図書館！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            他にいなければ9時スタートにしましょうか！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            わかった
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-ステータス user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            弾幕99　霊体だろうがなんだろうが撃てる　<br>見聞色 90　面倒くさくなった。<br>動かない大図書館 90　おおよその知識学問互換<br>説得 90<br>スペカ 51　ボム　被弾時に喰らい抜けでも使える
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ナラトグラフですねこれ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            最近立たないあの！？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            割と好きだったんですけどね～！流行りませんでした！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            一瞬流行った後無くなっちゃったわよね…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            解釈がはっきりしていなかった時の霊夢が無法でしたね！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            そんなふわふわしてたの
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ボムで弾が二つ好きなところに出せるみたいな能力だったんですけど二つ重ねたら確実に殺せるので！<br>なんか別々の場所にだったみたいです！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            なるほどね…一箇所に二つはダメって多分作ってる側は考えてたんでしょうけど書いてなかったのね
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            あとあれですねー流行らなかった理由は<br>最初から用意された版権！艦これRPGといっしょ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            …そこは、難しいわね
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            持ち込みでキャラ変えるという苦肉の策があるんですがどうしてもですね～！<br>好きなキャラ再現したがるのがOCLですから
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ナラトグラフは…だってあれ霊夢最強だと思うじゃん
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            わかるおれもナラトサプリ買ったけど使えてない
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では準備完了を教えてください！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            教える
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            教えるわ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            誰ぇ？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            駒置いてください！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            置けないから見守ってるだろ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では出航～～～～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            出航～～～…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            幸田義之主催の社交クラブ「東京旅行倶楽部」の懇親旅行の日がやってきた。<br>普通幸田のような実業家や高等遊民など、金持ちしか体験しえない客船での旅ということで探索者は柄にも無くはしゃいでしまっているかもしれない。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            幸田から届いた手紙で指定された時間に横浜港に行くと、幸田と、数人の会員たちが手を振って迎えてくれる。天気が良く、風や波も無い絶好の旅行日和だ。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            ごめんギリギリで技能ちょっと変えた
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            いいですよ～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            港には幸田のものだという普通よりずっと小ぶりな客船「飛鶴丸」が停泊しており、探索者たちは中へと乗り込むと同時にそれぞれ客室の鍵を手渡された。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            うわあり
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            その際に幸田は「飛ぶ鶴と書いて飛鶴丸っていうんだ。縁起の良い名前だろう？」と歯を見せてにこりと笑う。<br>荷物を置いて一息ついたら一度食堂へ集まってほしいとのことだ。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「はふぅ……………」<br>ぽす、とベッドに数分横たわる<br>荷運びだけでもう正直くたくただ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………………ん…」<br>ふらふらと揺れるようにしながら食堂へ向かう…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            食堂へと向かうと東京旅行倶楽部の会員たちの他に飛鶴丸の乗組員たちが集まっており、代表で船長が挨拶をした。名前は宮原雄二というらしい。船長というにはなかなかがっしりした体型をしており、寡黙そうな印象を受ける40代ほどの男性だ。それに続き船内施設の案内・緊急時の対処についての説明を受け、それが全て終わると程なくして飛鶴丸は出港した。目的地の長崎には2日ほどで到着するらしい。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………………」<br>２日…保てばいいけど…体
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            案内を受けた後食堂から出ると<br>船内のどこかの施設で物憂げな会員に出会う。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……………こんにちは？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-物憂げな会員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            物憂げな会員
+                        </p>
+                        <p class="message-content-text">
+                            「あ、こんにちは…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………どうかしたの？具合でも悪いの？私も悪いけど…」<br>私の場合はいつもだけど
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-物憂げな会員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            物憂げな会員
+                        </p>
+                        <p class="message-content-text">
+                            「実は…」<br>話を聞いてみると、と鞄から一冊の雑誌を取り出す。見せられたページには以下の内容が書かれている。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ■オカルト雑誌の特集<br>【原因不明の海難事故多発！】<br>今年に入ってから我が国近海で船が消えるという事件が多発している。どうやら国籍は関係無いようで、我が国の船舶だけでなく、幾隻か外国船も消息を絶っているようである。<br>帝国海軍による調査も行われているようではあるが、これらが大々的に報じられることは無く、我々の調べでは未だに有力な証拠や事件解決への手がかりは得られていないのではということがわかった。<br>また、これらの事故の前日に流れ星を見たというような証言もあるらしく、それに伴う怪奇現象ではないか？という見解もあるという。引き続き本誌では調査を進めていく次第である。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-物憂げな会員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            物憂げな会員
+                        </p>
+                        <p class="message-content-text">
+                            「幸田さん、たぶんこれが目的ですね…」<br>どうやらこの事件は今回の旅行で通る海路でも起こっているらしく、その会員はため息をつく。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「オカルト趣味なのね…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…遭遇したらどうしようもなくない？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-物憂げな会員">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            物憂げな会員
+                        </p>
+                        <p class="message-content-text">
+                            「ないですね…」<br>「救命ボートの場所はきちんと憶えておきますか」<br>そういってふらふらといってしまう
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…お達者で…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…どうしよう」<br>ボートに揺られて生きていられる気がしないな、と文字通り気が遠くなりそうになった
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            夜、深夜に差し掛かるくらいの時間帯に食堂に併設されたバーへ向かうと、幸田が小さめの海図片手に晩酌をしている。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………？」<br>昼間横になってたら夜に寝れなくなった…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            「よお！一緒に飲まないか！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            幸田の持つ海図には一部に何かが書き込まれている。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…水で良いなら…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            「かまわないさ！ところで…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            「いやあ、この印のあたりで何やら興味深いことが起きているらしくてさァ。僕ァね、そういった類の話が大好きでね。なんでも我が国のものやら海外の船がこの辺りで消息を絶っているんだとかでさァ…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…その、そういう目に遭ったら…どうするんですか？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「見物する訳じゃなくて当事者ですよ…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            「いやいや、これは旅行のついでだよ？ついで！…今日は波も風も無いしいい天気で見晴らしも良い。なんにも起きたりしないって！」<br>そう笑顔でまくし立てると陽気に笑って酒を飲み干す。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…なら良いですけど」<br>ちびちびと水を飲む…ちょっとだけ船の揺れからくる嫌悪感が和らぐ…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            その少し後に乗組員が幸田の元へやってきて、少し海が時化り出した旨を伝える
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            邪神がクトゥしてる！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            邪神ですからね！時間も邪神です！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            こわい
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            「いやあ噂をすれば影だな」<br>「船酔いには気をつけろよ？」<br>幸田は苦笑いを見せると、探索者たちに船酔いに注意するよう告げ、その場はお開きとなる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………………」<br>若干の恐怖心から自分の体を抱きかかえるようにし、震えながら自室に戻る
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では聞き耳をどうぞ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 8 ＞ スペシャル
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            なんて健康的なのだ…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ＜聞き耳＞ に成功した探索者は船の異音で目覚める。<br>時計を確認すると4時44分であった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………～～～～～～～…………」<br>ズルズルと引きずるようにベッドからゆっくりと落ちてきた
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……………こんな時間に何………」<br>頭を抑えながら自室を出る
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            個室を出て人が集まっている食堂の方へ向かうと、同じ倶楽部の仲間、幸田、そして気弱そうな船員が一人いる。どうやら飛鶴丸のどこかしらが異常をきたしたらしく、船が停止してしまったとのこと。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            船員に尋ねると<br>「①船長始め他の船員は原因の調査のため外に出ていること ②出港前の点検では船に何も異常が見られなかったこと ③飛鶴丸はこれが初の航海なため、劣化などによる事故では確実にないこと ④この事故の30分前ほどから霧が出始め、今は異常なほどそれが濃いこと」<br>を教えてくれる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………………………どうしましょう」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            以上のことを船員が話し終わった直後、窓にかじりついていた幸田があっ！と声を上げる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            「あれは一体なんだ！？おい！見てみろ！！」と叫ぶ幸田の指さす方を見てみると、探索者やほかの乗客たちはこんなものを目にする。<br>ボロボロの帆船が海面から船首部を突き出し、まるで水中から這い出るかのように霧の中に姿を現す。大きく船体を持ち上げたそれは船体の腹の部分を海面に叩きつけ、その衝撃で飛鶴丸が大きく揺れる。 <br>SANチェック 1/1D6
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=45 (1D100&lt;=45) ＞ 73 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ パチュリー ] SAN : 45 → 44
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………～～～～～～～！」<br>咄嗟にかがんで頭を抑える
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ＜目星-20%＞
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=70 (1D100&lt;=70) ＞ 71 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            1足りない。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            直後パニックに陥った船内に宮原が駆け込んで来た後、全員に落ち着いて部屋で待機するよう告げ、再び外へと出て行く。<br>慌ただしく駆け回る船員のうち一人が、船の脇に備え付けられていたライトをカチカチと点滅させていたかと思えば、再び顔を青くして走ってどこかへ行ってしまった。<br>＜アイデア1/2＞
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=35 (1D100&lt;=35) ＞ 3 ＞ 決定的成功/スペシャル
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            モールス信号(モールス符合)を使って交信を試みたようだが、帆船からはやはり返事は無いようだ。期待はしていないがあれとの意思疎通は無理だろうということがわかる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            次から1回失敗を無効にできます！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            わかったわ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            その後一度気弱そうな船員が食堂を出て行き、少し経ってから探索者たちの元へ戻ってきて状況を説明する。<br>「皆さま、どうか落ち着いてくださいませ。現在船長の宮原他船員3名があの船の調査に出ており、他船員2名は船の状態を調べるため船体を見に行っております。確認がすみましたらしかるべき処置を行いますのでどうか船内で待機していて下さいませ。船長の宮原が旧知の帝国海軍の友人への連絡も後ほど試みるとのことです！」<br><br>そのまま日は登って朝は過ぎていく
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……………………………むきゅう…………」<br>ベッドで毛布をぐるぐる巻きにくるまって隅で必死に眠ろうとする
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            聞き耳どうぞ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 68 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            船体を外からガリガリと何かで引っ搔くような音、そして無理矢理何かを壊したような音がしたかと思うと、ゴトン、という重い物を動かしたような音がする。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………………………」<br>見に行かない訳にも行かないので部屋を出て確認してみる
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ゾンビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゾンビ
+                        </p>
+                        <p class="message-content-text">
+                            女性が悲鳴を上げている。何かから逃げ、必死に船内を走り回っていたようで探索者たちに助けを求めてくる。女性の背後を見ると、生気を失ったように青白い肌をした人間のようなものが2人、女性を追っていた。よくよく見ればその人間のようなものは大量に水のような物を吐きこぼしている。 SANチェック 1/1D8 (1体分で良い)
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=44 (1D100&lt;=44) ＞ 16 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ パチュリー ] SAN : 44 → 43
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ゾンビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゾンビ
+                        </p>
+                        <p class="message-content-text">
+                            ＜目星＞又は＜アイデア＞
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 48 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ゾンビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゾンビ
+                        </p>
+                        <p class="message-content-text">
+                            それらの身に纏っている衣服が飛鶴丸の船員のものだということに気付く。<br>ゾンビ2体との戦闘。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………どうして…」<br>構える
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            15が2体…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            弾当てれば一瞬で溶けるでしょう！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            恐らく？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            でまあ弾幕なので範囲攻撃です！<br>成功一回で…勝利！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            うおー
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=99 (1D100&lt;=99) ＞ 99 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            あぶない。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ゾンビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゾンビ
+                        </p>
+                        <p class="message-content-text">
+                            ゾンビたちがぴちゅりました！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ゾンビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゾンビ
+                        </p>
+                        <p class="message-content-text">
+                            戦闘終了後 ＜目星＞
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 96 ＞ 致命的失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            まあファンブルだしここでクリティカル権使っておきましょう…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            承知！成功になりました！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ゾンビの耳もしくは口の端に緑色の細い糸状のものが付着していることに気付く。その長さは数センチほどだ。<br>破られた船体の外を見ると、壊れた救命艇がある。修理すると乗れるようになる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…糸…？」<br>良く分からない…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ゾンビ撃破後に入手した救命艇(木製の手漕ぎボート)の修復が終わり、誰が幽霊船へ船長たちを探しに行くかで話し合う。しかし必ず探索者のみが行くこととなる。<br>幸田は船の問題について調べているため手が離せず、気弱な船員は船長から乗客たちを任されているからと拒否する。他の乗客たちは怖いからと行きたがらない。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………………………………………え」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「え？」<br>私が、行くの？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………………………」<br>おろおろ　キョロキョロ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-客">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            客
+                        </p>
+                        <p class="message-content-text">
+                            「……」<br>全員目をそらしている
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……………………………………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            むきゅー…世を儚む…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「行ってきます…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            外は一層霧が濃くなり、船の灯りと幸田に渡されたランプでかろうじて辺りを確認できる程度。<br>帆船は初めて見たときよりもずっとこちらに迫って来ており、船体の様子をもっとよく見ることができるだろう。<br>船全体を見渡すと、微発光する緑色のひも状の組織が、まるで何か有害な寄生植物であるかのように腐った船体中に絡みついているのがわかる。<br>そして探索者たちは帆船の様子から、人が動かしているものでないことを確信できる。<br>＜目星＞
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 44 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            帆船の脇に自分たちが乗ってきたものと同じ小舟を見つける。鎖のようなもので縛り付けてあるらしく、そのすぐ横の部分の船体には無理矢理開けたような穴がある。(ここから中に入ることができる)
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………大丈夫、かしら……………」<br>気が引けながらも行くしか無いので…必死に入り込む
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            幽霊船内は何かが腐敗したような刺激臭と、それに混じって鉄のような臭いがする。探索者に医療関係の者がいるなら、これが死体の臭いと血液の臭いであることがわかるだろう。<br>外から見たとおり船内も酷く腐っており、ペンや筆ほどの太さのひも状の何かが這いまわっている。まるで死の世界に足を踏み入れてしまったかのように感じる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            船内はあの奇妙な触手の発する光以外の光源が無く、探索者たちの持ってきたランプの火が風も無いのにチラチラと揺れる。ランプを掲げて辺りを見回してみると、腐敗のせいかところどころ床が抜けており見られる場所は少ないように感じられた。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そしてどう見ても今すぐ崩壊してもおかしくないほど船体の破損が激しい。むしろここまで形が残っているほうが不思議だと感じる程だ。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………………」<br>これで私が入ってきた衝撃で倒壊なんてオチは無いでしょうね…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-info user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            幽霊船1階：部屋A<br>幽霊船1階：部屋B<br>幽霊船1階：部屋C<br>幽霊船2階：甲板
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            中を進むと、骨がむき出しになったゾンビの死体とまだ比較的新しい…見知った顔である船員の死体がある<br>1/1d6
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=43 (1D100&lt;=43) ＞ 28 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ パチュリー ] SAN : 43 → 42
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「う……………………」<br>僅かに後ずさる
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…本当に、人が死んでる…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            取り敢えず上から順に部屋Aから見ていきましょう…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ゾンビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゾンビ
+                        </p>
+                        <p class="message-content-text">
+                            扉の前に元飛鶴丸の船員のゾンビがいる。どうにか扉を開けようとしている
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            ………………！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            おらーっ弾幕だーっ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=99 (1D100&lt;=99) ＞ 61 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-ゾンビ">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            ゾンビ
+                        </p>
+                        <p class="message-content-text">
+                            ﾋﾟﾁｭﾝ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-宮原">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            宮原
+                        </p>
+                        <p class="message-content-text">
+                            中にいた宮原が音に気付いて扉をそっと開け、パチュリーがいるのが分かると安心して話し出す<br>「この船に侵入してみたはいいが、何が何だか状況が全くわからない。大きな棍棒を持った人骨の怪物が徘徊しているし、そこら中が腐り落ちていて下手に歩き回れん。部下たちは人骨の化け物に襲われて…俺はどうにかここに立てこもることができたが…。俺一人ではどうしようもない。申し訳ないんだが、この幽霊船をどうにかするために力を貸してはくれないか？恐らくこのままでは飛鶴丸に衝突するだろう。船体は腐っているが、舳先(へさき)は健在だ。ぶつかったらひとたまりもない。」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「多分、この船をどうにかしないと帰れもしないでしょうからそうしましょう…………」<br>すごくこわい
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            宮原が合流します！まあ使わないでしょうけど！<br>次はどこに行きますか？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            次はBで…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ボロボロの木箱やどこかの国の国旗らしきもの、腐った海図のようなものがある。&lt;目星&gt;
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 92 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            わからん…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            振り直してもいいですよ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            振り直しだぁ～
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 65 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ■カソーグタ号伝説<br>かの海賊黄金時代の第三期、所謂スペイン継承戦争以降の時代である1700年代前半、アメリカ大陸東岸部で猛威を振るったカソーグタ号の行方はいまだに判明しておらず、一部の人間の間では世界の七不思議のひとつとして数えられている。<br>海賊カソーグタは、スペイン継承戦争の終結により職を失った者たちが、海の神の姉であり妻である女神カソーグタの名を希望の象徴とし、決して大きいとは言えないにしろ、立派な帆船で新たな地を求めて旅立ったことがルーツとなっているらしい。<br>カソーグタ号の船員たちは海賊となったにも関わらず、結成当時の仲間にこだわり、例え仲間が死亡してもその人員を補充しようとはしなかったという。故にカソーグタの船員は少なく、最後は■人ほどだったといわれている。<br>そしてそのカソーグタ号は、ある日ぱたりと姿を消してしまうのである。<br>未だに船も船員の亡骸も発見されてはいない。しかし記録によれば、船員たちを最後に見たという酒場の店主は、カソーグタ号の船員たちが「流れ星を見た」と話しているのを聞いたようだ。<br>この流れ星とカソーグタ号が消えたことについて何か因果関係はあるのだろうか。<br>海の女神の祝福を受けたはずの船は、一体どこに消えてしまったのだろうか。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ■船に寄生する植物？～●●村の幽霊船伝説～<br>■■県の漁師から以前こんな話を聞いた。■■県北部に位置する●●村に幽霊船伝説があることは有名な話だが、実際にそのようなものを目撃したのだという。夜霧にまぎれて海を進むその船は、はっきりと確認できなかったものの腐った船体にまるで蔓のような物が巻き付いていたそうだ。<br>さて、この村の幽霊船伝説について触れておこう。その起源はおよそ200年前に遡る。<br>その当時、この村は漁村として大変栄えていたそうで、現在の5倍ほどの住民が居た事が資料で確認されている。海も豊かで、毎日豊漁であったそうだ。<br>しかし●●村はとある事件をきっかけに衰退してしまう。村で一番の大きさを誇る漁船と、村長であり、漁の指揮を執っていた者が”海底から現れた謎の植物”によって失われたのである。<br>大きな流星を村中の人々が見た翌日、漁に出た漁船が突如現れた大きな蔓のようなものに襲われたそうだ。その日は晴れていたにも関わらず突如霧が発生したらしい。<br>偶然にも生き残った村の若者は「星の母が来た。星の母に襲われた。」とうわ言のようにつぶやき続けていたという。村人たちはその蔓のようなものに”星の母”と名付け、これ以上村に被害が出ないよう石碑を立てて祈り続けたという。そして石碑を立てた夜、村人たちは夜霧の中に見たこともない外国の帆船を目撃したのだそうだ…。<br>それから被害に遭うことも無く、村人たちはどうにか暮らしてきたが、今回の目撃によって再び大変な不安にかられているのだという。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「星の………母……」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…植物…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「寄生…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「繊維って…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………………わかんないけど、進もう…」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            と言う訳で部屋Cに行きます…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            中には小ぶりなテーブルや椅子が転がっており、いずれも腐っており脚が足らない。この部屋には窓があるが、窓を覆うガラスは無く、木枠から何本もひも状のものが中に入ってきている。<br>＜目星＞
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=90 (1D100&lt;=90) ＞ 100 ＞ 致命的失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            転んで頭をぶつけます！<br>HP-1d6!
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            1d6 (1D6) ＞ 4
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            ぐえ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ パチュリー ] HP : 7 → 3
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…………あ…！」<br>べちゃっとすっ転んだと思えば
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「…～～～～～～～～…！！！」<br>普通の人じゃ鳴らないようななにかが折れたり砕ける音が鳴って悶えた
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そうして悶えていると 壁沿いに立つ棚だった物の裏に扉があることに気付く。この扉を出ると甲板へと上がることができる鉄製のはしごがある。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……………うぅ………」<br>プルプル震えながら梯子を登る
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            甲板へ上がると、先ほどより幽霊船が飛鶴丸に近づいていることがわかる。そこから海面を見ると、探索者達はあることに気が付く。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            海に出たときは気付かなかったが、あの緑色の光が何本も飛鶴丸の方へ伸びているのである。<br>揺れる海面の中で蠢くそれは、幽霊船からまだ飛鶴丸へ向かって伸びて行こうとしている物があるらしく、飛鶴丸の船体を見ればすでに辿り着いている触手が這い上がろうとしていた。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            ナラトグラフにサプリが出てるのも今知ったのおれ？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そして探索者たちは自分たちの背後にいる何かの気配にやっと気が付く。<br>本能が見てはいけないと警鐘を鳴らすが時すでに遅し、首はいつのまにやらそれの方を向いてしまっていたのだった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            すでに原形をとどめていない恐らく運転席であったであろう壁にそれは張り付いていた。<br>この幽霊船、そして飛鶴丸へと伸びる触手の、その根元がこれなのであろう。それは人間の幼児ほどの大きさの黄緑色をした石の塊で、小太りで、豊満な胸をした顔の無い女性の姿を象っている。そしてそれから何十本もの鉛筆ほどの大きさの根っこのようなひも状の触手が伸びている。<br>SANチェック 0/1D4+1<br>。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            これが、あの文献で見た”星の母”なのではないか？と探索者たちが思ったと同時に目の前に幾本もの触手が現れる
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=42 (1D100&lt;=42) ＞ 51 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            1d4+1 (1D4+1) ＞ 1[1]+1 ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ パチュリー ] SAN : 42 → 40
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……ひっ…！」<br>ビクッと大きく仰け反って離れようとする
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-宮原">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            宮原
+                        </p>
+                        <p class="message-content-text">
+                            「うわあ、なんだこいつは！」<br>焦ってライフルを連射するも
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-星の船">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            星の船
+                        </p>
+                        <p class="message-content-text">
+                            キチン質の肌に弾かれ全く通じない
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            まあ弾幕は通るんですけどね～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            あっ通るんだ
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どう考えても物理的攻撃じゃないですし！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「………」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「じゃ、じゃあ…」<br>と言う訳で弾幕打ちます
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どうぞ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=99 (1D100&lt;=99) ＞ 35 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-星の船">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            星の船
+                        </p>
+                        <p class="message-content-text">
+                            まばゆい光に包まれて肉体が徐々にえぐり取られ、触手が千切れて形を失っていく
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            もうED入るので好きなことしていいですよ～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「え」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「えっ」<br>お、終わった…？終わり？良いの？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……………か、帰れる…の？」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-宮原">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            宮原
+                        </p>
+                        <p class="message-content-text">
+                            「救命艇があったはず…行こう！」
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「は、はいっ！」<br>必死にコケた痛みで体を引き摺りながら付いてくる
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            星の母撃破後、星の母によりかろうじて形を保っていたカソーグタ号が崩壊を始める。探索者達は宮原に手を引かれ、なんとか救命艇へ乗り込むことができるだろう。幸運にも船を繋いでいた鎖は、絡まっていた柱を失いすぐに飛鶴丸へ向けて出発することができた。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            「どうやら船が動くようだよ！」<br>飛鶴丸へと戻ると、労いもほどほどに幸田が声を上げる。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            「……………はぁ…はぁ…………良かった…………」<br>死ぬかと、思った………
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            いつのまにやら飛鶴丸を包んでいた濃霧も消え去っており、程なくして飛鶴丸は最寄りの港へ向けて出発することができるだろう。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            散々な目に遭ったもののその後はお詫びとして幸田が奮発し、当初よりずっと豪勢な旅行を楽しむことが出来た探索者。宮原からの感謝も受け、しばらく船はトラウマになったものの、なにか達成感のようなものを胸に探索者たちは帰路へとつくのであった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-幸田義之">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            幸田義之
+                        </p>
+                        <p class="message-content-text">
+                            その後は原因不明の船の事故もぱたりと途絶え、様々な場所で消息を絶った船が発見された。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            しかし、船内には必ず乗っていた人々がいないらしい。未だ謎を残しつつも、怪奇事件と、探索者たちの悪夢のような航海は幕を閉じたのだった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            EDです！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            しぬかとおもった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            虚弱過ぎますね！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ということで…宴だ～～～～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～～～！！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            弾幕が無ければ死んでいた。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ソロは厳しいですね～！<br>無法技能は持ってくると踏んでましたが！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            無法がないとソロはうっかりデスが絶対あると思ったから…案の定死に片足突っ込んだし…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            クトゥルフとはそういうものだァ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            シャン要素のおかげでゲームになってる感はあります！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            殺される前に殺せー
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ②本シナリオの真相<br>たまたま宇宙から飛来した外なる神の幼生の一部である”星の母”という神話生物により、近年密かに多発していた海難事故。大の旅行好き・オカルト好きの幸田による小規模社交クラブ「東京旅行倶楽部」に参加又は関わる探索者たちは、そんなことを特に知りもせず星の母の次の被害者となってしまう。濃霧に行く手を阻まれ、船自体も原因不明の故障に見舞われ、海底からは謎の幽霊船が出現し、さらにはゾンビたちが迫り来る…探索者たちは無事に帰ることができるのだろうか？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            あとゾンビとの遭遇数もこっそり減らしました！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            100ファンを出して死ぬ確率が増えていく所だった…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            クリティカルなかったらダイスで死んでた可能性は大いにありましたね！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            …
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            ((((^^))))
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ではこんなところで！<br>またね～～～～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-パチュリー">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9c27b0;" class="message-user-text">
+                            パチュリー
+                        </p>
+                        <p class="message-content-text">
+                            またね～～～～～～～～…
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>
