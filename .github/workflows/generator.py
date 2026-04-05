@@ -1,11 +1,7 @@
 import os
 import sys
 
-#header
-#ログ一覧を含まないhtml部分 cssやら説明書きやらはこれとfooterに書く
-#checkbox要素のcheckedを使ってCSSに開いたり閉じたりさせている
-#paddingやmarginはよくわかっていない
-header="""<!DOCTYPE html>
+header = """<!DOCTYPE html>
 <html lang="ja">
   <head>
     <meta charset="UTF-8">
@@ -41,73 +37,147 @@ header="""<!DOCTYPE html>
         background: #ccc;
       }
     </style>
-  </head>
   <body>
     <h3>シャン卓のログをお前に教える</h3>
     <div class="menu">"""
 
-#この間にul要素が入れ子になる感じで
-example="""<details><summary>項目3</summary>
-    <ul>
-        <li>項目１－１
-        <li>項目１－２
-        <li>項目１－３お前に教えるooooooooooooooo
-    </ul>
-    <details>
-"""
-
-#footer 以下略
-footer="""    </div>
+footer = """    </div>
     <p>かっこいいCSS書けるシャンカーにこのページを託す…</p>
   </body>
 </html>"""
 
-#ブラックリスト
-black_list_dir=[]#'シャンTRPGログ2021_10_02まで'
-black_list_file=[]
+black_list_dir = []
+black_list_file = []
 
-def main():
-    #ワーキングディレクトリ(ルート想定)のログフォルダの存在チェック ない場合終了
-    if not os.path.isdir('./ログ'):
-        return
-    print(header)
-    generate_li('ログ')
-    print(footer)
 
-#ログのリストをログフォルダを再帰的に走査して入れ子になった<li>要素をprintする
-#path ルートフォルダ(ログフォルダ)
-#addLI 最初の階層だけ<li>付けない IQ28のゴリ押し実装 ベストプラクティスくれ
-def generate_li(path,addLI=False):
-    files = os.listdir(path)
-    #引数のパスから得られるディレクトリとファイルの一覧を生成
-    #ブラックリストの物及び頭に.がついている物(.keepなど)を除外
-    files_dir = [f for f in files if (not f.startswith('.')) and (f not in black_list_dir) and os.path.isdir(os.path.join(path, f))]
-    files_file = [f for f in files if (not f.startswith('.')) and (not f.endswith('.keep')) and (f not in black_list_file) and os.path.isfile(os.path.join(path, f))]
+# =========================
+# ① ツリー構造を作る
+# =========================
+import re
+
+def extract_year(name):
+    """
+    先頭のyyyymmddを検出して年を返す
+    """
+    match = re.match(r'^(\d{4})(\d{2})(\d{2})', name)
+    if match:
+        return match.group(1)
+    return None
+
+
+def build_tree(path):
+    node = {
+        "name": os.path.basename(path),
+        "type": "dir",
+        "children": []
+    }
+
+    try:
+        files = os.listdir(path)
+    except Exception as e:
+        print(e, file=sys.stderr)
+        return node
+
+    files_dir = [
+        f for f in files
+        if not f.startswith('.') and
+        f not in black_list_dir and
+        os.path.isdir(os.path.join(path, f))
+    ]
+
+    files_file = [
+        f for f in files
+        if not f.startswith('.') and
+        not f.endswith('.keep') and
+        f not in black_list_file and
+        os.path.isfile(os.path.join(path, f))
+    ]
 
     files_dir.sort()
     files_file.sort()
-    #デバッグ用
-    print(path,file=sys.stderr)
-    print(files_dir,file=sys.stderr)
-    print(files_file,file=sys.stderr)
 
-    #html生成
-    for dir in files_dir:
-        print(('<li>'if addLI else '')+'<details><summary>'+dir+"</summary>")
-        print('<ul>')
-        generate_li(path+"/"+dir,True)
-        print('</ul>')
-        print('</details>')
+    # 年ごとにまとめる用
+    year_groups = {}
 
-    for file in files_file:
-        print(('<li>'if addLI else '')+'<a href="'+path+'/'+file+'" target="_blank" rel="noopener noreferrer">'+file+'</a>')
+    # ===== ディレクトリ処理 =====
+    for d in files_dir:
+        full_path = os.path.join(path, d)
+        year = extract_year(d)
 
-    return
+        child_node = build_tree(full_path)
 
-#【最後に】
-#見てないけど多分ゴリ押しのスクリプトを書いたおれはIQ5 ミルクちゃんできた！
-#もっとまともなやり方存在する説濃厚に 私に代わっていい感じに書き直してくれ！
-#わかったかミズゴロウ
+        if year:
+            year_groups.setdefault(year, []).append(child_node)
+        else:
+            node["children"].append(child_node)
+
+    # ===== ファイル処理 =====
+    for f in files_file:
+        full_path = os.path.join(path, f)
+        year = extract_year(f)
+
+        file_node = {
+            "name": f,
+            "type": "file",
+            "path": full_path
+        }
+
+        if year:
+            year_groups.setdefault(year, []).append(file_node)
+        else:
+            node["children"].append(file_node)
+
+    # ===== 年ノードを追加 =====
+    for year in sorted(year_groups.keys()):
+        node["children"].append({
+            "name": year,
+            "type": "dir",
+            "children": year_groups[year]
+        })
+
+    return node
+
+
+# =========================
+# ② ツリーからHTML生成
+# =========================
+def render_html(node, add_li=False):
+    html = ""
+
+    if node["type"] == "dir":
+        if add_li:
+            html += "<li>"
+
+        html += f'<details><summary>{node["name"]}</summary>\n<ul>\n'
+
+        for child in node["children"]:
+            html += render_html(child, True)
+
+        html += "</ul>\n</details>\n"
+
+    else:  # file
+        if add_li:
+            html += "<li>"
+        html += f'<a href="{node["path"]}" target="_blank" rel="noopener noreferrer">{node["name"]}</a>\n'
+
+    return html
+
+
+def main():
+    if not os.path.isdir('./ログ'):
+        return
+
+    tree = build_tree('ログ')
+
+    print(header)
+
+    print("<ul>")
+    for child in tree["children"]:
+        print(render_html(child, add_li=True))
+    print("</ul>")
+
+    print(footer)
+
 
 if __name__ == "__main__":
-    main() 
+    main()
