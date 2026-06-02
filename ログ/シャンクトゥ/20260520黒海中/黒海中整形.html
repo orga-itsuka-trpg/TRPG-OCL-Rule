@@ -1,0 +1,1857 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width"/>
+    <title>Ccfolia Log</title>
+    <style data-meta="layout">
+
+        :root {
+            --body-background: #424242;
+            --side-bar-background: #424242;
+            --header-background: #4d4d4d;
+            --strong-text-color: #FFF;
+            --rgb-text: 255;
+            --rgb-shadow: 0;
+            --tab-items-height: 200px;
+            --user-items-height: 200px;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            font-family: -apple-system, "BlinkMacSystemFont", "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+            background-color: var(--body-background);
+            overflow-x: hidden;
+            height: 100%;
+            width: 100%;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+
+        * {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box
+        }
+
+        .root {
+            display: flex;
+            height: 100%;
+        }
+
+        .side-bar {
+            width: 300px;
+            height: 100%;
+            position: fixed;
+            z-index: 100;
+            background-color: var(--side-bar-background);
+            border-right: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            overflow-y: auto;
+        }
+
+        .side-bar hr {
+            border: none;
+            height: 1px;
+            margin: 0;
+            flex-shrink: 0;
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+        }
+
+        header {
+            background-color: var(--header-background);
+            height: 64px;
+            position: fixed;
+            padding-left: 24px;
+            box-shadow: 0px 2px 4px -1px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.2), 0px 4px 5px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 1px 10px 0px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            display: flex;
+            align-items: center;
+        }
+
+        header h1 {
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-size: 1.17em;
+            font-weight: 300;
+            color: var(--strong-text-color);
+            margin: 0;
+        }
+
+        main {
+            position: absolute;
+        }
+
+        .messages-list {
+            margin-top: 64px;
+            margin-bottom: 0px;
+            padding: 8px 0px;
+        }
+
+        /* mobile */
+        @media (max-width: 960px) {
+            .side-bar {
+                left: 0;
+                transform: translateX(-300px);
+                visibility: hidden;
+                transition: 225ms;
+                border-right: none;
+                box-shadow: 0px 8px 10px -5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.20), 0px 16px 24px 2px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.14), 0px 6px 30px 5px rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.12);
+            }
+
+            header {
+                width: 100%;
+            }
+
+            main {
+                width: 100%;
+            }
+
+            .messages-list {
+                width: 100%;
+            }
+
+            #drawer-open:checked ~ .side-bar {
+                transform: none;
+                visibility: visible;
+            }
+
+            .main-cover {
+                transition: 225ms;
+            }
+
+            #drawer-open:checked ~ .main-cover {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                z-index: 1;
+                background-color: rgba(var(--rgb-shadow), var(--rgb-shadow), var(--rgb-shadow), 0.5);
+            }
+        }
+
+        /* pc */
+        @media (min-width: 960px) {
+            header {
+                width: calc(100% - 300px);
+            }
+
+            main {
+                width: calc(100% - 300px);
+                margin-left: 300px;
+            }
+        }
+    </style>
+    <style data-meta="menu">
+        .menu-root {
+            padding: 8px 0px;
+        }
+
+        .accordion-input {
+            display: none;
+        }
+
+        .accordion-label {
+            padding: 8px 16px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-label-fonts {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            color: var(--strong-text-color);
+            margin: 0;
+            width: 243px;
+        }
+
+        .accordion-items:not(:checked) {
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: 300ms;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-user:checked ~ #user-items {
+            height: var(--user-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        #accordion-menu-tab:checked ~ #tab-items {
+            height: var(--tab-items-height);
+            overflow: visible;
+            opacity: 1;
+        }
+
+        .accordion-item {
+            padding: 4px 16px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+        }
+
+        .accordion-item-fonts {
+            font-size: 0.875rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: var(--strong-text-color);
+            margin: 0;
+            word-break: break-word;
+        }
+
+        .button-elements {
+            transition: 150ms;
+            cursor: pointer;
+        }
+
+        .button-elements:hover {
+            background-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.08);
+        }
+
+        .menu-header {
+            display: flex;
+            align-items: center;
+            height: 64px;
+            padding-left: 24px;
+        }
+    </style>
+    <style data-meta="checkbox">
+        .accordion-items input[type="checkbox"] {
+            cursor: pointer;
+            display: inline-block;
+            position: relative;
+            padding-left: 25px;
+            padding-right: 10px;
+        }
+
+        .accordion-items input[type="checkbox"]::before {
+            content: "";
+            position: absolute;
+            box-sizing: border-box;
+            width: 20px;
+            height: 20px;
+            margin-top: -10px;
+            left: 0;
+            top: 50%;
+            border: 2px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7); /* 枠の色変更 お好きな色を */
+            border-radius: 3px;
+            background-color: var(--side-bar-background);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .1), 0 0 0 rgba(203, 34, 237, .2);
+            -webkit-transition: all .275s;
+            transition: all .275s;
+        }
+
+        .accordion-items input[type="checkbox"]:checked::after {
+            content: "";
+            position: absolute;
+            display: block;
+            box-sizing: border-box;
+            width: 15px;
+            height: 7px;
+            margin-top: -6px;
+            top: 50%;
+            left: 3px;
+            transform: rotate(-45deg);
+            border-bottom: 3px solid;
+            border-left: 3px solid;
+            border-color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.7);
+        }
+    </style>
+    <style data-meta="icons">
+        .hamburger-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .hamburger-icon span,
+        .hamburger-icon span:before,
+        .hamburger-icon span:after {
+            content: '';
+            display: block;
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+        }
+
+        .hamburger-icon span:before {
+            bottom: 5px;
+        }
+
+        .hamburger-icon span:after {
+            top: 5px;
+        }
+
+        .cancel-icon {
+            display: flex;
+            height: 48px;
+            width: 48px;
+            justify-content: center;
+            align-items: center;
+            z-index: 110;
+            cursor: pointer;
+            padding: 12px;
+            margin-left: -12px;
+            margin-right: 16px;
+            border-radius: 24px;
+        }
+
+        .cancel-icon span,
+        .cancel-icon span:before {
+            content: '';
+            height: 2px;
+            width: 18px;
+            background-color: var(--strong-text-color);
+            position: absolute;
+            transform: rotate(45deg);
+        }
+
+        .cancel-icon span:before {
+            transform: rotate(-90deg);
+        }
+
+        @media (min-width: 960px) {
+            .hamburger-icon {
+                display: none;
+            }
+
+            .cancel-icon {
+                display: none;
+            }
+        }
+    </style>
+    <style data-meta="message-item">
+        .message-item {
+            border-bottom: 1px solid rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.12);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-item .tab-area {
+            width: 56px;
+            min-width: 56px;
+        }
+
+        .message-item .tab-area .tab-text {
+            font-size: 0.75rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.66;
+            letter-spacing: 0.03333em;
+            color: #888888;
+            max-width: 50px;
+            word-break: break-word;
+        }
+
+        .message-item .message-area {
+            margin: 6px 0px;
+        }
+
+        .message-item .message-area .message-user-text {
+            font-size: 1rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            letter-spacing: 0.00938em;
+            word-break: break-word;
+            margin: 0;
+        }
+
+        .message-item .message-area .message-content-text {
+            font-size: 0.85rem;
+            font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+            font-weight: 300;
+            line-height: 1.43;
+            letter-spacing: 0.01071em;
+            color: rgba(var(--rgb-text), var(--rgb-text), var(--rgb-text), 0.9);
+            word-break: break-word;
+            margin: 0;
+        }
+    </style>
+
+    <script>
+        const showHide = (checkbox) => {
+            const targetMessages = document.getElementsByClassName(checkbox.id)
+            for (let i = 0; i < targetMessages.length; i++) {
+                const message = targetMessages[i]
+                const contexts = message.className.split(' ')
+                let checked = checkbox.checked
+                contexts.forEach((context) => {
+                    const contextCheckbox = document.getElementById(context)
+                    if (contextCheckbox) {
+                        checked &= contextCheckbox.checked
+                    }
+                })
+                message.style.display = checked ? '' : 'none'
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="root">
+    <input id="drawer-open" class="accordion-input" type="checkbox">
+    <nav class="side-bar">
+        <div class="menu-header">
+            <label for="drawer-open" class="cancel-icon button-elements">
+                <span></span>
+            </label>
+        </div>
+        <hr>
+        <div class="menu-root">
+            <!-- tabs -->
+            <input id="accordion-menu-tab" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-tab" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Tabs</span>
+            </label>
+            <div id="tab-items" class="accordion-items">
+                <label for="tab-main" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-main" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">main</span>
+                </label>
+                <label for="tab-info" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-info" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">info</span>
+                </label>
+                <label for="tab-other" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-other" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">other</span>
+                </label>
+                <label for="tab-ステータス" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="tab-ステータス" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">ステータス</span>
+                </label>
+
+            </div>
+
+            <!-- users -->
+            <input id="accordion-menu-user" class="accordion-input" type="checkbox" checked="checked">
+            <label for="accordion-menu-user" class="accordion-label button-elements">
+                <span class="accordion-label-fonts">Users</span>
+            </label>
+            <div id="user-items" class="accordion-items">
+                <label for="user-GM" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-GM" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">GM</span>
+                </label>
+                <label for="user-[noname]" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-[noname]" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">[noname]</span>
+                </label>
+                <label for="user-笹波雲明" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-笹波雲明" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">笹波雲明</span>
+                </label>
+                <label for="user-system" class="accordion-item button-elements">
+                    <div style="width: 56px;">
+                        <input id="user-system" onclick="showHide(this)" type="checkbox" checked="checked">
+                    </div>
+                    <span class="accordion-item-fonts">system</span>
+                </label>
+
+            </div>
+        </div>
+    </nav>
+    <label for="drawer-open" class="main-cover"></label>
+    <main>
+        <header>
+            <!-- hamburger button -->
+            <label for="drawer-open" class="hamburger-icon button-elements">
+                <span></span>
+            </label>
+            <h1>Ccfolia Log</h1>
+        </header>
+        <div class="messages-list">
+            <div class="tab-info user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">info</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            丸い月の下で。そこは真っ黒な海<br><br>舞台　夢の世界<br><br>ロスト  なし<br><br>後遺症　あり<br><br>新規・継続問わない
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            さてやっていきなしょうかね～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            起きたら建っててダメだった<br>参加していいかお頭
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おや閉め切ろうかと思ったら参加者が来てました！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どうぞ！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-[noname]">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #9e9e9e;" class="message-user-text">
+                            [noname]
+                        </p>
+                        <p class="message-content-text">
+                            x5 3d6 #1<br>(3D6) ＞ 5[3,1,1] ＞ 5<br><br>#2<br>(3D6) ＞ 10[5,2,3] ＞ 10<br><br>#3<br>(3D6) ＞ 8[5,2,1] ＞ 8<br><br>#4<br>(3D6) ＞ 12[1,6,5] ＞ 12<br><br>#5<br>(3D6) ＞ 11[3,2,6] ＞ 11
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-ステータス user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">ステータス</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ＳＴＲ　5<br>ＣＯＮ　10<br>ＤＥＸ　8<br>ＰＯＷ　12<br>ＩＮＴ　11<br><br>ＨＰ　10<br>SAN値　60<br>アイデア　55<br>幸運　60<br><br>技能ポイント　330<br><br>目星　80<br>聞き耳　80<br>図書館　80<br>監督　80<br>サッカー　10
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            1D12  (1D12) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            まずいなんかコマンドが暴発した
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では準備はよろしいですかね？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            教えます
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            では死出の旅に！出航～～～～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            出航だァ〜〜〜〜〜〜〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            丸い月の下で。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            気づけばそこは夜の海。<br>探索者は小舟に乗っています。ぷかぷか、ぷかり。<br>頭上には丸い月が浮かんでおりました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            探索者の周囲は黒い海です。<br>本当に真っ黒で、よく見ると謎の油など浮かんでいます。<br>探索者の知っている海ではなさそうです。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            探索者がきょろきょろしておりますと、小舟は風もないのに勝手に動き出しました。<br>探索者をどこか別の場所へ運んでいくのでしょう。<br>ひたすら真っ黒な海しか見えません。<br>月明かりが照らす黒海は肌寒い冷気を放っておりました。<br>探索者は身震いします。<br>どこへ連れて行かれるのでしょう。<br><br>SANc（1/1d2）
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=60 (1D100&lt;=60) ＞ 83 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            1d2 (1D2) ＞ 2
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 笹波雲明 ] SAN値 : 60 → 58
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            小舟は真っ黒な海を進んでいきます。<br>東西南北どちらに進んでいるのかはさっぱり分かりません。<br>油と月光でてらてらと輝く黒海から、かちり、かち、かち、というかすかな異音が聞こえてきました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            何の音でしょう。この場所が何なのか、手がかりになるかもしれません。探索者は耳をすまします。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            【聞き耳】
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=80　聞き耳 (1D100&lt;=80) ＞ 89 ＞ 失敗
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            🌈
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            音の出所はよく分かりませんでした。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢なんか変な音だけはするな……｣
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            小舟はどんどん進んでいきます。<br>かすかな音は聞こえなくなりました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            遠くの方に、小さな島らしいものが見えてまいりました。<br>小舟はそちらに向かっているようです。<br>近づくにつれ、小さな島の異様な様子が分かってきます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            小さな島とは、巨大な石の舞台でした。<br>平たい円形の石の舞台が黒海に浮かんでおりました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            舞台の上には小さな書き物机と椅子。<br>たいそう歳を召したご老人が一心不乱に書き物をしています。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            小舟は黒海に浮かぶ円形の舞台の縁まで進むと、ぽんと震えて探索者を放り出しました。探索者はいい具合に円形の舞台に着地します。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どうしますか<br>・老人に話しかけてみる<br>・円形の石の舞台を観察する<br>・小舟に戻る
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            舞台を観察しましょう
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            円形の石の舞台を観察する
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            円形の舞台の上には、小さな書き物机と椅子、その椅子に腰掛け何かを書きまくっている老人が座っております。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そのほかに、何か有用なものは無さそうな気配ですが、探索者はもっとよく観察してみることにしました。<br><br>【目星】
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=80　目星 (1D100&lt;=80) ＞ 64 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            目星成功<br><br>黒い海、つるんとした石の舞台、小さな書き物机、椅子、かなりお年を召したご老人…他に何かないか、石の舞台をゆっくり見ながら歩いていきます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            見つかったのは、一本の万年筆。<br>探索者は万年筆を拾い上げました。<br>それはわずかに青く発光しておりました。万年筆は探索者の手によく馴染み、はるか昔からそれを使って何かを書き記していたような感覚を覚えます。探索者はなんだか嬉しくなり、万年筆を持っていくことにしました。あの老人の持ち物かな？と一瞬頭をよぎりましたが、落っこちていたものなら問題ないでしょう。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            老人の方は…書き物に集中しきっているようです。探索者が話しかけても、たぶん返事はないでしょう。<br><br>探索者は石の舞台から立ち去ることにしました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢万年筆だけ貰っていきましょう｣<br>｢落ちてるから僕の物だ｣<br>船に戻る
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            小舟に戻る<br><br>探索者は小舟に戻ってきました。<br>小舟は探索者が乗りますと、また勝手に動きだし何処か別の場所に連れて行くようです。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ところで…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            あなたが今までの船旅で気になったのは<br>出所不明の音ですか？<br>それとも老人ですか？<br>それとも万年筆ですか？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            全部気になってますが強いて言うなら万年筆ですかね
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            探索者を乗せた小舟は、黒海をぐんぐんと進みます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            どこまでもどこまでも。黒海は果てがないように思えます。<br>探索者は不安を覚えます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            その時ぴとん、と頬に冷たいものが触れました。<br>雨でも降ってきたのでしょうか？<br>【聞き耳】
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            CCB&lt;=80　聞き耳 (1D100&lt;=80) ＞ 30 ＞ 成功
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それは黒い水滴でありました。<br>雨水ではなく、それはインクのようでした。<br>すぐに大降りになり、インクの雨が探索者と小舟と黒海に降り注ぎます。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢うわっ！インクみたいな雨……？｣
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢この小舟、すぐに沈んでしまいそうだ｣<br>｢雨水を掻き出さないと……｣
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            小舟も探索者もインクで真っ黒です。<br>黒海が生き物のようにうねります。<br>小舟も探索者も飲み込まれてしまいました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            黒海とは天から降ってきたインクでできていたのか。<br>インクとは書き記すためのもの。では、この場所は誰かが書き記してできあがった世界なのかもしれない…
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            探索者は薄れゆく意識の中、そんなことを考えました。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            探索者は目覚めた。<br>いつもの、探索者の寝床であった。<br>何か奇妙な夢を見た気がしたが、夢とは失われるものである。<br>何も覚えてはいなかった。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            探索者は日常の行動を開始するだろう。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢何かしらの夢を見ていたような気がする……｣
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢まあいいや、今日はフットボールフロンティア決勝戦｣<br>｢あの雷門中との決勝戦だ｣
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢入念に準備しておかないとね｣<br>ベッドから降り、準備を始める
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            ふと、手の中に万年筆を握っていたことに気づく。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            それはわずかに青く発光している。このような物を持っていた記憶はないが、まるで大昔から使っているもののような感触がある。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            そんなわけで、特に疑問も持たぬまま万年筆は使われるだろう。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            ｢手に持ってるってことは多分僕の物なんだろう｣<br>｢大事に使おう｣
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            これを拾ったために、完全な黒になることを免れ黒海の夢から覚めることができたのだ。
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            シナリオエンド<br>《END3》<br>探索者生還<br>生還報酬<br><br>SAN回復1d3
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            【AF:異界の万年筆<br>わずかに青く発光している。書く道具として普通に使用できる。この万年筆はインクを補充する必要はない。インクの海たる黒海と繋がっているからだ。<br>この万年筆を所持している間、芸術/製作（執筆）+10 芸術/製作（文才）+10の補正が加わる】
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ～～～～～～～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            これで雷門中破りますよ来い
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            宴だァ〜〜〜〜〜〜〜〜〜〜〜！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            さすがに朝とはいえ短すぎますね！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            万年筆を拾っていなければ即死でした
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            フラグが…折れた！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            1d3 (1D3) ＞ 1
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-main user-system">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">main</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            system
+                        </p>
+                        <p class="message-content-text">
+                            [ 笹波雲明 ] SAN値 : 58 → 59
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            PCが僕で命拾いしましたね<br>他のイナイレ選手だったらとりあえずジジイにボール蹴りこんでました
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            イナイレってそんなに治安世紀末だったんですか！？
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            割と治安は世紀末です
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            おそろしいですね<br>あのおっさんに異世界言語脳みそに叩き込まれるんでおっさんは殺されたかもしれません
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            怖いです
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            でもおっさんが気になったらバッドエンドなのでどのみち！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            【後遺症: 一億五千万と七十八年の観測者<br>探索者が眠りにつくごとに【POW】ロールし成功すると黒海の夢を見る。（内容はPLが自由に決めてよい。）夢から覚めたなら、その内容を記録しなければならない。<br>【異界言語】をロールせよ。成功したら、探索者は満足する。失敗したら、SANc（0/1）<br>この後遺症は一億五千万と七十八年の間継続する。<br>使命が終わらずに探索者が死亡したなら、この後遺症を保持したまま転生することになるだろう】
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            気にしなくてよかったですね！
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            適当に島探索してペン拾ってて良かったです
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            では僕は出勤準備をするのでこの辺りで……
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-笹波雲明">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #009688;" class="message-user-text">
+                            笹波雲明
+                        </p>
+                        <p class="message-content-text">
+                            お疲れシャンでした<br>またね〜〜〜〜〜〜〜〜〜
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-other user-GM">
+                <div class="message-item">
+                    <div class="tab-area">
+                        <span class="tab-text">other</span>
+                    </div>
+                    <div class="message-area">
+                        <p style="color: #888888;" class="message-user-text">
+                            GM
+                        </p>
+                        <p class="message-content-text">
+                            またね～～～～！
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+</body>
+</html>
